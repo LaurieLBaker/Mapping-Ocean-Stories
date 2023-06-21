@@ -1,0 +1,53 @@
+---
+title: "Interview Analysis"
+output: html_document
+date: "2023-04-25"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Reading in the data
+
+```{r}
+library(pdftools)
+library(tidyverse)
+library(tidytext)
+
+ingalls_full_text <- pdftools::pdf_text(pdf = "data/ingalls_bobby_and_lee_reggie.pdf")
+
+# convert text to string
+ingalls_full_text <- toString(ingalls_full_text)
+ingalls_full_text
+# convert text to character lines
+ingalls <- read_lines(ingalls_full_text)
+
+ingalls <- tibble(ingalls)
+```
+
+```{r}
+# who is talking?
+
+ingalls$text <- ingalls$ingalls
+
+ingalls <- ingalls %>%
+  mutate(who = str_extract(text, pattern = "[A-Z]{1,3}\\:")) %>%
+  fill(who, .direction = "down")
+
+
+meta_ingalls <- data.frame("Interviewee Name" = ingalls$text[is.na(str_extract(ingalls$text, pattern = "^.*Interviewee.*$")) == FALSE],
+                           "Project" = ingalls$text[is.na(str_extract(ingalls$text, pattern = "^.*Project\\/Collection.*$")) == FALSE], 
+                           `Interviewers Names and Affiliation` = ingalls$text[is.na(str_extract(ingalls$text, pattern = "^.*Interviewer.*$")) == FALSE],
+                           "Location" = ingalls$text[is.na(str_extract(ingalls$text, pattern = "^.*Interview Location.*$")) == FALSE],
+                           "Date" = ingalls$text[is.na(str_extract(ingalls$text, pattern = "^.*Date of Interview.*$")) == FALSE]) %>%
+  mutate(Location = str_replace(Location, pattern = "^.*:", replacement = "")) %>%
+  mutate(Date = str_replace(Date, pattern = "^.*:", replacement = ""))
+
+```
+
+```{r}
+https://mainesoundandstory.com/wp-content/uploads/2022/07/Petersen_Chris_10_25_19.pdf
+```
+
+
