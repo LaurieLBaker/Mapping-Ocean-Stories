@@ -19,6 +19,7 @@ library(wordcloud)
 library(RColorBrewer)
 library(topicmodels)
 library(reshape2)
+library(igraph)
 # install.packages("spacyr")
 # library(spacyr)
 # spacy_download_langmodel("en") #need to install Anaconda on computer (not currently working)
@@ -93,6 +94,28 @@ extract_location <- function(text)
 #link to lawson1t_merged
 lawson1t_merged$location <- sapply(lawson1t_merged$text, extract_location)
 ```
+##Location network
+```{r}
+#filter for the rows with locations
+filtered_merged <- lawson1t_merged %>%
+  filter((location != "character(0)")) %>% 
+  unnest(location)
+#create list of connection locations (with consecutive initials only)
+# connection_list <- filtered_merged %>%
+#   mutate(initials = as.character(initials)) %>%
+#   group_by(grp = cumsum(c(TRUE, diff(as.integer(factor(initials))) != 1))) %>%
+#   filter(n() > 1) %>%
+#   mutate(from = lag(location), to = lead(location)) %>%
+#   select(from, to)
+# 
+# network_location <- graph_from_data_frame(filtered_merged, directed = TRUE)
+# #
+# initials <- unique(filtered_merged$initials)
+# colors <- rainbow(length(initials))
+# names(colors) <- initials
+# plot(network_location, vertex.color = colors)
+```
+
 ##Word frequency
 ```{r word_frequency_plot}
 lawson1_word <- lawson1t %>% 
