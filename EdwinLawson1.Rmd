@@ -1,0 +1,30 @@
+---
+title: "Edwin Layson Interview Analysis"
+output: html_document
+date: "2023-07-18"
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r install_packages}
+library(pdftools)
+library(tidyverse)
+library(tidytext)
+```
+
+## Reading in the data
+```{r read_data}
+lawson_full_text <- pdftools::pdf_text(pdf = "data/Lawson_Edwin_10131972.pdf")
+```
+
+```{r string-data}
+# convert text to string
+lawson_full_text <- toString(lawson_full_text)
+lawson_full_text
+# convert text to character lines
+lawson <- read_lines(lawson_full_text)
+
+lawson <- tibble(lawson)
+```
+
