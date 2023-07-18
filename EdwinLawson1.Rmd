@@ -17,6 +17,8 @@ library(textclean)
 library(stopwords)
 library(wordcloud)
 library(RColorBrewer)
+library(topicmodels)
+library(reshape2)
 # install.packages("spacyr")
 # library(spacyr)
 # spacy_download_langmodel("en") #need to install Anaconda on computer (not currently working)
@@ -105,12 +107,12 @@ lawson1_word %>%
 ```
 ###Word cloud list
 ```{r list_frequencies}
-#words provided by ChatGPT + added bay, summer, harbor, dollars from the word frequency plot above. (total of 37 words --> decide what amount of words would be best)
+#words provided by ChatGPT + added bay, summer, harbor, dollars from the word frequency plot above. (total of 37 words --> decide what amount of words would be best) I also added weiring and dragging (they are not of high frequency, but it is mentionned, which would be good to portray)
 word_list <- c("lobster", "boat", "traps", "fishermen", "water", "lobstering", "oil", "clothes",
                "motor", "work", "years", "fishing", "rowboat", "wharf", "season", "boats",
                "diesel", "buoys", "accidents", "licence", "gasoline", "engine", "swim", "son",
                "horsepower", "fishing", "heavy", "boots", "color", "land", "coast", "shore",
-               "family", "winter", "father", "summer", "bay", "harbor", "dollars")
+               "family", "winter", "father", "summer", "bay", "harbor", "dollars", "weiring", "dragging")
 word_freq <- table(lawson1_word$word)
 target_freq <- word_freq[names(word_freq) %in% word_list]
 target_freq <- sort(target_freq, decreasing = TRUE)
@@ -120,9 +122,31 @@ target_freq <- sort(target_freq, decreasing = TRUE)
 wordcloud(
   words = names(target_freq),
   freq = target_freq,
-  scale = c(5, 0.5), #Size range for the words in the cloud (big, small)
+  min.freq = 1,
+  scale = c(5, 1), #Size range for the words in the cloud (big, small)
   random.order = FALSE, #FALSE will put the biggest words in the middle, TRUE will put them in a random order
-  colors = brewer.pal(6, "Dark2") #(amount of colors, palette)
+  colors = brewer.pal(8, "Dark2") #(amount of colors, palette)
 )
+```
+
+##Topic Modelling (is not very conclusive for now, perhaps adding more documents (more interviews) could make the topic modelling more relevant?)
+```{r}
+lawson1_word <- lawson1_word  %>% 
+  anti_join(get_stopwords(source = "smart")) %>% 
+  mutate(document_id = row_number())
+#create document term matrix (DTM)
+dtm <- lawson1_word %>%
+  count(document_id, word) %>%
+  cast_dtm(document_id, word, n)
+#set number of topics
+num_topics <- 20
+#run Latent Dirichlet Allocation (LDA) topic modeling algorithm 
+lda_model <- LDA(dtm, k = num_topics)
+#most probable words for each topic
+terms_per_topic <- terms(lda_model, 10)
+#get most dominant topic for each document
+document_topics <- tidy(lda_model, matrix = "gamma") %>%
+  group_by(document) %>%
+  top_n(1, gamma)
 ```
 
