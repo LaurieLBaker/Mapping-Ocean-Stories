@@ -11,20 +11,57 @@ knitr::opts_chunk$set(echo = TRUE)
 library(pdftools)
 library(tidyverse)
 library(tidytext)
+library(dplyr)
+library(textclean)
+
 ```
 
 ## Reading in the data
 ```{r read_data}
-lawson_full_text <- pdftools::pdf_text(pdf = "data/Lawson_Edwin_10131972.pdf")
+lawson1_full_text <- pdftools::pdf_text(pdf = "data/Lawson_Edwin_10131972.pdf")
 ```
 
 ```{r string-data}
 # convert text to string
-lawson_full_text <- toString(lawson_full_text)
-lawson_full_text
+lawson1_full_text <- toString(lawson1_full_text)
+lawson1_full_text
 # convert text to character lines
-lawson <- read_lines(lawson_full_text)
+lawson1 <- read_lines(lawson1_full_text)
 
-lawson <- tibble(lawson)
+lawson1 <- tibble(lawson1)
+lawson1 <- rename(lawson1, text = lawson1)
+```
+
+## Cleaning table
+```{r}
+lawson1 <- lawson1 %>% 
+  mutate(initials = str_extract(text, pattern = "[A-Z]{1,3}\\:")) %>%
+  fill(initials, .direction = "down")
+#remove the metadata and only look at interview
+lawson1t <- lawson1[-c(1:60), ]
+#correct first initials
+lawson1t$initials[1:4] <- "RS:"
+lawson1t$initials[5:7] <- "EL:"
+#remove initials from text
+lawson1t$text <- str_replace_all(lawson1t$text, "[A-Z]{1,3}:", "")
+#remove white spaces
+lawson1t$text <- gsub("\\s{2,}", "", lawson1t$text)
+#remove empty rows
+lawson1t <- lawson1t[!is.na(lawson1t$text), ]
+#merging text
+lawson1t <- lawson1t %>%
+  mutate(group = cumsum(initials != lag(initials, default = "")))
+#merge consecutive rows within each group to have
+lawson1t_merged <- lawson1t %>%
+  group_by(initials, group) %>%
+  summarise(text = paste(text, collapse = " ")) %>%
+  ungroup() %>% 
+  arrange(group)
+#extract time stamps
+lawson1t_merged <- lawson1t_merged %>%
+  mutate(time = str_extract_all(text, "\\[\\d{2}:\\d{2}:\\d{2}\\.\\d\\]"))
+time_unnested <- lawson1t_merged %>%
+  unnest(time)
+#do we want to remove the time stamps from the text?
 ```
 
