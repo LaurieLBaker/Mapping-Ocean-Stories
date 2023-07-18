@@ -1,7 +1,8 @@
 ---
-title: "Edwin Layson Interview Analysis"
+title: "Edwin Lawson Interview Analysis"
 output: html_document
 date: "2023-07-18"
+name: "Delphine Demaisy"
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -13,7 +14,10 @@ library(tidyverse)
 library(tidytext)
 library(dplyr)
 library(textclean)
-
+# install.packages("spacyr")
+# library(spacyr)
+# spacy_download_langmodel("en") #need to install Anaconda on computer (not currently working)
+# spacy_initialize("en")
 ```
 
 ## Reading in the data
@@ -33,7 +37,7 @@ lawson1 <- rename(lawson1, text = lawson1)
 ```
 
 ## Cleaning table
-```{r}
+```{r data_cleaning}
 lawson1 <- lawson1 %>% 
   mutate(initials = str_extract(text, pattern = "[A-Z]{1,3}\\:")) %>%
   fill(initials, .direction = "down")
@@ -63,5 +67,25 @@ lawson1t_merged <- lawson1t_merged %>%
 time_unnested <- lawson1t_merged %>%
   unnest(time)
 #do we want to remove the time stamps from the text?
+```
+
+##SpacyR location extraction
+```{r}
+# parsed_text <- spacy_parse(lawson1t_merged$text)
+# location_entities <- spacy_entity(parsed_text, entity = "GPE")
+# locations <- location_entities$ent_text
+```
+##Location extraction from list
+```{r location_function}
+# List of locations from ChatGPT
+locations <- c("West Tremont", "home", "Seal Cove", "Ship Harbor", "Tremont",
+               "Rockland", "Maine", "Swan's Island", "Bass Harbor", "Blue Hill Bay",
+               "Hardwood Island", "Stonington", "Blue Hill", "Black Island", "Goose Cove")
+#function to extract location
+extract_location <- function(text) 
+  { extracted_location <- str_extract_all(text, paste(locations, collapse = "|"))
+  return(extracted_location)}
+#link to lawson1t_merged
+lawson1t_merged$location <- sapply(lawson1t_merged$text, extract_location)
 ```
 

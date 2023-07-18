@@ -12,7 +12,7 @@
 
 <meta name="date" content="2023-07-18" />
 
-<title>Edwin Layson Interview Analysis</title>
+<title>Edwin Lawson Interview Analysis</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -349,7 +349,7 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">Edwin Layson Interview Analysis</h1>
+<h1 class="title toc-ignore">Edwin Lawson Interview Analysis</h1>
 <h4 class="date">2023-07-18</h4>
 
 </div>
@@ -370,7 +370,11 @@ display: none;
 ## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
 <pre class="r"><code>library(tidytext)
 library(dplyr)
-library(textclean)</code></pre>
+library(textclean)
+# install.packages(&quot;spacyr&quot;)
+# library(spacyr)
+# spacy_download_langmodel(&quot;en&quot;) #need to install Anaconda on computer (not currently working)
+# spacy_initialize(&quot;en&quot;)</code></pre>
 <div id="reading-in-the-data" class="section level2">
 <h2>Reading in the data</h2>
 <pre class="r"><code>lawson1_full_text &lt;- pdftools::pdf_text(pdf = &quot;data/Lawson_Edwin_10131972.pdf&quot;)</code></pre>
@@ -417,6 +421,21 @@ lawson1t_merged &lt;- lawson1t_merged %&gt;%
 time_unnested &lt;- lawson1t_merged %&gt;%
   unnest(time)
 #do we want to remove the time stamps from the text?</code></pre>
+<p>##SpacyR location extraction</p>
+<pre class="r"><code># parsed_text &lt;- spacy_parse(lawson1t_merged$text)
+# location_entities &lt;- spacy_entity(parsed_text, entity = &quot;GPE&quot;)
+# locations &lt;- location_entities$ent_text</code></pre>
+<p>##Location extraction from list</p>
+<pre class="r"><code># List of locations from ChatGPT
+locations &lt;- c(&quot;West Tremont&quot;, &quot;home&quot;, &quot;Seal Cove&quot;, &quot;Ship Harbor&quot;, &quot;Tremont&quot;,
+               &quot;Rockland&quot;, &quot;Maine&quot;, &quot;Swan&#39;s Island&quot;, &quot;Bass Harbor&quot;, &quot;Blue Hill Bay&quot;,
+               &quot;Hardwood Island&quot;, &quot;Stonington&quot;, &quot;Blue Hill&quot;, &quot;Black Island&quot;, &quot;Goose Cove&quot;)
+#function to extract location
+extract_location &lt;- function(text) 
+  { extracted_location &lt;- str_extract_all(text, paste(locations, collapse = &quot;|&quot;))
+  return(extracted_location)}
+#link to lawson1t_merged
+lawson1t_merged$location &lt;- sapply(lawson1t_merged$text, extract_location)</code></pre>
 </div>
 
 
