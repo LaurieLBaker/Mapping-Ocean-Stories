@@ -15,6 +15,8 @@ library(tidytext)
 library(dplyr)
 library(textclean)
 library(stopwords)
+library(wordcloud)
+library(RColorBrewer)
 # install.packages("spacyr")
 # library(spacyr)
 # spacy_download_langmodel("en") #need to install Anaconda on computer (not currently working)
@@ -100,5 +102,27 @@ lawson1_word %>%
   ggplot(aes(n, fct_reorder(word, n))) + 
   geom_col()
 #see comments about this in Trello
+```
+###Word cloud list
+```{r list_frequencies}
+#words provided by ChatGPT + added bay, summer, harbor, dollars from the word frequency plot above. (total of 37 words --> decide what amount of words would be best)
+word_list <- c("lobster", "boat", "traps", "fishermen", "water", "lobstering", "oil", "clothes",
+               "motor", "work", "years", "fishing", "rowboat", "wharf", "season", "boats",
+               "diesel", "buoys", "accidents", "licence", "gasoline", "engine", "swim", "son",
+               "horsepower", "fishing", "heavy", "boots", "color", "land", "coast", "shore",
+               "family", "winter", "father", "summer", "bay", "harbor", "dollars")
+word_freq <- table(lawson1_word$word)
+target_freq <- word_freq[names(word_freq) %in% word_list]
+target_freq <- sort(target_freq, decreasing = TRUE)
+```
+
+```{r word_cloud}
+wordcloud(
+  words = names(target_freq),
+  freq = target_freq,
+  scale = c(5, 0.5), #Size range for the words in the cloud (big, small)
+  random.order = FALSE, #FALSE will put the biggest words in the middle, TRUE will put them in a random order
+  colors = brewer.pal(6, "Dark2") #(amount of colors, palette)
+)
 ```
 
