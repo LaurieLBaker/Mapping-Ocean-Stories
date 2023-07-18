@@ -14,6 +14,7 @@ library(tidyverse)
 library(tidytext)
 library(dplyr)
 library(textclean)
+library(stopwords)
 # install.packages("spacyr")
 # library(spacyr)
 # spacy_download_langmodel("en") #need to install Anaconda on computer (not currently working)
@@ -87,5 +88,17 @@ extract_location <- function(text)
   return(extracted_location)}
 #link to lawson1t_merged
 lawson1t_merged$location <- sapply(lawson1t_merged$text, extract_location)
+```
+##Word frequency
+```{r word_frequency_plot}
+lawson1_word <- lawson1t %>% 
+  unnest_tokens(word, text) 
+lawson1_word %>% 
+  anti_join(get_stopwords(source = "smart")) %>% 
+  count(word, sort = TRUE) %>%
+  slice_max(n, n = 20) %>%
+  ggplot(aes(n, fct_reorder(word, n))) + 
+  geom_col()
+#see comments about this in Trello
 ```
 
