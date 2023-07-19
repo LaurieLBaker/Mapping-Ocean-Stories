@@ -41,7 +41,6 @@ lawson1 <- read_lines(lawson1_full_text)
 lawson1 <- tibble(lawson1)
 lawson1 <- rename(lawson1, text = lawson1)
 ```
-
 ## Cleaning table
 ```{r data_cleaning}
 lawson1 <- lawson1 %>% 
@@ -140,6 +139,26 @@ filtered_merged <- lawson1t_merged %>%
 # colors <- rainbow(length(initials))
 # names(colors) <- initials
 # plot(network_location, vertex.color = colors)
+```
+
+##Gear Extraction from list ChatGPT
+```{r gear_list}
+gear <- c("tape recorder", "battery", "sardine weir", "fishing lines", "lobster traps", "rowboat", "lobster smack", "lobster buyers", "lobster companies", "lobster boat", "lobster catcher", "outboard motor", "two and a half horsepower outboard motor", "wooden lobster traps", "softwood traps", "second-hand traps", "laths", "boughs", "bottoms", "frames", "nylon twine", "cotton twine", "manila twine", "polyethylene twine", "plastic buoys", "foam buoys", "styrofoam buoys", "wooden buoys", "cedar wood", "oak wood", "spruce wood", "pot warp", "toggle", "single-cylinder boat engine", "four-cylinder boat engine", "six-cylinder boat engine", "eight-cylinder boat engine", "diesel engine", "gasoline engine", "hundred and thirty-five horsepower gasoline engine", "eighty-horsepower diesel engine","seine net")
+```
+
+```{r lower_case_text}
+#we need all the text to be in lower case and the list to be in lower case to extract all the gear. However we need to keep the Uppercase when we want to extract Location, which is why the location extraction should stay first.
+lawson1t_merged_lower <- lawson1t_merged %>%
+  mutate(text = tolower(text))
+```
+
+```{r function_gear_list}
+#function to extract gear
+extract_gear <- function(text) 
+  { extracted_gear <- str_extract_all(text, paste(gear, collapse = "|"))
+  return(extracted_gear)}
+#link to lawson1t_merged_lower
+lawson1t_merged_lower$gear <- sapply(lawson1t_merged_lower$text, extract_gear)
 ```
 
 ##Word frequency
