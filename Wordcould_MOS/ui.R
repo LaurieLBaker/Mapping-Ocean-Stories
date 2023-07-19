@@ -8,26 +8,52 @@
 #
 
 library(shiny)
-
-# Define UI for application that draws a histogram
-fluidPage(
-
-    # Application title
-    titlePanel("Old Faithful Geyser Data"),
-
-    # Sidebar with a slider input for number of bins
-    sidebarLayout(
-        sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
-        ),
-
-        # Show a plot of the generated distribution
-        mainPanel(
-            plotOutput("distPlot")
-        )
+# Define UI for data upload app ----
+ui <- fluidPage(
+  # App title ----
+  titlePanel("Uploading Transcripts"),
+  # Sidebar layout with input and output definitions ----
+  sidebarLayout(
+    # Sidebar panel for inputs ----
+    sidebarPanel(
+      fileInput("pdfFile", "Upload PDF file"),
+      checkboxGroupInput("wordList", "Select Word List", 
+                         choices = list(
+                           "location_EL" = c("Swan's Island", "home", "Southwest Harbor", "Manset", 
+                                              "Worcester", "Massachusetts", "California", "Pasadena", 
+                                              "Florida", "Lake Worth", "Palm Beach", "Westward", 
+                                              "Cherryfield", "Canada", "Hancock", "Bangor", "Castine", 
+                                              "Ship Harbor", "West", "Boston", "Gloucester", "New York", 
+                                              "Black Island", "Mitchell's Cove", "Placentia", "Bass Harbor", 
+                                              "Blue Hill", "Blue Hill Bay", "Hardwood Island", "Stonington", 
+                                              "Seal Cove", "Mitchell’s Cove", "Goose Cove", "West Tremont", 
+                                              "Lynn", "Marblehead", "Maine", "Bass Harbor Head", "Bear Island", 
+                                              "Ship Island Ledges", "Ship Island", "bay", "Gulf", "Wilson", "Bernard", 
+                                              "Portland", "Rockland", "Mt. Desert Island/ Mount Desert Island", "Chester", 
+                                              "England", "Tremont", "Ellsworth", "Cranberry Island", 
+                                              "Mt. Desert Rock/ Mount Desert Rocks", "Duck Island", "Duck Cove", "Cape Cod", 
+                                              "Camden", "Norway", "Saugus", "Nova Scotia", "Atlantic", "Brooklin", "Corea", 
+                                              "Prospect Harbor", "Orono", "New Hampshire", "Hancock county", "Bar Harbor", 
+                                              "Northeast Harbor", "Vinalhaven", "Eastward", "Oak Point", "Long Ledge", "Platt's Point", 
+                                              "Somesville", "England"),
+                            "gear" = c ("tape recorder", "battery", "sardine weir", "fishing lines", "lobster traps", "rowboat", 
+                                        "lobster smack", "lobster buyers", "lobster companies", "lobster boat", "lobster catcher", 
+                                        "outboard motor", "two and a half horsepower outboard motor", "wooden lobster traps", 
+                                        "softwood traps", "second-hand traps", "laths", "boughs", "bottoms", "frames", "nylon twine", 
+                                        "cotton twine", "manila twine", "polyethylene twine", "plastic buoys", "foam buoys", "styrofoam buoys", 
+                                        "wooden buoys", "cedar wood", "oak wood", "spruce wood", "pot warp", "toggle", "single-cylinder boat engine", 
+                                        "four-cylinder boat engine", "six-cylinder boat engine", "eight-cylinder boat engine", "diesel engine", 
+                                        "gasoline engine", "hundred and thirty-five horsepower gasoline engine", "eighty-horsepower diesel engine"
+                                        ,"seine net"),
+                            "sepcies" = c("lobsters", "scallops", "lobster", "scallop", "sardine", "sardines", "fish"))),
+      downloadButton("downloadButton", "Download Word Cloud")
+    ),
+    # Main panel for displaying the word cloud plot ----
+    mainPanel(
+      plotOutput("WordCloudPlot")
     )
+  )
 )
+    
+
+

@@ -20,6 +20,7 @@ library(RColorBrewer) #for wordcloud
 library(topicmodels) #for LDA topic modelling
 library(reshape2) #for LDA topic modelling
 library(igraph) #for network graph
+library(shiny) #for shiny app
 # install.packages("spacyr")
 # library(spacyr)
 # spacy_download_langmodel("en") #need to install Anaconda on computer (not currently working)
