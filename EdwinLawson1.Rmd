@@ -122,26 +122,69 @@ lawson1t_merged %>%
 ```
 
 ##Location network
-```{r location_network}
-#filter for the rows with locations
+```{r location_network_trial1, fig.height=15, fig.width=15}
+# Filter for the rows with locations
 filtered_merged <- lawson1t_merged %>%
-  filter((location != "character(0)")) %>% 
+  filter(location != "character(0)") %>% 
   unnest(location)
-#create list of connection locations (with consecutive initials only)
-# connection_list <- filtered_merged %>%
-#   mutate(initials = as.character(initials)) %>%
-#   group_by(grp = cumsum(c(TRUE, diff(as.integer(factor(initials))) != 1))) %>%
-#   filter(n() > 1) %>%
-#   mutate(from = lag(location), to = lead(location)) %>%
-#   select(from, to)
-# 
-# network_location <- graph_from_data_frame(filtered_merged, directed = TRUE)
-# #
-# initials <- unique(filtered_merged$initials)
-# colors <- rainbow(length(initials))
-# names(colors) <- initials
-# plot(network_location, vertex.color = colors)
+
+# Add unique identifiers to location names
+filtered_merged$location <- paste0(filtered_merged$location, "_", filtered_merged$group)
+
+# Create list of connection locations (within the same group)
+connection_list_1 <- filtered_merged %>%
+  group_by(group) %>%
+  filter(n() > 1) %>%
+  mutate(from = lag(location), to = lead(location)) %>%
+  na.omit() %>%
+  select(from, to)
+
+# Create a graph from the filtered data
+network_location_1 <- graph_from_data_frame(connection_list_1, directed = TRUE)
+
+# Get unique initials
+initials <- unique(filtered_merged$initials)
+
+# Choose colors
+colors <- ifelse(grepl("^RS:", initials), "red", "blue")
+
+# Plot network
+plot(network_location_1, vertex.color = colors)
 ```
+```{r network_location_trial2}
+# Filter for the rows with locations
+filtered_merged <- lawson1t_merged %>%
+  filter(location != "character(0)") %>% 
+  unnest(location)
+
+# Add unique identifiers to location names
+#filtered_merged$location <- paste0(filtered_merged$location, "_", filtered_merged$group)
+
+# Create list of connection locations (within the same group)
+connection_list_2 <- filtered_merged %>%
+  group_by(group, initials) %>%
+  filter(n() > 1) #%>%
+#  mutate(from = paste0(location, "_", initials), to = paste0(lead(location), "_", lead(initials))) %>%
+  # na.omit() %>%
+  # select(from, to)
+
+# Create a graph from the filtered data
+network_location_2 <- graph_from_data_frame(d = connection_list_2, directed = TRUE)
+
+# # Get unique initials
+# initials <- unique(filtered_merged$initials)
+
+# Assign unique vertex names
+# unique_names <- paste0(V(network_location)$name, "_", sequence(vcount(network_location)))
+# V(network_location)$name <- unique_names
+
+# Choose colors
+colors <- ifelse(grepl("^RS:", initials), "red", "blue")
+
+# Plot network with vertex color based on initials
+plot(network_location_2, vertex.color = colors[V(network_location_2)$initials])
+```
+
 
 ##Gear Extraction from list ChatGPT
 ```{r gear_list}
