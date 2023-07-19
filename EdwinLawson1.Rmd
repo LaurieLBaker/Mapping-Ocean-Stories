@@ -86,12 +86,12 @@ time_unnested <- lawson1t_merged %>%
 # List of locations from ChatGPT with EL interview 1 only
 locations <- c("West Tremont", "home", "Seal Cove", "Ship Harbor", "Tremont",
                "Rockland", "Maine", "Swan's Island", "Bass Harbor", "Blue Hill Bay",
-               "Hardwood Island", "Stonington", "Blue Hill", "Black Island", "Goose Cove")
+               "Hardwood Island", "Stonington", "Blue Hill", "Black Island", "Goose Cove", "England")
 ```
 
 ```{r location_list_EL_compiled}
 # List of locations compiled by us while coding all the EL interviews
-locations_EL <- c("Swan's Island", "home", "Southwest Harbor", "Manset", "Worcester", "Massachusetts", "California", "Pasadena", "Florida", "Lake Worth", "Palm Beach", "Westward", "Cherryfield", "Canada", "Hancock", "Bangor", "Castine", "Ship Harbor", "West", "Boston", "Gloucester", "New York", "Black Island", "Mitchell's Cove", "Placentia", "Bass Harbor", "Blue Hill", "Blue Hill Bay", "Hardwood Island", "Stonington", "Seal Cove", "Mitchell’s Cove", "Goose Cove", "West Tremont", "Lynn", "Marblehead", "Maine", "Bass Harbor Head", "Bear Island", "Ship Island Ledges", "Ship Island", "bay", "Gulf", "Wilson", "Bernard", "Portland", "Rockland", "Mt. Desert Island/ Mount Desert Island", "Chester", "England", "Tremont", "Ellsworth", "Cranberry Island", "Mt. Desert Rock/ Mount Desert Rocks", "Duck Island", "Duck Cove", "Cape Cod", "Camden", "Norway", "Saugus", "Nova Scotia", "Atlantic", "Brooklin", "Corea", "Prospect Harbor", "Orono", "New Hampshire", "Hancock county", "Bar Harbor", "Northeast Harbor", "Vinalhaven", "Eastward", "Oak Point", "Long Ledge", "Platt's Point", "Somesville")
+locations_EL <- c("Swan's Island", "home", "Southwest Harbor", "Manset", "Worcester", "Massachusetts", "California", "Pasadena", "Florida", "Lake Worth", "Palm Beach", "Westward", "Cherryfield", "Canada", "Hancock", "Bangor", "Castine", "Ship Harbor", "West", "Boston", "Gloucester", "New York", "Black Island", "Mitchell's Cove", "Placentia", "Bass Harbor", "Blue Hill", "Blue Hill Bay", "Hardwood Island", "Stonington", "Seal Cove", "Mitchell’s Cove", "Goose Cove", "West Tremont", "Lynn", "Marblehead", "Maine", "Bass Harbor Head", "Bear Island", "Ship Island Ledges", "Ship Island", "bay", "Gulf", "Wilson", "Bernard", "Portland", "Rockland", "Mt. Desert Island/ Mount Desert Island", "Chester", "England", "Tremont", "Ellsworth", "Cranberry Island", "Mt. Desert Rock/ Mount Desert Rocks", "Duck Island", "Duck Cove", "Cape Cod", "Camden", "Norway", "Saugus", "Nova Scotia", "Atlantic", "Brooklin", "Corea", "Prospect Harbor", "Orono", "New Hampshire", "Hancock county", "Bar Harbor", "Northeast Harbor", "Vinalhaven", "Eastward", "Oak Point", "Long Ledge", "Platt's Point", "Somesville", "England")
 ```
 
 ```{r function_location_list}
@@ -108,16 +108,16 @@ lawson1t_merged %>%
 ```
 ```{r function_location_EL_list}
 # #function to extract locations from compiled EL list
-# extract_locations_EL <- function(text) 
-#   { extracted_locations_EL <- str_extract_all(text, paste(locations, collapse = "|"))
-#   return(extracted_locations_EL)}
+extract_locations_EL <- function(text)
+  { extracted_locations_EL <- str_extract_all(text, paste(locations_EL, collapse = "|"))
+  return(extracted_locations_EL)}
 # #link to lawson1t_merged
-# lawson1t_merged$location <- sapply(lawson1t_merged$text, extract_locations_EL)
-# #check how many picked out by chatGPT --> 21 rows with locations
-# lawson1t_merged %>% 
-#   count(location) %>% 
-#   summarize(sum = location)
-# #this gives the same amount of results with the big as the one gotten from ChapGPT = chaGPT reliable
+lawson1t_merged$location <- sapply(lawson1t_merged$text, extract_locations_EL)
+#check how many picked out by chatGPT --> 21 rows with locations
+lawson1t_merged %>%
+  count(location) %>%
+  summarize(sum = location)
+#this gives 5 more locations than the list from ChatGPT. It separated West Tremont into two like West and Tremont. These have been mentioned both together and as separate. The locations were still picked out wich means that ChatGPT was still accurate. However by only using ChatGPT we might also miss a few.
 ```
 
 ##Location network
