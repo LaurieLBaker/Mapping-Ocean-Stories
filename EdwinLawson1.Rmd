@@ -80,7 +80,8 @@ time_unnested <- lawson1t_merged %>%
 # location_entities <- spacy_entity(parsed_text, entity = "GPE")
 # locations <- location_entities$ent_text
 ```
-##Location extraction from list
+
+##Location extraction from list and ChatGPT
 ```{r location_list_chatgpt}
 # List of locations from ChatGPT with EL interview 1 only
 locations <- c("West Tremont", "home", "Seal Cove", "Ship Harbor", "Tremont",
@@ -159,6 +160,20 @@ extract_gear <- function(text)
   return(extracted_gear)}
 #link to lawson1t_merged_lower
 lawson1t_merged_lower$gear <- sapply(lawson1t_merged_lower$text, extract_gear)
+```
+
+##Species Extraction from list ChatGPT
+```{r species_list}
+species <- c("lobsters", "scallops", "lobster", "scallop", "sardine", "sardines", "fish")
+```
+
+```{r species_list_function}
+#function to extract species
+extract_species <- function(text) 
+  { extracted_species <- str_extract_all(text, paste(species, collapse = "|"))
+  return(extracted_species)}
+#link to lawson1t_merged_lower
+lawson1t_merged_lower$species <- sapply(lawson1t_merged_lower$text, extract_species)
 ```
 
 ##Word frequency
