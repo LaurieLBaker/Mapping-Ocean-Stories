@@ -18,7 +18,7 @@ server <- function(input, output) {
   text_data <- reactive({
     req(input$pdfFile)
     text <- pdftools::pdf_text(input$pdfFile$datapath)
-    tibble(text = text)
+    tibble::tibble(text = text)
   })
   
   # Generate the word frequency table based on the selected word list
@@ -28,21 +28,18 @@ server <- function(input, output) {
     filtered_text <- text_data() %>%
       unnest_tokens(word, text) %>%
       filter(word %in% word_list)
-    word_freq_table <- count(filtered_text, word)
+    word_freq_table <- filtered_text %>%
+      count(word, sort = TRUE) %>%
+      rename(n = freq)
     word_freq_table
   })
   
-  output$wordCloudUI <- renderUI({
-    req(word_freq())
-    plotOutput("WordCloudPlot")
-  })
-  
-  output$WordCloudPlot <- renderPlot({
+  output$wordCloudUI <- renderPlot({
     req(word_freq())
     wordcloud(words = word_freq()$word,
               freq = word_freq()$n,
-              scale = c(5, 0.2),
-              min.freq = 1)
+              scale = c(5, max(word_freq()$n) / 100),
+              min.freq = 2) # Set minimum frequency to 2
   })
   
   output$downloadButton <- downloadHandler(
@@ -51,12 +48,13 @@ server <- function(input, output) {
       pdf(file, width = 8, height = 6)
       wordcloud(words = word_freq()$word,
                 freq = word_freq()$n,
-                scale = c(5, 1),
-                min.freq = 1)
+                scale = c(5, max(word_freq()$n) / 100),
+                min.freq = 2) # Set minimum frequency to 2
       dev.off()
     }
   )
 }
+
 # Run the Shiny app
 shinyApp(ui, server)
 

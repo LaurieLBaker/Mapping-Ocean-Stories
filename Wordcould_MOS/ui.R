@@ -50,14 +50,11 @@ ui <- fluidPage(
                                     "four-cylinder boat engine", "six-cylinder boat engine", "eight-cylinder boat engine", "diesel engine", 
                                     "gasoline engine", "hundred and thirty-five horsepower gasoline engine", "eighty-horsepower diesel engine",
                                     "seine net")),
-      "species" = c("lobsters", "scallops", "lobster", "scallop", "sardine", "sardines", "fish"))
+      "species" = c("lobsters", "scallops", "lobster", "scallop", "sardine", "sardines", "fish")
+    )
   ),
   # Main panel for displaying the word cloud plot ----
   mainPanel(
-    uiOutput("wordCloudUI")
+    plotOutput("wordCloudUI")
   )
 )
-)
-    
-
-
