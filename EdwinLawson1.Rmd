@@ -275,7 +275,36 @@ lawson1_word %>%
   geom_col()
 #see comments about this in Trello
 ```
-###Word cloud list
+##TF-IDF
+```{r tf-idf}
+lawson1_word <- lawson1t %>%
+  mutate(document = row_number()) %>%  
+  unnest_tokens(word, text) 
+
+lawson1_word <- lawson1_word %>%
+  anti_join(get_stopwords(source = "smart")) %>%
+  count(document, word, sort = TRUE)
+
+word_document_freq <- lawson1_word %>%
+  group_by(document) %>%
+  mutate(tf = n / sum(n))
+
+total_documents <- n_distinct(lawson1_word$document)
+lawson1_word_idf <- lawson1_word %>%
+  group_by(word) %>%
+  summarise(idf = log(total_documents / sum(document %in% unique(document)))) 
+
+lawson1_word_tf_idf <- word_document_freq %>%
+  left_join(lawson1_word_idf, by = "word") %>%
+  mutate(tf_idf = tf * idf) 
+
+print(lawson1_word_tf_idf)
+
+# lawson1_word_tf_idf %>%
+#   arrange(-tf_idf)
+```
+
+##Word cloud list
 ```{r list_frequencies_wordcloud}
 #words provided by ChatGPT + added bay, summer, harbor, dollars from the word frequency plot above. (total of 37 words --> decide what amount of words would be best) I also added weiring and dragging (they are not of high frequency, but it is mentionned, which would be good to portray)
 word_list <- c("lobster", "boat", "traps", "fishermen", "water", "lobstering", "oil", "clothes",
