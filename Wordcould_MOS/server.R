@@ -6,7 +6,7 @@
 #
 #    http://shiny.rstudio.com/
 server <- function(input, output, session) {
-  # Add all word lists here
+  # Sample word lists
   word_lists <- list(
     "location_EL" = c("Swan's Island", "home", "Southwest Harbor", "Manset", "Worcester", "Massachusetts", "California", "Pasadena",
                       "Florida", "Lake Worth", "Palm Beach", "Westward", "Cherryfield", "Canada", "Hancock", "Bangor", "Castine",
@@ -27,16 +27,6 @@ server <- function(input, output, session) {
                "eighty-horsepower diesel engine", "seine net"),
     "species" = c("lobsters", "scallops", "lobster", "scallop", "sardine", "sardines", "fish")
   )
-  
-  # Text mining function
-  process_text <- function(text, word_lists) {
-    text <- tolower(text)
-    words_in_lists <- unlist(word_lists)
-    words_found <- str_extract_all(text, paste0("\\b", words_in_lists, "\\b"))
-    words_found <- unlist(words_found)
-    word_freq <- table(words_found)
-    return(word_freq)
-  }
   
   # Update checkbox options based on the selected word list
   observe({
@@ -65,8 +55,18 @@ server <- function(input, output, session) {
     }
   })
   
+  # Text mining function
+  process_text <- function(text, word_lists) {
+    text <- tolower(text)
+    words_in_lists <- unlist(word_lists)
+    words_found <- str_extract_all(text, paste0("\\b", words_in_lists, "\\b"))
+    words_found <- unlist(words_found)
+    word_freq <- table(words_found)
+    return(word_freq)
+  }
+  
   # Process text and render the word cloud
-  wordcloud_data <- reactive({
+  output$wordcloud <- renderWordcloud2({
     inFile <- input$file
     if (is.null(inFile)) return(NULL)
     
@@ -75,15 +75,12 @@ server <- function(input, output, session) {
     word_freq <- process_text(text, selected_words)
     
     # Filter the wordcloud data only for words with frequency > 0
-    data.frame(word = names(word_freq), freq = as.numeric(word_freq))
-  })
-  
-  output$wordcloud <- renderWordcloud2({
-    wordcloud_data <- wordcloud_data()
-    if (!is.null(wordcloud_data)) {
-      wordcloud2(data = wordcloud_data, color = "random-light", backgroundColor = "white", size = 1.5)
-    }
+    wordcloud_data <- data.frame(word = names(word_freq), freq = as.numeric(word_freq))
+    
+    wordcloud2(data = wordcloud_data,
+               color = "random-light",
+               backgroundColor = "white",
+               size = 1.5)
   })
 }
-
 shinyApp(ui, server)
