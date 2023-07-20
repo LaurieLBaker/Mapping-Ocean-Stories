@@ -5,59 +5,85 @@
 # Find out more about building applications with Shiny here:
 #
 #    http://shiny.rstudio.com/
-#
-
-library(shiny)
-library(tidytext)
-library(wordcloud)
-library(pdftools)
-library(tidyverse)
-
-server <- function(input, output) {
-  # Read the uploaded PDF file and unnest the text
-  text_data <- reactive({
-    req(input$pdfFile)
-    text <- pdftools::pdf_text(input$pdfFile$datapath)
-    tibble::tibble(text = text)
-  })
-  
-  # Generate the word frequency table based on the selected word list
-  word_freq <- reactive({
-    req(text_data())
-    word_list <- unlist(input$wordList)
-    filtered_text <- text_data() %>%
-      unnest_tokens(word, text) %>%
-      filter(word %in% word_list)
-    word_freq_table <- filtered_text %>%
-      count(word, sort = TRUE) %>%
-      rename(n = freq)
-    word_freq_table
-  })
-  
-  output$wordCloudUI <- renderPlot({
-    req(word_freq())
-    wordcloud(words = word_freq()$word,
-              freq = word_freq()$n,
-              scale = c(5, max(word_freq()$n) / 100),
-              min.freq = 2) # Set minimum frequency to 2
-  })
-  
-  output$downloadButton <- downloadHandler(
-    filename = "word_cloud.pdf",
-    content = function(file) {
-      pdf(file, width = 8, height = 6)
-      wordcloud(words = word_freq()$word,
-                freq = word_freq()$n,
-                scale = c(5, max(word_freq()$n) / 100),
-                min.freq = 2) # Set minimum frequency to 2
-      dev.off()
-    }
+server <- function(input, output, session) {
+  # Add all word lists here
+  word_lists <- list(
+    "location_EL" = c("Swan's Island", "home", "Southwest Harbor", "Manset", "Worcester", "Massachusetts", "California", "Pasadena",
+                      "Florida", "Lake Worth", "Palm Beach", "Westward", "Cherryfield", "Canada", "Hancock", "Bangor", "Castine",
+                      "Ship Harbor", "West", "Boston", "Gloucester", "New York", "Black Island", "Mitchell's Cove", "Placentia", "Bass Harbor",
+                      "Blue Hill", "Blue Hill Bay", "Hardwood Island", "Stonington", "Seal Cove", "Mitchell’s Cove", "Goose Cove", "West Tremont",
+                      "Lynn", "Marblehead", "Maine", "Bass Harbor Head", "Bear Island", "Ship Island Ledges", "Ship Island", "bay", "Gulf", "Wilson", "Bernard",
+                      "Portland", "Rockland", "Mt. Desert Island/ Mount Desert Island", "Chester", "England", "Tremont", "Ellsworth", "Cranberry Island",
+                      "Mt. Desert Rock/ Mount Desert Rocks", "Duck Island", "Duck Cove", "Cape Cod", "Camden", "Norway", "Saugus", "Nova Scotia", "Atlantic", "Brooklin", "Corea",
+                      "Prospect Harbor", "Orono", "New Hampshire", "Hancock county", "Bar Harbor", "Northeast Harbor", "Vinalhaven", "Eastward", "Oak Point", "Long Ledge", "Platt's Point",
+                      "Somesville", "England"),
+    "gear" = c("tape recorder", "battery", "sardine weir", "fishing lines", "lobster traps", "rowboat", "lobster smack",
+               "lobster buyers", "lobster companies", "lobster boat", "lobster catcher", "outboard motor",
+               "two and a half horsepower outboard motor", "wooden lobster traps", "softwood traps", "second-hand traps",
+               "laths", "boughs", "bottoms", "frames", "nylon twine", "cotton twine", "manila twine", "polyethylene twine",
+               "plastic buoys", "foam buoys", "styrofoam buoys", "wooden buoys", "cedar wood", "oak wood", "spruce wood",
+               "pot warp", "toggle", "single-cylinder boat engine", "four-cylinder boat engine", "six-cylinder boat engine",
+               "eight-cylinder boat engine", "diesel engine", "gasoline engine", "hundred and thirty-five horsepower gasoline engine",
+               "eighty-horsepower diesel engine", "seine net"),
+    "species" = c("lobsters", "scallops", "lobster", "scallop", "sardine", "sardines", "fish")
   )
+  
+  # Text mining function
+  process_text <- function(text, word_lists) {
+    text <- tolower(text)
+    words_in_lists <- unlist(word_lists)
+    words_found <- str_extract_all(text, paste0("\\b", words_in_lists, "\\b"))
+    words_found <- unlist(words_found)
+    word_freq <- table(words_found)
+    return(word_freq)
+  }
+  
+  # Update checkbox options based on the selected word list
+  observe({
+    req(input$wordlist)
+    wordlist <- input$wordlist
+    choices <- word_lists[[wordlist]]
+    output$wordlist_options <- renderUI({
+      word_checkboxes <- lapply(choices, function(word) {
+        checkboxInput(paste0("word_", word), label = word, value = TRUE)
+      })
+      do.call(tagList, c(
+        checkboxInput("select_all", label = "Select All", value = TRUE),
+        div(word_checkboxes, class = "checkbox-group")
+      ))
+    })
+  })
+  
+  # Update individual word checkboxes when "Select All" checkbox is clicked
+  observeEvent(input$select_all, {
+    if (input$select_all) {
+      wordlist <- input$wordlist
+      choices <- word_lists[[wordlist]]
+      updateCheckboxGroupInput(session, "wordlist_options", choices = choices, selected = choices)
+    } else {
+      updateCheckboxGroupInput(session, "wordlist_options", choices = character(0), selected = character(0))
+    }
+  })
+  
+  # Process text and render the word cloud
+  wordcloud_data <- reactive({
+    inFile <- input$file
+    if (is.null(inFile)) return(NULL)
+    
+    text <- pdf_text(inFile$datapath)
+    selected_words <- c(input$wordlist, input$wordlist_options)
+    word_freq <- process_text(text, selected_words)
+    
+    # Filter the wordcloud data only for words with frequency > 0
+    data.frame(word = names(word_freq), freq = as.numeric(word_freq))
+  })
+  
+  output$wordcloud <- renderWordcloud2({
+    wordcloud_data <- wordcloud_data()
+    if (!is.null(wordcloud_data)) {
+      wordcloud2(data = wordcloud_data, color = "random-light", backgroundColor = "white", size = 1.5)
+    }
+  })
 }
 
-# Run the Shiny app
 shinyApp(ui, server)
-
-#runExample("09_upload")  
-
-
