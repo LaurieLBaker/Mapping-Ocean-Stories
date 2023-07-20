@@ -15,6 +15,8 @@ library(tidytext)
 library(dplyr)
 library(textclean)
 library(stopwords)
+library(ggplot2) #for geom_segment location
+library(ggraph) #for geom edge link location
 library(wordcloud) #for wordcloud
 library(RColorBrewer) #for wordcloud
 library(topicmodels) #for LDA topic modelling
@@ -183,6 +185,47 @@ colors <- ifelse(grepl("^RS:", initials), "red", "blue")
 
 # Plot network with vertex color based on initials
 plot(network_location_2, vertex.color = colors[V(network_location_2)$initials])
+```
+```{r geom_edge_link_location, fig.height=12, fig.width=30}
+connection_list_3 <- connection_list_2 %>%
+  group_by(group) %>%
+  summarize(combination = list(combn(location, 2, simplify = FALSE))) %>%
+  unnest(combination) %>%
+  separate(combination, into = c("from", "to"), sep = ", ", convert = TRUE) %>% 
+  mutate(from = gsub("^c\\(|\\)$|\"|'", "", from),
+         to = gsub("^c\\(|\\)$|\"|'", "", to))
+
+# Calculate the number of connections for each node (to display the size accordingly)
+node_connections <- connection_list_3 %>%
+  count(from, name = "connections") %>%
+  bind_rows(connection_list_3 %>% count(to, name = "connections")) %>%
+  group_by(from) %>%
+  summarize(max_connections = max(connections, na.rm = TRUE))
+
+# Merge node_degrees
+connection_list_3 <- left_join(connection_list_3, node_connections, by = c("from" = "from"))
+
+# Combine the 'group' and '(from, to)' variables to create unique ids
+connection_list_3 <- connection_list_3 %>%
+  mutate(unique_id = interaction(group, from, to))
+
+connection_list_3 %>%
+  ggraph(layout = "nicely") + #see other layout options
+  geom_edge_link(aes(alpha = 2, 
+                     color = unique_id),  #to color by group
+                 show.legend = TRUE, #put to false to only have colors displayed but not legend
+                 arrow = arrow(length = unit(1.5, "mm")),
+                 start_cap = circle(3, "mm"),
+                 end_cap = circle(3, "mm")) +
+  geom_node_text(aes(label = name),
+                 size = 6) +  # size by max_connection doesn't work here
+  scale_size_continuous(range = c(6, 12), 
+                        guide = "legend") +  # legend of size not working
+  scale_color_viridis_d() +
+  # theme(legend.direction = "vertical", 
+  #       legend.text = element_text(size = 12), 
+  #       legend.key.width = unit(2, "cm")) + #this formatting of the color legend is also not working
+  theme_graph() 
 ```
 
 
