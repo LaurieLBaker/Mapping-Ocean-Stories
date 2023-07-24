@@ -77,14 +77,61 @@ time_unnested <- lawson1t_merged %>%
 #do we want to remove the time stamps from the text?
 ```
 
-##SpacyR location extraction (I believe we need to also have Python installed on computer with the SpaCy for spacyr to work. I don't have it, anyone does?)
+## Extracting keyword + words of the same sentence before and after
+```{r extract_keyword}
+# Choose a  keyword
+new_keyword <- "traps"  # change keyword here
+
+# Function to extract keyword and words before/after it
+extract_keyword_and_context <- function(text, keyword) {
+  keyword_index <- regexpr(paste0("(?i)\\b", keyword, "\\b"), text)
+  
+  if (keyword_index == -1) {
+    return(list(before = NULL, after = NULL))
+  }
+  
+ before <- sub(".*\\. ", "", substr(text, 1, keyword_index + attr(keyword_index, "match.length") - 1))
+  after <- sub(paste0(".*(?i)\\b", keyword, "\\b(.*?)(\\.|$)"), "\\1", text)
+  
+  return(list(keyword = keyword, before = before, after = after))
+}
+
+# Function to process data with a given keyword
+process_data_with_keyword <- function(data, keyword) {
+  # Extract keyword and context for each row in the dataframe
+  processed_data <- data %>%
+    rowwise() %>%
+    mutate(keyword_context = list(extract_keyword_and_context(text, keyword)))
+  
+  # Unnest the keyword_context column to get separate before and after columns
+  processed_data <- processed_data %>%
+    unnest_wider(c(keyword_context)) %>%
+    mutate(
+      before = coalesce(before, ""),
+      after = coalesce(after, "")
+    )
+  
+  return(processed_data)
+}
+
+# Process data with the new keyword so that we can change it
+lawson1t_merged_keyword <- process_data_with_keyword(lawson1t_merged, new_keyword)
+
+#Pull part of text to verify accuracy/see whole entry
+lawson1t_merged_keyword %>% 
+  filter(group == 18) %>%
+  pull(text)
+
+```
+
+## SpacyR location extraction (I believe we need to also have Python installed on computer with the SpaCy for spacyr to work. I don't have it, anyone does?)
 ```{r spacryr_location_extraction}
 # parsed_text <- spacy_parse(lawson1t_merged$text)
 # location_entities <- spacy_entity(parsed_text, entity = "GPE")
 # locations <- location_entities$ent_text
 ```
 
-##Location extraction from list and ChatGPT
+## Location extraction from list and ChatGPT
 ```{r location_list_chatgpt}
 # List of locations from ChatGPT with EL interview 1 only
 locations <- c("West Tremont", "home", "Seal Cove", "Ship Harbor", "Tremont",
@@ -123,7 +170,7 @@ lawson1t_merged %>%
 #this gives 5 more locations than the list from ChatGPT. It separated West Tremont into two like West and Tremont. These have been mentioned both together and as separate. The locations were still picked out wich means that ChatGPT was still accurate. However by only using ChatGPT we might also miss a few.
 ```
 
-##Location network
+## Location network
 ```{r location_network_trial1, fig.height=15, fig.width=15}
 # Filter for the rows with locations
 filtered_merged <- lawson1t_merged %>%
@@ -186,6 +233,7 @@ colors <- ifelse(grepl("^RS:", initials), "red", "blue")
 # Plot network with vertex color based on initials
 plot(network_location_2, vertex.color = colors[V(network_location_2)$initials])
 ```
+
 ```{r geom_edge_link_location, fig.height=12, fig.width=30}
 connection_list_3 <- connection_list_2 %>%
   group_by(group) %>%
@@ -229,7 +277,7 @@ connection_list_3 %>%
 ```
 
 
-##Gear Extraction from list ChatGPT
+## Gear Extraction from list ChatGPT
 ```{r gear_list}
 gear <- c("tape recorder", "battery", "sardine weir", "fishing lines", "lobster traps", "rowboat", "lobster smack", "lobster buyers", "lobster companies", "lobster boat", "lobster catcher", "outboard motor", "two and a half horsepower outboard motor", "wooden lobster traps", "softwood traps", "second-hand traps", "laths", "boughs", "bottoms", "frames", "nylon twine", "cotton twine", "manila twine", "polyethylene twine", "plastic buoys", "foam buoys", "styrofoam buoys", "wooden buoys", "cedar wood", "oak wood", "spruce wood", "pot warp", "toggle", "single-cylinder boat engine", "four-cylinder boat engine", "six-cylinder boat engine", "eight-cylinder boat engine", "diesel engine", "gasoline engine", "hundred and thirty-five horsepower gasoline engine", "eighty-horsepower diesel engine","seine net")
 ```
@@ -249,7 +297,7 @@ extract_gear <- function(text)
 lawson1t_merged_lower$gear <- sapply(lawson1t_merged_lower$text, extract_gear)
 ```
 
-##Species Extraction from list ChatGPT
+## Species Extraction from list ChatGPT
 ```{r species_list}
 species <- c("lobsters", "scallops", "lobster", "scallop", "sardine", "sardines", "fish")
 ```
@@ -263,7 +311,7 @@ extract_species <- function(text)
 lawson1t_merged_lower$species <- sapply(lawson1t_merged_lower$text, extract_species)
 ```
 
-##Word frequency
+## Word frequency
 ```{r word_frequency_plot}
 lawson1_word <- lawson1t %>% 
   unnest_tokens(word, text) 
@@ -275,7 +323,7 @@ lawson1_word %>%
   geom_col()
 #see comments about this in Trello
 ```
-##TF-IDF
+## TF-IDF
 ```{r tf-idf}
 lawson1_word <- lawson1t %>%
   mutate(document = row_number()) %>%  
@@ -304,7 +352,7 @@ print(lawson1_word_tf_idf)
 #   arrange(-tf_idf)
 ```
 
-##Word cloud list
+## Word cloud list
 ```{r list_frequencies_wordcloud}
 #words provided by ChatGPT + added bay, summer, harbor, dollars from the word frequency plot above. (total of 37 words --> decide what amount of words would be best) I also added weiring and dragging (they are not of high frequency, but it is mentionned, which would be good to portray)
 word_list <- c("lobster", "boat", "traps", "fishermen", "water", "lobstering", "oil", "clothes",
@@ -317,7 +365,7 @@ target_freq <- word_freq[names(word_freq) %in% word_list]
 target_freq <- sort(target_freq, decreasing = TRUE)
 ```
 
-```{r word_cloud}
+```{r word_cloud, fig.height=5, fig.width=5}
 wordcloud(
   words = names(target_freq),
   freq = target_freq,
@@ -328,7 +376,7 @@ wordcloud(
 )
 ```
 
-##Topic Modeling (is not very conclusive for now, perhaps adding more documents (more interviews) could make the topic modelling more relevant?)
+## Topic Modeling (is not very conclusive for now, perhaps adding more documents (more interviews) could make the topic modelling more relevant?)
 ```{r LDA_topic_modeling}
 lawson1_word <- lawson1_word  %>% 
   anti_join(get_stopwords(source = "smart")) %>% 
