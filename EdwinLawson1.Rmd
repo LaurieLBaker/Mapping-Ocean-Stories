@@ -44,6 +44,7 @@ lawson1 <- read_lines(lawson1_full_text)
 lawson1 <- tibble(lawson1)
 lawson1 <- rename(lawson1, text = lawson1)
 ```
+
 ## Cleaning table
 ```{r data_cleaning}
 lawson1 <- lawson1 %>% 
@@ -84,16 +85,20 @@ new_keyword <- "traps"  # change keyword here
 
 # Function to extract keyword and words before/after it
 extract_keyword_and_context <- function(text, keyword) {
-  keyword_index <- regexpr(paste0("(?i)\\b", keyword, "\\b"), text)
+  keyword_indices <- gregexpr(paste0("(?i)\\b", keyword, "\\b"), text)
+  num_occurrences <- sum(keyword_indices[[1]] != -1)
   
-  if (keyword_index == -1) {
-    return(list(before = NULL, after = NULL))
+  if (num_occurrences == 0) {
+    return(list(before = NULL, after = NULL, count = num_occurrences, keyword_occurrences = ""))
   }
   
- before <- sub(".*\\. ", "", substr(text, 1, keyword_index + attr(keyword_index, "match.length") - 1))
-  after <- sub(paste0(".*(?i)\\b", keyword, "\\b(.*?)(\\.|$)"), "\\1", text)
+  keyword_occurrences <- unlist(regmatches(text, keyword_indices))
   
-  return(list(keyword = keyword, before = before, after = after))
+  before <- sub(".*[.!?] ", "", substr(text, 1, min(keyword_indices[[1]] + attr(keyword_indices[[1]], "match.length")) - 1))
+  before <- gsub(paste0("(?i)\\b", keyword, "\\b"), "", before)  
+  after <- sub(paste0(".*(?i)\\b", keyword, "\\b(.*?[.!?])"), "\\1", text)
+  
+  return(list(keyword = keyword, before = before, after = after, count = num_occurrences, keyword_occurrences = keyword_occurrences))
 }
 
 # Function to process data with a given keyword
@@ -108,20 +113,21 @@ process_data_with_keyword <- function(data, keyword) {
     unnest_wider(c(keyword_context)) %>%
     mutate(
       before = coalesce(before, ""),
-      after = coalesce(after, "")
-    )
+      after = coalesce(after, ""),
+      count_keyword = coalesce(count, 0)
+    ) %>% 
+    select(initials, group, text, time, before, keyword_occurrences, after, count_keyword)
   
   return(processed_data)
 }
 
-# Process data with the new keyword so that we can change it
+# Process data with the new keyword
 lawson1t_merged_keyword <- process_data_with_keyword(lawson1t_merged, new_keyword)
 
 #Pull part of text to verify accuracy/see whole entry
 lawson1t_merged_keyword %>% 
-  filter(group == 18) %>%
+  filter(group == 54) %>%
   pull(text)
-
 ```
 
 ## SpacyR location extraction (I believe we need to also have Python installed on computer with the SpaCy for spacyr to work. I don't have it, anyone does?)
