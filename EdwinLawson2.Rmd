@@ -23,3 +23,20 @@ library(topicmodels) #for LDA topic modelling
 library(reshape2) #for LDA topic modelling
 library(igraph) #for network graph
 library(shiny) #for shiny app
+```
+
+## Reading in the data
+```{r read_data}
+lawson2_full_text <- pdftools::pdf_text(pdf = "data/Lawson_Edwin_10201972.pdf")
+```
+
+```{r string-data}
+# convert text to string
+lawson2_full_text <- toString(lawson2_full_text)
+lawson2_full_text
+# convert text to character lines
+lawson2 <- read_lines(lawson2_full_text)
+
+lawson2 <- tibble(lawson2)
+lawson2 <- rename(lawson2, text = lawson2)
+```
