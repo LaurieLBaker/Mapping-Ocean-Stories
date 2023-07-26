@@ -1,0 +1,25 @@
+---
+title: "Edwin Lawson Interview 2 Analysis"
+output: html_document
+date: "2023-07-26"
+name: "Delphine Demaisy"
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r install_packages}
+library(pdftools)
+library(tidyverse)
+library(tidytext)
+library(dplyr)
+library(textclean)
+library(stopwords)
+library(ggplot2) #for geom_segment location
+library(ggraph) #for geom edge link location
+library(wordcloud) #for wordcloud
+library(RColorBrewer) #for wordcloud
+library(topicmodels) #for LDA topic modelling
+library(reshape2) #for LDA topic modelling
+library(igraph) #for network graph
+library(shiny) #for shiny app
