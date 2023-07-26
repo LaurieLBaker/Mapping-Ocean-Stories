@@ -75,7 +75,8 @@ lawson1t_merged <- lawson1t_merged %>%
   mutate(time = str_extract_all(text, "\\[\\d{2}:\\d{2}:\\d{2}\\.\\d\\]"))
 time_unnested <- lawson1t_merged %>%
   unnest(time)
-#do we want to remove the time stamps from the text?
+#remove time stamps from text
+lawson1t_merged$text <- gsub("\\[\\d{2}:\\d{2}:\\d{2}\\.\\d\\]", "",lawson1t_merged$text)
 ```
 
 ## Extracting keyword + words of the same sentence before and after (need to figure out how to deal with multiple mentions in the same row)
@@ -329,7 +330,7 @@ lawson1_word %>%
   geom_col()
 #see comments about this in Trello
 ```
-## TF-IDF
+## TF EL1
 ```{r term_frequency}
 lawson1_word <- lawson1t %>%
   mutate(document = 1) %>%  
@@ -339,27 +340,11 @@ lawson1_word <- lawson1_word %>%
   anti_join(get_stopwords(source = "smart")) %>%
   count(document, word, sort = TRUE)
 
-word_document_freq <- lawson1_word %>%
+word_document_freq_1 <- lawson1_word %>%
   group_by(document) %>%
   mutate(tf = n / sum(n)) 
 
-print(word_document_freq)
-```
-```{r inverse_document_frequency}
-#modify to add more documents
-# total_documents <- n_distinct(lawson1_word$document)
-# lawson1_word_idf <- lawson1_word %>%
-#   group_by(word) %>%
-#   summarise(idf = log(total_documents / sum(document %in% unique(document)))) 
-# 
-# lawson1_word_tf_idf <- word_document_freq %>%
-#   left_join(lawson1_word_idf, by = "word") %>%
-#   mutate(tf_idf = tf * idf) 
-# 
-# print(lawson1_word_tf_idf)
-# 
-#   lawson1_word_tf_idf %>%
-#     arrange(-tf_idf)
+print(word_document_freq_1)
 ```
 
 ## Word cloud list
@@ -370,15 +355,22 @@ word_list <- c("lobster", "boat", "traps", "fishermen", "water", "lobstering", "
                "diesel", "buoys", "accidents", "licence", "gasoline", "engine", "swim", "son",
                "horsepower", "fishing", "heavy", "boots", "color", "land", "coast", "shore",
                "family", "winter", "father", "summer", "bay", "harbor", "dollars", "weiring", "dragging")
-word_freq <- table(lawson1_word$word)
-target_freq <- word_freq[names(word_freq) %in% word_list]
-target_freq <- sort(target_freq, decreasing = TRUE)
+word_freq_1 <- table(lawson1_word$word)
+target_freq_1 <- word_freq_1[names(word_freq_1) %in% word_list]
+target_freq_1 <- sort(target_freq_1, decreasing = TRUE)
+word_freq_1 <- as.data.frame(word_freq_1)
+target_freq_1 <- as.data.frame(target_freq_1)
+
+colnames(word_freq_1) <- c("word", "freq")
+colnames(target_freq_1) <- c("word", "freq")
+
+target_freq_1 <- target_freq_1[order(-target_freq_1$freq), ]
 ```
 
-```{r word_cloud, fig.height=5, fig.width=5}
+```{r word_cloud, fig.height=15, fig.width=15}
 wordcloud(
-  words = names(target_freq),
-  freq = target_freq,
+  words = target_freq_1$word,
+  freq = target_freq_1$freq,
   min.freq = 1,
   scale = c(5, 1), #Size range for the words in the cloud (big, small)
   random.order = FALSE, #FALSE will put the biggest words in the middle, TRUE will put them in a random order
