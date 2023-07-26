@@ -78,7 +78,7 @@ time_unnested <- lawson1t_merged %>%
 #do we want to remove the time stamps from the text?
 ```
 
-## Extracting keyword + words of the same sentence before and after
+## Extracting keyword + words of the same sentence before and after (need to figure out how to deal with multiple mentions in the same row)
 ```{r extract_keyword}
 # Choose a  keyword
 new_keyword <- "traps"  # change keyword here
@@ -94,7 +94,7 @@ extract_keyword_and_context <- function(text, keyword) {
   
   keyword_occurrences <- unlist(regmatches(text, keyword_indices))
   
-  before <- sub(".*[.!?] ", "", substr(text, 1, min(keyword_indices[[1]] + attr(keyword_indices[[1]], "match.length")) - 1))
+   before <- sub(".*[.!?] ", "", substr(text, 1, min(keyword_indices[[1]] + attr(keyword_indices[[1]], "match.length")) - 1))
   before <- gsub(paste0("(?i)\\b", keyword, "\\b"), "", before)  
   after <- sub(paste0(".*(?i)\\b", keyword, "\\b(.*?[.!?])"), "\\1", text)
   
@@ -330,9 +330,9 @@ lawson1_word %>%
 #see comments about this in Trello
 ```
 ## TF-IDF
-```{r tf-idf}
+```{r term_frequency}
 lawson1_word <- lawson1t %>%
-  mutate(document = row_number()) %>%  
+  mutate(document = 1) %>%  
   unnest_tokens(word, text) 
 
 lawson1_word <- lawson1_word %>%
@@ -341,21 +341,25 @@ lawson1_word <- lawson1_word %>%
 
 word_document_freq <- lawson1_word %>%
   group_by(document) %>%
-  mutate(tf = n / sum(n))
+  mutate(tf = n / sum(n)) 
 
-total_documents <- n_distinct(lawson1_word$document)
-lawson1_word_idf <- lawson1_word %>%
-  group_by(word) %>%
-  summarise(idf = log(total_documents / sum(document %in% unique(document)))) 
-
-lawson1_word_tf_idf <- word_document_freq %>%
-  left_join(lawson1_word_idf, by = "word") %>%
-  mutate(tf_idf = tf * idf) 
-
-print(lawson1_word_tf_idf)
-
-# lawson1_word_tf_idf %>%
-#   arrange(-tf_idf)
+print(word_document_freq)
+```
+```{r inverse_document_frequency}
+#modify to add more documents
+# total_documents <- n_distinct(lawson1_word$document)
+# lawson1_word_idf <- lawson1_word %>%
+#   group_by(word) %>%
+#   summarise(idf = log(total_documents / sum(document %in% unique(document)))) 
+# 
+# lawson1_word_tf_idf <- word_document_freq %>%
+#   left_join(lawson1_word_idf, by = "word") %>%
+#   mutate(tf_idf = tf * idf) 
+# 
+# print(lawson1_word_tf_idf)
+# 
+#   lawson1_word_tf_idf %>%
+#     arrange(-tf_idf)
 ```
 
 ## Word cloud list
