@@ -430,6 +430,43 @@ lawson2 &lt;- read_lines(lawson2_full_text)
 lawson2 &lt;- tibble(lawson2)
 lawson2 &lt;- rename(lawson2, text = lawson2)</code></pre>
 </div>
+<div id="cleaning-table" class="section level2">
+<h2>Cleaning table</h2>
+<pre class="r"><code>lawson2 &lt;- lawson2 %&gt;% 
+  mutate(initials = str_extract(text, pattern = &quot;[A-Z]{1,3}\\:&quot;)) %&gt;%
+  fill(initials, .direction = &quot;down&quot;)
+#remove the metadata and only look at interview
+lawson2t &lt;- lawson2[-c(1:57), ]
+#correct first initials
+ lawson2t$initials[1:9] &lt;- &quot;ML:&quot;
+ lawson2t$initials[10:11] &lt;- &quot;RS:&quot;
+ lawson2t$initials[12:13] &lt;- &quot;EL:&quot;
+#remove full names
+ lawson2t$text[10] &lt;- gsub(&quot;Rita Swidrowski:&quot;, &quot;&quot;,  lawson2t$text[10])
+ lawson2t$text[12] &lt;- gsub(&quot;Edwin Lawson:&quot;, &quot;&quot;,  lawson2t$text[12])
+#remove initials from text
+lawson2t$text &lt;- str_replace_all(lawson2t$text, &quot;[A-Z]{1,3}:&quot;, &quot;&quot;)
+#remove white spaces
+lawson2t$text &lt;- gsub(&quot;\\s{2,}&quot;, &quot;&quot;, lawson2t$text)
+#remove empty rows
+lawson2t &lt;- lawson2t[!is.na(lawson2t$text), ]
+#merging text
+lawson2t &lt;- lawson2t %&gt;%
+  mutate(group = cumsum(initials != lag(initials, default = &quot;&quot;)))
+#merge consecutive rows within each group to have
+lawson2t_merged &lt;- lawson2t %&gt;%
+  group_by(initials, group) %&gt;%
+  summarise(text = paste(text, collapse = &quot; &quot;)) %&gt;%
+  ungroup() %&gt;% 
+  arrange(group)</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;initials&#39;. You can override using the
+## `.groups` argument.</code></pre>
+<pre class="r"><code>#extract time stamps
+lawson2t_merged &lt;- lawson2t_merged %&gt;%
+  mutate(time = str_extract_all(text, &quot;\\[\\d{2}:\\d{2}:\\d{2}\\.\\d{2}\\]&quot;))
+time_unnested &lt;- lawson2t_merged %&gt;%
+  unnest(time)</code></pre>
+</div>
 
 
 
