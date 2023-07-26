@@ -75,4 +75,44 @@ lawson2t_merged <- lawson2t_merged %>%
   mutate(time = str_extract_all(text, "\\[\\d{2}:\\d{2}:\\d{2}\\.\\d{2}\\]"))
 time_unnested <- lawson2t_merged %>%
   unnest(time)
+#remove time stamps from text
+lawson2t_merged$text <- gsub("\\[\\d{2}:\\d{2}:\\d{2}\\.\\d{2}\\]", "",lawson2t_merged$text)
 ```
+
+## TF-IDF (EL1 and EL2)
+```{r term_frequency_EL2}
+lawson2_word <- lawson2t %>%
+  unnest_tokens(word, text) 
+
+lawson2_word <- lawson2_word %>%
+  anti_join(get_stopwords(source = "smart")) %>% 
+  count(word, sort = TRUE)
+
+word_document_freq_2 <- lawson2_word %>%
+  mutate(tf = n / sum(n)) 
+
+print(word_document_freq_2)
+```
+
+```{r tf_idf_interviews}
+lawson1t <- lawson1t %>% 
+  mutate(interview = "EL1")
+lawson2t <- lawson2t %>% 
+  mutate(interview = "EL2")
+
+EL_interviews <- bind_rows(lawson1t, lawson2t)
+
+interviews_word <- EL_interviews %>%
+  unnest_tokens(word, text) %>% 
+  anti_join(get_stopwords(source = "smart")) %>% 
+  count(interview, word, sort = TRUE)
+
+interviews_tf_idf <- interviews_word %>%
+  bind_tf_idf(word, interview, n)
+
+interviews_tf_idf %>%
+  arrange(-tf_idf)
+
+```
+
+
