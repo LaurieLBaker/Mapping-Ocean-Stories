@@ -29,7 +29,7 @@ library(shiny) #for shiny app
 # spacy_initialize("en")
 ```
 
-## Reading in the data
+## Reading in the data EL1
 ```{r read_data}
 lawson1_full_text <- pdftools::pdf_text(pdf = "data/Lawson_Edwin_10131972.pdf")
 ```
@@ -45,7 +45,7 @@ lawson1 <- tibble(lawson1)
 lawson1 <- rename(lawson1, text = lawson1)
 ```
 
-## Cleaning table
+## Cleaning table EL1
 ```{r data_cleaning}
 lawson1 <- lawson1 %>% 
   mutate(initials = str_extract(text, pattern = "[A-Z]{1,3}\\:")) %>%
@@ -79,7 +79,7 @@ time_unnested <- lawson1t_merged %>%
 lawson1t_merged$text <- gsub("\\[\\d{2}:\\d{2}:\\d{2}\\.\\d\\]", "",lawson1t_merged$text)
 ```
 
-## Extracting keyword + words of the same sentence before and after (need to figure out how to deal with multiple mentions in the same row)
+## Extracting keyword + words of the same sentence before and after EL1(need to figure out how to deal with multiple mentions in the same row)
 ```{r extract_keyword}
 # Choose a  keyword
 new_keyword <- "traps"  # change keyword here
@@ -131,14 +131,14 @@ lawson1t_merged_keyword %>%
   pull(text)
 ```
 
-## SpacyR location extraction (I believe we need to also have Python installed on computer with the SpaCy for spacyr to work. I don't have it, anyone does?)
+## SpacyR location extraction EL1 (I believe we need to also have Python installed on computer with the SpaCy for spacyr to work. I don't have it, anyone does?)
 ```{r spacryr_location_extraction}
 # parsed_text <- spacy_parse(lawson1t_merged$text)
 # location_entities <- spacy_entity(parsed_text, entity = "GPE")
 # locations <- location_entities$ent_text
 ```
 
-## Location extraction from list and ChatGPT
+## Location extraction from list and ChatGPT EL1
 ```{r location_list_chatgpt}
 # List of locations from ChatGPT with EL interview 1 only
 locations <- c("West Tremont", "home", "Seal Cove", "Ship Harbor", "Tremont",
@@ -177,7 +177,7 @@ lawson1t_merged %>%
 #this gives 5 more locations than the list from ChatGPT. It separated West Tremont into two like West and Tremont. These have been mentioned both together and as separate. The locations were still picked out wich means that ChatGPT was still accurate. However by only using ChatGPT we might also miss a few.
 ```
 
-## Location network
+## Location network EL1
 ```{r location_network_trial1, fig.height=15, fig.width=15}
 # Filter for the rows with locations
 filtered_merged <- lawson1t_merged %>%
@@ -284,7 +284,7 @@ connection_list_3 %>%
 ```
 
 
-## Gear Extraction from list ChatGPT
+## Gear Extraction from list ChatGPT EL1
 ```{r gear_list}
 gear <- c("tape recorder", "battery", "sardine weir", "fishing lines", "lobster traps", "rowboat", "lobster smack", "lobster buyers", "lobster companies", "lobster boat", "lobster catcher", "outboard motor", "two and a half horsepower outboard motor", "wooden lobster traps", "softwood traps", "second-hand traps", "laths", "boughs", "bottoms", "frames", "nylon twine", "cotton twine", "manila twine", "polyethylene twine", "plastic buoys", "foam buoys", "styrofoam buoys", "wooden buoys", "cedar wood", "oak wood", "spruce wood", "pot warp", "toggle", "single-cylinder boat engine", "four-cylinder boat engine", "six-cylinder boat engine", "eight-cylinder boat engine", "diesel engine", "gasoline engine", "hundred and thirty-five horsepower gasoline engine", "eighty-horsepower diesel engine","seine net")
 ```
@@ -304,7 +304,7 @@ extract_gear <- function(text)
 lawson1t_merged_lower$gear <- sapply(lawson1t_merged_lower$text, extract_gear)
 ```
 
-## Species Extraction from list ChatGPT
+## Species Extraction from list ChatGPT EL1
 ```{r species_list}
 species <- c("lobsters", "scallops", "lobster", "scallop", "sardine", "sardines", "fish")
 ```
@@ -318,7 +318,7 @@ extract_species <- function(text)
 lawson1t_merged_lower$species <- sapply(lawson1t_merged_lower$text, extract_species)
 ```
 
-## Word frequency
+## Word frequency EL1
 ```{r word_frequency_plot}
 lawson1_word <- lawson1t %>% 
   unnest_tokens(word, text) 
@@ -333,15 +333,13 @@ lawson1_word %>%
 ## TF EL1
 ```{r term_frequency}
 lawson1_word <- lawson1t %>%
-  mutate(document = 1) %>%  
   unnest_tokens(word, text) 
 
 lawson1_word <- lawson1_word %>%
   anti_join(get_stopwords(source = "smart")) %>%
-  count(document, word, sort = TRUE)
+  count(word, sort = TRUE)
 
 word_document_freq_1 <- lawson1_word %>%
-  group_by(document) %>%
   mutate(tf = n / sum(n)) 
 
 print(word_document_freq_1)
@@ -398,4 +396,71 @@ document_topics <- tidy(lda_model, matrix = "gamma") %>%
   group_by(document) %>%
   top_n(1, gamma)
 ```
+## Reading in the data EL2
+```{r read_data_EL2}
+lawson2_full_text <- pdftools::pdf_text(pdf = "data/Lawson_Edwin_10201972.pdf")
+```
 
+```{r string-data_EL2}
+# convert text to string
+lawson2_full_text <- toString(lawson2_full_text)
+lawson2_full_text
+# convert text to character lines
+lawson2 <- read_lines(lawson2_full_text)
+
+lawson2 <- tibble(lawson2)
+lawson2 <- rename(lawson2, text = lawson2)
+```
+
+## Cleaning table EL2
+```{r data_cleaning_EL2}
+lawson2 <- lawson2 %>% 
+  mutate(initials = str_extract(text, pattern = "[A-Z]{1,3}\\:")) %>%
+  fill(initials, .direction = "down")
+#remove the metadata and only look at interview
+lawson2t <- lawson2[-c(1:57), ]
+#correct first initials
+ lawson2t$initials[1:9] <- "ML:"
+ lawson2t$initials[10:11] <- "RS:"
+ lawson2t$initials[12:13] <- "EL:"
+#remove full names
+ lawson2t$text[10] <- gsub("Rita Swidrowski:", "",  lawson2t$text[10])
+ lawson2t$text[12] <- gsub("Edwin Lawson:", "",  lawson2t$text[12])
+#remove initials from text
+lawson2t$text <- str_replace_all(lawson2t$text, "[A-Z]{1,3}:", "")
+#remove white spaces
+lawson2t$text <- gsub("\\s{2,}", "", lawson2t$text)
+#remove empty rows
+lawson2t <- lawson2t[!is.na(lawson2t$text), ]
+#merging text
+lawson2t <- lawson2t %>%
+  mutate(group = cumsum(initials != lag(initials, default = "")))
+#merge consecutive rows within each group to have
+lawson2t_merged <- lawson2t %>%
+  group_by(initials, group) %>%
+  summarise(text = paste(text, collapse = " ")) %>%
+  ungroup() %>% 
+  arrange(group)
+#extract time stamps
+lawson2t_merged <- lawson2t_merged %>%
+  mutate(time = str_extract_all(text, "\\[\\d{2}:\\d{2}:\\d{2}\\.\\d{2}\\]"))
+time_unnested <- lawson2t_merged %>%
+  unnest(time)
+#remove time stamps from text
+lawson2t_merged$text <- gsub("\\[\\d{2}:\\d{2}:\\d{2}\\.\\d{2}\\]", "",lawson2t_merged$text)
+```
+
+## TF-IDF (EL1 and EL2)
+```{r term_frequency_EL2}
+lawson2_word <- lawson2t %>%
+  unnest_tokens(word, text) 
+
+lawson2_word <- lawson2_word %>%
+  anti_join(get_stopwords(source = "smart")) %>% 
+  count(word, sort = TRUE)
+
+word_document_freq_2 <- lawson2_word %>%
+  mutate(tf = n / sum(n)) 
+
+print(word_document_freq_2)
+```
