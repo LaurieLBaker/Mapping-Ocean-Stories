@@ -363,7 +363,6 @@ wordcloud(
   random.order = FALSE,  # To keep the word order as per frequency
   scale = c(5, 0.5),      
   max.words = 50,
-  # Maximum number of words in the cloud
 )
 ```
 
@@ -455,3 +454,33 @@ word_document_freq_2 <- lawson2_word %>%
 
 print(word_document_freq_2)
 ```
+```{r tf-idf_EL1_EL2}
+lawson1t <- lawson1t %>% 
+  mutate(interview = "EL1")
+
+lawson2t <- lawson2t %>% 
+  mutate(interview = "EL2")
+
+EL_interviews <- bind_rows(lawson1t, lawson2t)
+
+interviews_word <- EL_interviews %>%
+  unnest_tokens(word, text) %>% 
+  anti_join(get_stopwords(source = "smart")) %>% 
+  count(interview, word, sort = TRUE)
+
+interviews_tf_idf <- interviews_word %>%
+  bind_tf_idf(word, interview, n)
+interviews_tf_idf %>%
+  arrange(-tf_idf)
+```
+
+```{r tf-idf_word_frequency_viz, fig.height=8, fig.width=5}
+interviews_tf_idf %>%
+group_by(interview) %>%
+slice_max(tf_idf, n = 20) %>%
+ggplot(aes(tf_idf, fct_reorder(word, tf_idf), fill = interview)) +
+geom_col(show.legend = FALSE) +
+facet_wrap(~interview, scales = "free")
+```
+
+
