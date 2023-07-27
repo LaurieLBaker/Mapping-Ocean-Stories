@@ -1,0 +1,66 @@
+```{r intall_packages}
+library(pdftools)
+library(tidyverse)
+library(tidytext)
+library(dplyr)
+library(textclean)
+library(stopwords)
+```
+
+#Attemping a general interview to cleaned text function
+
+```{r interview_function}
+interview_clean <- function(interview_pdf_name, interview_name){
+  #create file name to import
+  file_location = str_c("data/", (interview_pdf_name))
+  #import pdf
+  interview <- pdftools::pdf_text(file_location)
+  #convert to tibble
+  interview <- interview %>% 
+    toString() %>% 
+    read_lines() %>% 
+    tibble()
+  #add initials
+  interview <- interview %>% 
+  mutate(initials = str_extract(., pattern = "[A-Z]{1,3}\\: ")) %>%
+  fill(initials, .direction = "down")
+  #remove start and end
+  start_end <- interview %>% 
+    mutate(line = row_number()) %>%
+    filter(str_starts(., pattern = "\\[")) %>% 
+    select(line)
+  start_row <- start_end$line[1]
+  end_row <- start_end$line[nrow(start_end)]
+  interview <- interview %>% 
+    mutate(line = row_number()) %>% 
+    filter(line > start_row) %>% 
+    filter(line < end_row)
+  #remove initials from text
+  interview$. <- str_replace_all(interview$., "[A-Z]{1,3}: ", "")
+  #remove white spaces
+  interview$. <- gsub("\\s{2,}", "", interview$.)
+  #remove empty rows
+  interview <- interview[!is.na(interview$.), ]
+  
+
+  
+}
+```
+
+```{r function_testing}
+interview <- interview_clean("Lawson_Edwin_10131972.pdf", "Lawson_interview")
+```
+
+Word search function
+
+```{r search_function}
+term_search <- function(text, word) {
+  imported_text <- (text)
+  imported_text <- imported_text %>% 
+    unnest_tokens(word, text)
+}
+```
+```{r search_function_testing}
+#term_search(lawson1t, fish)
+```
+
