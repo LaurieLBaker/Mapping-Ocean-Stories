@@ -46,6 +46,7 @@ lawson1 <- rename(lawson1, text = lawson1)
 ```
 
 ## Cleaning table EL1
+
 ```{r data_cleaning}
 lawson1 <- lawson1 %>% 
   mutate(initials = str_extract(text, pattern = "[A-Z]{1,3}\\:")) %>%
@@ -80,6 +81,7 @@ lawson1t_merged$text <- gsub("\\[\\d{2}:\\d{2}:\\d{2}\\.\\d\\]", "",lawson1t_mer
 ```
 
 ## Extracting keyword + words of the same sentence before and after EL1(need to figure out how to deal with multiple mentions in the same row)
+
 ```{r extract_keyword}
 # Choose a  keyword
 new_keyword <- "traps"  # change keyword here
@@ -131,7 +133,10 @@ lawson1t_merged_keyword %>%
   pull(text)
 ```
 
-## SpacyR location extraction EL1 (I believe we need to also have Python installed on computer with the SpaCy for spacyr to work. I don't have it, anyone does?)
+## SpacyR location extraction EL1 
+
+### (I believe we need to also have Python installed on computer with the SpaCy for spacyr to work. I don't have it, anyone does?)
+
 ```{r spacryr_location_extraction}
 # parsed_text <- spacy_parse(lawson1t_merged$text)
 # location_entities <- spacy_entity(parsed_text, entity = "GPE")
@@ -139,6 +144,7 @@ lawson1t_merged_keyword %>%
 ```
 
 ## Location extraction from list and ChatGPT EL1
+
 ```{r location_list_chatgpt}
 # List of locations from ChatGPT with EL interview 1 only
 locations <- c("West Tremont", "home", "Seal Cove", "Ship Harbor", "Tremont",
@@ -178,6 +184,7 @@ lawson1t_merged %>%
 ```
 
 ## Location network EL1
+
 ```{r location_network_trial1, fig.height=15, fig.width=15}
 # Filter for the rows with locations
 filtered_merged <- lawson1t_merged %>%
@@ -285,6 +292,7 @@ connection_list_3 %>%
 
 
 ## Gear Extraction from list ChatGPT EL1
+
 ```{r gear_list}
 gear <- c("tape recorder", "battery", "sardine weir", "fishing lines", "lobster traps", "rowboat", "lobster smack", "lobster buyers", "lobster companies", "lobster boat", "lobster catcher", "outboard motor", "two and a half horsepower outboard motor", "wooden lobster traps", "softwood traps", "second-hand traps", "laths", "boughs", "bottoms", "frames", "nylon twine", "cotton twine", "manila twine", "polyethylene twine", "plastic buoys", "foam buoys", "styrofoam buoys", "wooden buoys", "cedar wood", "oak wood", "spruce wood", "pot warp", "toggle", "single-cylinder boat engine", "four-cylinder boat engine", "six-cylinder boat engine", "eight-cylinder boat engine", "diesel engine", "gasoline engine", "hundred and thirty-five horsepower gasoline engine", "eighty-horsepower diesel engine","seine net")
 ```
@@ -305,6 +313,7 @@ lawson1t_merged_lower$gear <- sapply(lawson1t_merged_lower$text, extract_gear)
 ```
 
 ## Species Extraction from list ChatGPT EL1
+
 ```{r species_list}
 species <- c("lobsters", "scallops", "lobster", "scallop", "sardine", "sardines", "fish")
 ```
@@ -319,6 +328,7 @@ lawson1t_merged_lower$species <- sapply(lawson1t_merged_lower$text, extract_spec
 ```
 
 ## Word frequency EL1
+
 ```{r word_frequency_plot}
 lawson1_word <- lawson1t %>% 
   unnest_tokens(word, text) 
@@ -330,7 +340,9 @@ lawson1_word %>%
   geom_col()
 #see comments about this in Trello
 ```
+
 ## TF EL1
+
 ```{r term_frequency}
 lawson1_word <- lawson1t %>%
   unnest_tokens(word, text) 
@@ -346,6 +358,7 @@ print(word_document_freq_1)
 ```
 
 ## Word cloud list
+
 ```{r list_frequencies_wordcloud, fig.height=8, fig.width=8}
 #words provided by ChatGPT + added bay, summer, harbor, dollars from the word frequency plot above. (total of 37 words --> decide what amount of words would be best) I also added weiring and dragging (they are not of high frequency, but it is mentionned, which would be good to portray)
 word_list <- c("lobster", "boat", "traps", "fishermen", "water", "lobstering", "oil", "clothes",
@@ -366,7 +379,10 @@ wordcloud(
 )
 ```
 
-## Topic Modeling (is not very conclusive for now, perhaps adding more documents (more interviews) could make the topic modelling more relevant?)
+## Topic Modeling 
+
+###(is not very conclusive for now, perhaps adding more documents (more interviews) could make the topic modelling more relevant?)
+
 ```{r LDA_topic_modeling}
 lawson1_word <- lawson1_word  %>% 
   anti_join(get_stopwords(source = "smart")) %>% 
@@ -473,14 +489,29 @@ interviews_tf_idf <- interviews_word %>%
 interviews_tf_idf %>%
   arrange(-tf_idf)
 ```
+### Word Frequency Plot TF-IDF (EL1 and EL2)
 
 ```{r tf-idf_word_frequency_viz, fig.height=8, fig.width=5}
 interviews_tf_idf %>%
-group_by(interview) %>%
-slice_max(tf_idf, n = 20) %>%
-ggplot(aes(tf_idf, fct_reorder(word, tf_idf), fill = interview)) +
-geom_col(show.legend = FALSE) +
-facet_wrap(~interview, scales = "free")
+  group_by(interview) %>%
+  slice_max(tf_idf, n = 20) %>%
+  ggplot(aes(tf_idf, fct_reorder(word, tf_idf), fill = interview)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~interview, scales = "free")
 ```
 
+### WordCloud TF-IDF (EL1 and EL2)
+
+```{r word_cloud_tf-idf, fig.height=8, fig.width=8}
+wordcloud(
+  words = interviews_tf_idf$word,
+  freq = interviews_tf_idf$tf_idf,
+  scale = c(5, 0.5),
+  colors = brewer.pal(length(unique(interviews_tf_idf$interview)), "Set2"),
+  max.words = 40,
+  random.order = FALSE
+)
+legend("topright", legend = unique(interviews_tf_idf$interview), fill = colors)
+#Warning: minimal value for n is 3, returning requested palette with 3 different levels
+```
 
