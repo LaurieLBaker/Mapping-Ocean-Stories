@@ -28,3 +28,4 @@ ui <- fluidPage(
   hr(),
   wordcloud2Output("wordcloud")
 )
+
