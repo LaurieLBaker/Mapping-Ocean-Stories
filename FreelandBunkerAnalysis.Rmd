@@ -23,3 +23,135 @@ journal_1874 <- read_excel("data/journal_1874.xlsx")
 
 ## Exploratory Visualizations
 
+### Wind Speed 1873
+```{r wind_speed_1873_pivot_longer}
+wind_speed_1873 <- journal_1873 %>%
+  select(date_mdy,
+         date,
+         wind_speed_am, 
+         wind_speed_pm, 
+         wind_speed_night) %>% 
+  rename(month = date) %>% 
+  mutate(year = "1873") %>% 
+  pivot_longer(cols = starts_with("wind_speed"), 
+               names_to = "period", 
+               values_to = "wind_speed") %>%
+  mutate(period = case_when(
+    period == "wind_speed_am" ~ "am",
+    period == "wind_speed_pm" ~ "pm", 
+    period == "wind_speed_night" ~ "night")) %>% 
+  separate_rows(wind_speed, sep = ",") %>% 
+  mutate(category = case_when(
+    wind_speed %in% c("blustering", "very blustering") ~ "blustering",
+    wind_speed %in% c("breezy", "good breeze", "very fresh breeze", "breezed up", "fresh breeze", "heavy breeze", "smart breeze", "strong breeze") ~ "breeze",
+    wind_speed %in% c("blowing very heavy", "fresh blow", "heavy blow", "very heavy blow", "blowy", "blowing", "blowing hard", "blowing very hard") ~ "blow",
+    wind_speed %in% c("fresh gale", "gale") ~ "gale",
+    wind_speed %in% c("moderate", "quite moderate", "very moderate") ~ "moderate",
+    wind_speed %in% c("pleasant", "quite pleasant", "very pleasant") ~ "pleasant",
+    wind_speed %in% c("calm", "perfectly calm") ~ "calm",
+    wind_speed %in% c("scant wind", "heavy winds") ~ "wind",
+    wind_speed %in% c("rough", "squall", "strong", "very light", "heavy", "baffling", "a light air", "variable", "fair") ~ "other intensities"
+  ))
+```
+
+```{r bar_wind_speed_frequency_1873}
+wind_speed_1873 %>%
+  mutate(wind_speed = ifelse(wind_speed == "NA", NA, wind_speed)) %>%
+  drop_na(wind_speed, period, category) %>%
+  group_by(wind_speed, period, category) %>%
+  summarize(n = n()) %>%
+  mutate(period = factor(period, levels = c("am", "pm", "night"))) %>%
+  ggplot(aes(x = wind_speed, 
+             y = n, 
+             fill = category)) +
+  geom_bar(stat = "identity", 
+           position = "dodge") +
+  labs(x = "Wind Speed Vocabulary", 
+       y = "Frequency", 
+       fill = "Category") +
+  theme_minimal() +
+  coord_flip() +
+  facet_wrap(~ period)
+```
+```{r coodpolar_wind_speed_frequency_1873, fig.height=5, fig.width=10}
+  wind_speed_1873 %>%
+  mutate(wind_speed = ifelse(wind_speed == "NA", NA, wind_speed)) %>%
+  drop_na(wind_speed, period, category) %>%
+  group_by(wind_speed, period, category) %>%
+  summarize(n = n()) %>%
+  mutate(period = factor(period, levels = c("am", "pm", "night"))) %>%
+  ggplot(aes(x = wind_speed, 
+             y = n, 
+             fill = category)) +
+  geom_bar(stat = "identity", 
+           position = "dodge") +
+  labs(x = "Wind Speed Vocabulary", 
+       y = "Frequency", 
+       fill = "Category") +
+  theme_minimal() +
+  coord_polar() +
+  scale_y_log10() # to better see smaller frequencies
+```
+```{r piechart_wind_speed_frequency_1873}
+wind_speed_1873 %>%
+  mutate(wind_speed = ifelse(wind_speed == "NA", NA, wind_speed)) %>%
+  drop_na(wind_speed, period, category) %>%
+  group_by(wind_speed, period, category) %>%
+  summarize(n = n()) %>%
+  mutate(period = factor(period, levels = c("am", "pm", "night"))) %>%
+  ggplot(aes(x = "", y = n, fill = category)) +
+  geom_bar(stat = "identity", width = 1) + # 1 for pie chart effect
+  labs(x = NULL, y = "Frequency", fill = "Category") +
+  theme_minimal() +
+  coord_polar("y", start = 0)
+```
+
+### Wind Speed Comparison 1873-1874
+
+```{r wind_speed_1874_pivot_longer}
+wind_speed_1874 <- journal_1874 %>%
+  select(date_mdy, 
+         month,
+         wind_speed_am, 
+         wind_speed_pm, 
+         wind_speed_night) %>% 
+  mutate(year = 1874) %>% 
+  pivot_longer(cols = starts_with("wind_speed"), 
+               names_to = "period", 
+               values_to = "wind_speed") %>%
+  mutate(period = case_when(
+    period == "wind_speed_am" ~ "am",
+    period == "wind_speed_pm" ~ "pm", 
+    period == "wind_speed_night" ~ "night")) %>% 
+  separate_rows(wind_speed, sep = ",") %>% 
+  mutate(category = case_when(
+    wind_speed %in% c("blustering", "very blustering") ~ "blustering",
+    wind_speed %in% c("breezy", "good breeze", "very fresh breeze", "breezed up", "fresh breeze", "heavy breeze", "smart breeze", "strong breeze") ~ "breeze",
+    wind_speed %in% c("blowing very heavy", "fresh blow", "heavy blow", "very heavy blow", "blowy", "blowing", "blowing hard", "blowing very hard") ~ "blow",
+    wind_speed %in% c("fresh gale", "gale") ~ "gale",
+    wind_speed %in% c("moderate", "quite moderate", "very moderate") ~ "moderate",
+    wind_speed %in% c("pleasant", "quite pleasant", "very pleasant") ~ "pleasant",
+    wind_speed %in% c("calm", "perfectly calm") ~ "calm",
+    wind_speed %in% c("scant wind", "heavy winds") ~ "wind",
+    wind_speed %in% c("rough", "squall", "strong", "very light", "heavy", "baffling", "a light air", "variable", "fair") ~ "other intensities"
+  ))
+```
+
+```{r combine_wind_speed}
+combined_wind_speed<- rbind(wind_speed_1873, wind_speed_1874)
+```
+
+```{r wind_speed_comparison}
+combined_wind_speed %>%
+  mutate(wind_speed = ifelse(wind_speed == "NA", NA, wind_speed)) %>%
+  drop_na(wind_speed, period, category, year) %>%
+  group_by(wind_speed, category, year) %>%
+  summarize(n = n()) %>%
+  ggplot(aes(x = wind_speed, y = n, fill = category)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(x = "Wind Speed Vocabulary", y = "Frequency", fill = "Category") +
+  theme_minimal() +
+  coord_flip() +
+  facet_wrap(~ year)
+```
+
