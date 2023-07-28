@@ -4,3 +4,22 @@ output: html_document
 date: "2023-07-28"
 name: "Delphine Demais and Will Draxler"
 ---
+
+```{r install.packages}
+#chooseCRANmirror(ind=70)
+#install.packages("readxl")
+library(readxl)
+library(tidyverse)
+library(tidytext)
+library(ggplot2)
+```
+
+## Read Excel Freeland Bunker Journal Transcription (1873-1874)
+
+```{r read_excel}
+journal_1873 <- read_excel("data/journal_1873.xlsx")
+journal_1874 <- read_excel("data/journal_1874.xlsx")
+```
+
+## Exploratory Visualizations
+
