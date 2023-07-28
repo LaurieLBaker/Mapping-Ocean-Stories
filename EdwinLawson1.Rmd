@@ -186,6 +186,7 @@ lawson1t_merged %>%
 ## Location network EL1
 
 ```{r location_network_trial1, fig.height=15, fig.width=15}
+#This one is not working (might want to use this template for locations and their keywords associated to it)
 # Filter for the rows with locations
 filtered_merged <- lawson1t_merged %>%
   filter(location != "character(0)") %>% 
@@ -215,6 +216,7 @@ colors <- ifelse(grepl("^RS:", initials), "red", "blue")
 plot(network_location_1, vertex.color = colors)
 ```
 ```{r network_location_trial2}
+#This one is not working
 # Filter for the rows with locations
 filtered_merged <- lawson1t_merged %>%
   filter(location != "character(0)") %>% 
@@ -249,6 +251,7 @@ plot(network_location_2, vertex.color = colors[V(network_location_2)$initials])
 ```
 
 ```{r geom_edge_link_location, fig.height=12, fig.width=30}
+# Mostly working (good enough for now)
 connection_list_3 <- connection_list_2 %>%
   group_by(group) %>%
   summarize(combination = list(combn(location, 2, simplify = FALSE))) %>%
@@ -315,7 +318,7 @@ lawson1t_merged_lower$gear <- sapply(lawson1t_merged_lower$text, extract_gear)
 ## Species Extraction from list ChatGPT EL1
 
 ```{r species_list}
-species <- c("lobsters", "scallops", "lobster", "scallop", "sardine", "sardines", "fish")
+species <- c("lobsters", "scallops", "lobster", "scallop", "sardine", "sardines")
 ```
 
 ```{r species_list_function}
@@ -471,6 +474,7 @@ word_document_freq_2 <- lawson2_word %>%
 print(word_document_freq_2)
 ```
 ```{r tf-idf_EL1_EL2}
+#do we perhaps also want to create a running list of our own stop_words to add so that we can remove them and they won't show up here (eg: that's, there's, they're, can't)
 lawson1t <- lawson1t %>% 
   mutate(interview = "EL1")
 
