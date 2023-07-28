@@ -23,6 +23,7 @@ library(topicmodels) #for LDA topic modelling
 library(reshape2) #for LDA topic modelling
 library(igraph) #for network graph
 library(shiny) #for shiny app
+library(data.table) # to modify data.table
 # install.packages("spacyr")
 # library(spacyr)
 # spacy_download_langmodel("en") #need to install Anaconda on computer (not currently working)
@@ -328,6 +329,38 @@ extract_species <- function(text)
   return(extracted_species)}
 #link to lawson1t_merged_lower
 lawson1t_merged_lower$species <- sapply(lawson1t_merged_lower$text, extract_species)
+```
+
+
+## Explore Data.Table Packages with version of lawson1t_merged_lower (extraction of location, gear, species)
+
+### It is possible in R to change the content of the cells trough simple code, but we NEED shiny to be able to have someone modify the content of the cells and add their initials directly to the data table. Then it is also possible to make a copy of the original data table before it is modified.
+
+```{r data.table}
+#keep in mind that data.table modifies the data directly!!!
+
+lawson_to_modify <- data.table(lawson1t_merged_lower)
+```
+
+## Explore Text Wrapping
+
+### Doesn't seem to be working super well in R directly, but ChatGPT says that it will be more useful within the shiny App --> we will probably see results there.
+```{r text-wrapping}
+# Convert to data.table
+setDT(lawson1t_merged_lower)
+
+# Function to wrap the text and create a new data.table with individual wrapped lines
+wrap_text_lines <- function(text, width) {
+  wrapped_lines <- strwrap(text, width = width)
+  data.table(Wrappedtext = unlist(wrapped_lines))
+}
+
+# Wrap the text in the "text" column and store the result in the new data.table
+width <- 1000  # Adjust the width as needed
+wrap_lawson1t_merged_lower <- lawson1t_merged_lower[, wrap_text_lines(text, width), by = group]
+
+# Print the modified data.table with wrapped text
+print(wrap_lawson1t_merged_lower)
 ```
 
 ## Word frequency EL1
