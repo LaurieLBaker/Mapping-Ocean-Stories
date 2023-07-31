@@ -179,3 +179,139 @@ combined_wind_speed %>%
   coord_flip()
 ```
 
+### Wind Directions 1873
+```{r wind_direction_function}
+convert_wind_direction_to_degrees <- function(wind_direction) {
+  degrees <- case_when(
+    wind_direction == "N" ~ 0,
+    wind_direction == "NNE" ~ 22.5,
+    wind_direction == "NE" ~ 45,
+    wind_direction == "ENE" ~ 67.5,
+    wind_direction == "E" ~ 90,
+    wind_direction == "ESE" ~ 112.5,
+    wind_direction == "SE" ~ 135,
+    wind_direction == "SSE" ~ 157.5,
+    wind_direction == "S" ~ 180,
+    wind_direction == "SSW" ~ 202.5,
+    wind_direction == "SW" ~ 225,
+    wind_direction == "WSW" ~ 247.5,
+    wind_direction == "W" ~ 270,
+    wind_direction == "WNW" ~ 292.5,
+    wind_direction == "NW" ~ 315,
+    wind_direction == "NNW" ~ 337.5,
+    TRUE ~ NA_real_  # Return NA if the wind direction is not recognized
+  )
+  return(degrees)
+}
+```
+
+```{r wind_direction_longer_1873}
+wind_direction_1873_long <- journal_1873 %>% 
+  pivot_longer(cols = starts_with("wind_direction"), 
+               names_to = "period", 
+               values_to = "wind_direction") %>% 
+  separate_rows(wind_direction, sep = ", ") %>% 
+  mutate(period = case_when(
+    period == "wind_direction_am" ~ "am",
+    period == "wind_direction_pm" ~ "pm", 
+    period == "wind_direction_night" ~ "night"
+  ))
+```
+
+```{r 1873_mutate_degrees}
+wind_direction_1873_long <- wind_direction_1873_long %>%
+  mutate(
+    wind_degrees = case_when(
+      period == "am" ~ convert_wind_direction_to_degrees(wind_direction),
+      period == "pm" ~ convert_wind_direction_to_degrees(wind_direction),
+      period == "night" ~ convert_wind_direction_to_degrees(wind_direction)
+    )) %>% 
+  select(date_mdy, date, wind_direction, period, wind_degrees) %>% 
+  rename(month = date) %>% 
+  mutate(year = "1873")
+```
+
+```{r morning_rose_plot, fig.height=10, fig.width=15}
+# Function to convert degrees to radians for polar coordinates
+to_radians <- function(degrees) {
+  return((degrees - 90) * pi / 180)
+}
+
+# Create the plot with polar coordinates for wind_direction_am
+wind_direction_1873_long %>% 
+  mutate(period = factor(period, levels = c("am", "pm", "night"))) %>%
+  ggplot(aes(x = to_radians(wind_degrees))) +
+  geom_bar(aes(fill = stat(count)), 
+           bins = 16, 
+           color = "black") +  # Color by frequency
+  scale_fill_viridis_c(option = "plasma", name = "Frequency") +  # Color scale
+  geom_text(aes(x = to_radians(wind_degrees), 
+                y = 150, label = wind_direction),
+            size = 4, fontface = "bold", 
+            color = "black") +  # Add labels around the rose plot
+  labs(title = "Wind Directions 1873", 
+       "Only Directions Explicitely Specified by Period",
+       x = NULL, 
+       y = NULL) +
+  theme_minimal() +
+  theme(axis.text = element_blank()) +
+  coord_polar() +
+  scale_y_continuous(name = "Frequency", 
+                     trans = "log10") +  # Frequency scale (logarithmic)
+  facet_wrap(~ period)
+```
+```{r fig.height=10, fig.width=20}
+wind_direction_1873_long %>% 
+ mutate(wind_direction = ifelse(wind_direction == "NA", NA, wind_direction)) %>%
+  drop_na(wind_direction, period, month) %>%
+  ggplot(aes(x = wind_direction, fill = period)) +
+  geom_bar(position = "stack", color = "black") +
+  labs(title = "Bar Chart of Monthly Wind Directions Frequencies in 1873",
+       x = "Wind Direction",
+       y = "Frequency") +
+  coord_flip() +
+  facet_wrap(~ month, nrow = 2)
+```
+
+### Wind Direction Comparison 1873-1874
+```{r longer_wind_direction_1874}
+wind_direction_1874_long <- journal_1874 %>% 
+  pivot_longer(cols = starts_with("wind_direction"), 
+               names_to = "period", 
+               values_to = "wind_direction") %>% 
+  separate_rows(wind_direction, sep = ", ") %>% 
+  mutate(period = case_when(
+    period == "wind_direction_am" ~ "am",
+    period == "wind_direction_pm" ~ "pm", 
+    period == "wind_direction_night" ~ "night"
+  ))
+```
+
+```{r 1874_mutate_degrees}
+wind_direction_1874_long <- wind_direction_1874_long %>%
+  mutate(
+    wind_degrees = case_when(
+      period == "am" ~ convert_wind_direction_to_degrees(wind_direction),
+      period == "pm" ~ convert_wind_direction_to_degrees(wind_direction),
+      period == "night" ~ convert_wind_direction_to_degrees(wind_direction)
+    )) %>% 
+  select(date_mdy, month, wind_direction, period, wind_degrees) %>% 
+  mutate(year = "1874") 
+```
+
+```{r combine_wind-direction}
+combined_wind_direction <- rbind(wind_direction_1873_long, wind_direction_1874_long)
+```
+
+```{r}
+combined_wind_direction %>% 
+ mutate(wind_direction = ifelse(wind_direction == "NA", NA, wind_direction)) %>%
+  drop_na(wind_direction, period, year) %>%
+  ggplot(aes(x = wind_direction, fill = year)) +
+  geom_bar(position = "stack", color = "black") +
+  labs(title = "Bar Chart of Yearly Wind Directions Frequencies",
+       x = "Wind Direction",
+       y = "Frequency") +
+  coord_flip() 
+```
+
