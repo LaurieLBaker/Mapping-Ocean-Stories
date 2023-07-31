@@ -66,7 +66,8 @@ wind_speed_1873 %>%
              fill = category)) +
   geom_bar(stat = "identity", 
            position = "dodge") +
-  labs(x = "Wind Speed Vocabulary", 
+  labs(title = "Wind Vocabulary Frequency by Period of the Day 1873",
+       x = "Wind Speed Vocabulary", 
        y = "Frequency", 
        fill = "Category") +
   theme_minimal() +
@@ -85,7 +86,8 @@ wind_speed_1873 %>%
              fill = category)) +
   geom_bar(stat = "identity", 
            position = "dodge") +
-  labs(x = "Wind Speed Vocabulary", 
+  labs(title = "General Wind Vocabulary Frequency 1873",
+       x = "Wind Speed Vocabulary", 
        y = "Frequency", 
        fill = "Category") +
   theme_minimal() +
@@ -103,7 +105,9 @@ wind_speed_1873 %>%
   geom_bar(stat = "identity", width = 1) + # 1 for pie chart effect
   labs(x = NULL, y = "Frequency", fill = "Category") +
   theme_minimal() +
-  coord_polar("y", start = 0)
+  coord_polar("y", start = 0) +
+  theme_void() +
+  labs(title = " 1873 Wind Vocabulary by Category")
 ```
 
 ### Wind Speed Comparison 1873-1874
@@ -149,9 +153,29 @@ combined_wind_speed %>%
   summarize(n = n()) %>%
   ggplot(aes(x = wind_speed, y = n, fill = category)) +
   geom_bar(stat = "identity", position = "dodge") +
-  labs(x = "Wind Speed Vocabulary", y = "Frequency", fill = "Category") +
+  labs(title = "Yearly Comparison of Wind Speed Vocabulary",
+       subtitle = "Colored by Overarching Categories in 1873 and 1874",
+       x = "Wind Speed Vocabulary", 
+       y = "Frequency", 
+       fill = "Category") +
   theme_minimal() +
   coord_flip() +
   facet_wrap(~ year)
+```
+
+```{r}
+combined_wind_speed %>%
+  mutate(wind_speed = ifelse(wind_speed == "NA", NA, wind_speed)) %>%
+  drop_na(wind_speed, period, category, year) %>%
+  group_by(category, month, year) %>%
+  summarise(frequency = n()) %>%
+  ggplot(aes(x = category, y = frequency, fill = as.factor(year))) +
+  geom_bar(stat = "identity", position = "stack") +
+  labs(title = "Monthly Comparison of Wind Speed Categories 1873-1874",
+       x = "Category",
+       y = "Frequency",
+       fill = "Year") +
+  facet_wrap(~ month) +
+  coord_flip()
 ```
 
