@@ -13,19 +13,24 @@ library(tm)
 library(wordcloud2)
 library(stringr)
 library(pdftools)
+library(tibble)
 
 ui <- fluidPage(
-  titlePanel("Word Cloud from PDF"),
+  titlePanel("Interview Analysis"),
   fileInput("file", "Choose a PDF file"),
   
   # Select word list(s)
   checkboxGroupInput("wordlist", "Select word list(s):",
-                     choices = c("location_EL", "gear", "species")),
+                     choices = c("locations", "gear", "species")),
   
   # Checkbox group for individual words within selected word list
   uiOutput("wordlist_options"),
   
-  hr(),
-  wordcloud2Output("wordcloud")
-)
+  # TabsetPanel for different tabs
+  tabsetPanel(
+    tabPanel("Table Output", tableOutput("table_output")),
+    tabPanel("Word Cloud Output", wordcloud2Output("wordcloud"))
+  )
+) 
+
 

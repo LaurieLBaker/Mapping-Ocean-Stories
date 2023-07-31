@@ -5,10 +5,11 @@
 # Find out more about building applications with Shiny here:
 #
 #    http://shiny.rstudio.com/
+
 server <- function(input, output, session) {
   # Sample word lists
   word_lists <- list(
-    "location_EL" = c("Swan's Island", "home", "Southwest Harbor", "Manset", "Worcester", "Massachusetts", "California", "Pasadena",
+    "locations" = c("Swan's Island", "home", "Southwest Harbor", "Manset", "Worcester", "Massachusetts", "California", "Pasadena",
                       "Florida", "Lake Worth", "Palm Beach", "Westward", "Cherryfield", "Canada", "Hancock", "Bangor", "Castine",
                       "Ship Harbor", "West", "Boston", "Gloucester", "New York", "Black Island", "Mitchell's Cove", "Placentia", "Bass Harbor",
                       "Blue Hill", "Blue Hill Bay", "Hardwood Island", "Stonington", "Seal Cove", "Mitchell’s Cove", "Goose Cove", "West Tremont",
@@ -55,32 +56,74 @@ server <- function(input, output, session) {
     }
   })
   
-  # Text mining function
-  process_text <- function(text, word_lists) {
-    text <- tolower(text)
-    words_in_lists <- unlist(word_lists)
-    words_found <- str_extract_all(text, paste0("\\b", words_in_lists, "\\b"))
-    words_found <- unlist(words_found)
-    word_freq <- table(words_found)
-    return(word_freq)
+  
+  # Define the extract_location function
+  extract_location <- function(text, locations) {
+    extracted_location <- str_extract_all(text, paste(locations, collapse = "|"))
+    return(extracted_location)
+  }
+
+  # Interview Clean Function + extract locations
+  interview_clean <- function(interview_pdf_name, interview_name, locations){
+    # create file name to import
+    file_location <- str_c("data/", interview_pdf_name)
+    # import pdf
+    interview <- pdftools::pdf_text(file_location)
+    # convert to tibble
+    interview <- interview %>% 
+      toString() %>% 
+      read_lines() %>% 
+      tibble(text = .)
+    # add initials
+    interview <- interview %>% 
+      mutate(initials = str_extract(., pattern = "[A-Z]{1,3}\\: ")) %>%
+      fill(initials, .direction = "down")
+    # remove start and end
+    start_end <- interview %>% 
+      mutate(line = row_number()) %>%
+      filter(str_starts(., pattern = "\\[")) %>% 
+      select(line)
+    start_row <- start_end$line[1]
+    end_row <- start_end$line[nrow(start_end)]
+    interview <- interview %>% 
+      mutate(line = row_number()) %>% 
+      filter(line > start_row) %>% 
+      filter(line < end_row)
+    # remove initials from text
+    interview$. <- str_replace_all(interview$text, "[A-Z]{1,3}: ", "")
+    # remove white spaces
+    interview$. <- gsub("\\s{2,}", "", interview$text)
+    # remove empty rows
+    interview <- interview[!is.na(interview$text), ]
+    # extract locations
+    interview$extracted_locations <- extract_location(interview$text, locations)
+    return(interview)
   }
   
-  # Process text and render the word cloud
-  output$wordcloud <- renderWordcloud2({
+  # Reactive function for the cleaned interview data
+  cleaned_interview <- reactive({
     inFile <- input$file
-    if (is.null(inFile)) return(NULL)
-    
-    text <- pdf_text(inFile$datapath)
-    selected_words <- c(input$wordlist, input$wordlist_options)
-    word_freq <- process_text(text, selected_words)
-    
-    # Filter the wordcloud data only for words with frequency > 0
-    wordcloud_data <- data.frame(word = names(word_freq), freq = as.numeric(word_freq))
-    
-    wordcloud2(data = wordcloud_data,
-               color = "random-light",
-               backgroundColor = "white",
-               size = 1.5)
+    if (!is.null(inFile)) {
+      # Call interview_clean with the selected word list (locations, gear, species)
+      interview_clean(inFile$name, "Interview 1", input$wordlist)
+    }
+  })
+  
+  # Output the cleaned interview data as a table
+  output$table_output <- renderTable({
+    cleaned_interview()
+  })
+  
+  # Generate word cloud using the cleaned interview data
+  output$wordcloud <- renderWordcloud2({
+    if (!is.null(cleaned_interview())) {
+      # Combine the text from the cleaned interview data
+      text <- paste(cleaned_interview()$text, collapse = " ")
+      # Process the text to remove punctuation and numbers, and convert to lowercase
+      text <- tolower(gsub("[[:punct:][:digit:]]", "", text))
+      # Generate the word cloud
+      wordcloud2(data = data.frame(word = str_split(text, "\\s+")), size = 1)
+    }
   })
 }
 shinyApp(ui, server)
