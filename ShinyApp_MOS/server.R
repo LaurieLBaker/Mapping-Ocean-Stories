@@ -7,6 +7,14 @@
 #    http://shiny.rstudio.com/
 
 server <- function(input, output, session) {
+  library(shiny)
+  library(pdftools)
+  library(stringr)
+  library(tibble)
+  library(dplyr)
+  library(textclean)
+  library(DT)
+  
   # Sample word lists
   word_lists <- list(
     "locations" = c("Swan's Island", "home", "Southwest Harbor", "Manset", "Worcester", "Massachusetts", "California", "Pasadena",
@@ -132,6 +140,9 @@ server <- function(input, output, session) {
     return(interview)
   }
   
+  # Reactive value to store the modified table
+  modified_table <- reactiveVal()
+  
   # Reactive function for the cleaned interview data
   cleaned_interview <- reactive({
     req(input$file)
@@ -147,24 +158,46 @@ server <- function(input, output, session) {
     }
   })
   
-  # Output the cleaned interview data as a table
-  output$table_output <- renderTable({
+  # Output the cleaned interview data as an editable DT::datatable
+  output$table_output <- DT::renderDataTable({
     req(cleaned_interview())
-    cleaned_interview() %>%
+    cleaned_data <- cleaned_interview() %>%
       mutate(across(where(is.list), sapply, toString))
+    
+    # Store the cleaned_data as the modified table
+    modified_table(cleaned_data)
+    
+    DT::datatable(cleaned_data, editable = TRUE)
   })
   
-  # Generate word cloud using the cleaned interview data
-  output$wordcloud <- renderWordcloud2({
-    if (!is.null(cleaned_interview())) {
-      # Combine the text from the cleaned interview data
-      text <- paste(cleaned_interview()$text, collapse = " ")
-      # Process the text to remove punctuation and numbers, and convert to lowercase
-      text <- tolower(gsub("[[:punct:][:digit:]]", "", text))
-      # Generate the word cloud
-      wordcloud2(data = data.frame(word = str_split(text, "\\s+")), size = 1)
-    }
+  # Listen for table edits and update the modified_table reactive value
+  observeEvent(input$table_output_cell_edit, {
+    info <- input$table_output_cell_edit
+    modified_table_data <- modified_table()
+    modified_table_data[info$row, info$col] <- info$value
+    modified_table(modified_table_data)
   })
+  
+  # Download the original table as a CSV file
+  output$download_original <- downloadHandler(
+    filename = function() {
+      "original_table.csv"
+    },
+    content = function(file) {
+      write.csv(cleaned_interview(), file, row.names = FALSE)
+    }
+  )
+  
+  # Download the modified table as a CSV file
+  output$download_modified <- downloadHandler(
+    filename = function() {
+      "modified_table.csv"
+    },
+    content = function(file) {
+      data <- modified_table()
+      write.csv(data, file, row.names = FALSE)
+    }
+  )
 }
 shinyApp(ui, server)
 

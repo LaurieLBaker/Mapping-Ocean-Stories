@@ -7,7 +7,7 @@
 #    http://shiny.rstudio.com/
 
 
-#install.packages(c("shiny", "tm", "wordcloud2", "stringr", "pdftools", "tibble", "readr", "tidyr","dplyr", "textclean", "stopwords"))
+#install.packages(c("shiny", "tm", "wordcloud2", "stringr", "pdftools", "tibble", "readr", "tidyr","dplyr", "textclean", "stopwords", "DT"))
 library(shiny)
 library(tm)
 library(wordcloud2)
@@ -19,6 +19,7 @@ library(tidyr)
 library(dplyr)
 library(textclean)
 library(stopwords)
+library(DT)
 
 ui <- fluidPage(
   titlePanel("Interview Analysis"),
@@ -31,11 +32,20 @@ ui <- fluidPage(
   # Checkbox group for individual words within selected word list
   uiOutput("wordlist_options"),
   
-  # TabsetPanel for different tabs
-  tabsetPanel(
-    tabPanel("Table Output", tableOutput("table_output")),
-    tabPanel("Word Cloud Output", wordcloud2Output("wordcloud"))
+  fluidRow(
+    column(6,
+           # TabsetPanel for different tabs
+           tabsetPanel(
+             tabPanel("Table Output", dataTableOutput("table_output")),
+             tabPanel("Word Cloud Output", wordcloud2Output("wordcloud"))
+           )
+    ),
+    
+    column(6,
+           # Download buttons
+           downloadButton("download_original", "Download Original Table"),
+           downloadButton("download_modified", "Download Modified Table")
+    )
   )
-) 
-
+)
 
