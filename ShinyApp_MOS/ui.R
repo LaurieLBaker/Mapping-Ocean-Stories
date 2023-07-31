@@ -22,7 +22,7 @@ library(stopwords)
 library(DT)
 
 ui <- fluidPage(
-  titlePanel("Interview Analysis"),
+  titlePanel("MOS Interview Coding and Analysis App"),
   fileInput("file", "Choose a PDF file"),
   
   # Select word list(s)
@@ -46,7 +46,7 @@ ui <- fluidPage(
                )
              )
     ),
-    tabPanel("Word Cloud Output", wordcloud2Output("wordcloud"))
+    tabPanel("Word Cloud Output", wordcloud2Output("wordcloud")) #need to create wordcloud
   )
 )
 

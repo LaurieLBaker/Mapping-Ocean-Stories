@@ -34,7 +34,7 @@ server <- function(input, output, session) {
                "pot warp", "toggle", "single-cylinder boat engine", "four-cylinder boat engine", "six-cylinder boat engine",
                "eight-cylinder boat engine", "diesel engine", "gasoline engine", "hundred and thirty-five horsepower gasoline engine",
                "eighty-horsepower diesel engine", "seine net"),
-    "species" = c("lobsters", "scallops", "lobster", "scallop", "sardine", "sardines", "fish")
+    "species" = c("lobsters", "scallops", "lobster", "scallop", "sardine", "sardines")
   )
   
   # Update checkbox options based on the selected word list
