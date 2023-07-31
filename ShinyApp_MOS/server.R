@@ -56,62 +56,102 @@ server <- function(input, output, session) {
     }
   })
   
-  
   # Define the extract_location function
   extract_location <- function(text, locations) {
     extracted_location <- str_extract_all(text, paste(locations, collapse = "|"))
     return(extracted_location)
   }
-
+  
+  # Define the extract_species function
+  extract_species <- function(text, species) {
+    extracted_species <- str_extract_all(text, paste(species, collapse = "|"))
+    return(extracted_species)
+  }
+  
+  # Define the extract_gear function
+  extract_gear<- function(text, gear) {
+    extracted_gear <- str_extract_all(text, paste(gear, collapse = "|"))
+    return(extracted_gear)
+  }
+  
   # Interview Clean Function + extract locations
-  interview_clean <- function(interview_pdf_name, interview_name, locations){
+  interview_clean <- function(interview_pdf_name, interview_name, locations, species, gear) {
     # create file name to import
     file_location <- str_c("data/", interview_pdf_name)
     # import pdf
     interview <- pdftools::pdf_text(file_location)
     # convert to tibble
-    interview <- interview %>% 
-      toString() %>% 
-      read_lines() %>% 
+    interview <- interview %>%
+      toString() %>%
+      read_lines() %>%
       tibble(text = .)
-    # add initials
-    interview <- interview %>% 
-      mutate(initials = str_extract(., pattern = "[A-Z]{1,3}\\: ")) %>%
+    # extract initials
+    interview <- interview %>%
+      mutate(initials = str_extract(text, pattern = "[A-Z]{1,3}\\: ")) %>%
       fill(initials, .direction = "down")
+    # remove initials from text
+    interview$text <- str_replace_all(interview$text, "[A-Z]{1,3}: ", "")
     # remove start and end
-    start_end <- interview %>% 
+    start_end <- interview %>%
       mutate(line = row_number()) %>%
-      filter(str_starts(., pattern = "\\[")) %>% 
+      filter(str_detect(text, pattern = "\\[")) %>%
       select(line)
     start_row <- start_end$line[1]
     end_row <- start_end$line[nrow(start_end)]
-    interview <- interview %>% 
-      mutate(line = row_number()) %>% 
-      filter(line > start_row) %>% 
+    interview <- interview %>%
+      mutate(line = row_number()) %>%
+      filter(line > start_row) %>%
       filter(line < end_row)
-    # remove initials from text
-    interview$. <- str_replace_all(interview$text, "[A-Z]{1,3}: ", "")
     # remove white spaces
-    interview$. <- gsub("\\s{2,}", "", interview$text)
+    interview$text <- gsub("\\s{2,}", "", interview$text)
     # remove empty rows
     interview <- interview[!is.na(interview$text), ]
+    # Add group column based on consecutive initials
+    interview <- interview %>%
+      mutate(group = cumsum(initials != lag(initials, default = ""))) %>%
+      fill(group, .direction = "down")
+    # merging text
+    interview <- interview %>%
+      group_by(initials, group) %>%
+      summarise(text = paste(text, collapse = " ")) %>%
+      ungroup() %>%
+      arrange(group)
+    #extract time stamps
+    interview <- interview %>%
+      mutate(time = str_extract(text, "\\[\\d{2}:\\d{2}:\\d{2}\\.\\d{2}\\]"))
+    interview <- interview %>%
+      unnest(time)
+    #remove time stamps from text
+    interview$text <- gsub("\\[\\d{2}:\\d{2}:\\d{2}\\.\\d{2}\\]", "",interview$text)
     # extract locations
     interview$extracted_locations <- extract_location(interview$text, locations)
+    # extract species
+    interview$extracted_species <- extract_species(interview$text, species)
+    # extract locations
+    interview$extracted_gear <- extract_gear(interview$text, gear)
     return(interview)
   }
   
   # Reactive function for the cleaned interview data
   cleaned_interview <- reactive({
+    req(input$file)
     inFile <- input$file
     if (!is.null(inFile)) {
       # Call interview_clean with the selected word list (locations, gear, species)
-      interview_clean(inFile$name, "Interview 1", input$wordlist)
+      interview_data <- interview_clean(inFile$name, "Interview 1", word_lists$locations, word_lists$species, word_lists$gear)
+      # Convert the list of extracted locations, species, and gear to comma-separated strings
+      interview_data$extracted_locations <- sapply(interview_data$extracted_locations, toString)
+      interview_data$extracted_species <- sapply(interview_data$extracted_species, toString)
+      interview_data$extracted_gear <- sapply(interview_data$extracted_gear, toString)
+      return(interview_data)
     }
   })
   
   # Output the cleaned interview data as a table
   output$table_output <- renderTable({
-    cleaned_interview()
+    req(cleaned_interview())
+    cleaned_interview() %>%
+      mutate(across(where(is.list), sapply, toString))
   })
   
   # Generate word cloud using the cleaned interview data
@@ -127,3 +167,4 @@ server <- function(input, output, session) {
   })
 }
 shinyApp(ui, server)
+

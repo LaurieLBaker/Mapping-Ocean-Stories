@@ -7,13 +7,18 @@
 #    http://shiny.rstudio.com/
 
 
-#install.packages(c("shiny", "tm", "wordcloud2", "stringr", "pdftools"))
+#install.packages(c("shiny", "tm", "wordcloud2", "stringr", "pdftools", "tibble", "readr", "tidyr","dplyr", "textclean", "stopwords"))
 library(shiny)
 library(tm)
 library(wordcloud2)
 library(stringr)
 library(pdftools)
 library(tibble)
+library(readr)
+library(tidyr)
+library(dplyr)
+library(textclean)
+library(stopwords)
 
 ui <- fluidPage(
   titlePanel("Interview Analysis"),
