@@ -32,20 +32,21 @@ ui <- fluidPage(
   # Checkbox group for individual words within selected word list
   uiOutput("wordlist_options"),
   
-  fluidRow(
-    column(6,
-           # TabsetPanel for different tabs
-           tabsetPanel(
-             tabPanel("Table Output", dataTableOutput("table_output")),
-             tabPanel("Word Cloud Output", wordcloud2Output("wordcloud"))
-           )
+  # TabsetPanel for different tabs
+  tabsetPanel(
+    tabPanel("Table Output",
+             fluidRow(
+               DTOutput("table_output"),
+               align = "center" # Align the DataTable in the center
+             ),
+             fluidRow(
+               column(12,
+                      downloadButton("download_original", "Download Original Table"),
+                      downloadButton("download_modified", "Download Modified Table")
+               )
+             )
     ),
-    
-    column(6,
-           # Download buttons
-           downloadButton("download_original", "Download Original Table"),
-           downloadButton("download_modified", "Download Modified Table")
-    )
+    tabPanel("Word Cloud Output", wordcloud2Output("wordcloud"))
   )
 )
 

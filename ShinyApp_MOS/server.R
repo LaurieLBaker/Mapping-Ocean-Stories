@@ -154,6 +154,8 @@ server <- function(input, output, session) {
       interview_data$extracted_locations <- sapply(interview_data$extracted_locations, toString)
       interview_data$extracted_species <- sapply(interview_data$extracted_species, toString)
       interview_data$extracted_gear <- sapply(interview_data$extracted_gear, toString)
+      # Add an empty "reviewer" column
+      interview_data$reviewer <- ""
       return(interview_data)
     }
   })
@@ -167,7 +169,22 @@ server <- function(input, output, session) {
     # Store the cleaned_data as the modified table
     modified_table(cleaned_data)
     
-    DT::datatable(cleaned_data, editable = TRUE)
+    DT::datatable(
+      cleaned_data,
+      editable = TRUE,
+      options = list(
+        columnDefs = list(
+          list(targets = "_all", className = "dt-center"), # Center-align content in all columns
+          list(targets = 3, width = "400px") # Set width of the "text" column to 400px
+        ),
+        scrollX = TRUE, # Enable horizontal scrolling
+        dom = "lrtip", # Hide the search bar and show processing indicator
+        autoWidth = TRUE, # Enable automatic column width calculation
+        deferRender = TRUE, # Defer rendering of rows for better performance
+        ordering = FALSE, # Disable sorting
+        bPaginate = FALSE # Hide pagination controls
+      )
+    )
   })
   
   # Listen for table edits and update the modified_table reactive value
