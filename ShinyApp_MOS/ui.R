@@ -32,6 +32,14 @@ ui <- fluidPage(
   # Checkbox group for individual words within selected word list
   uiOutput("wordlist_options"),
   
+  # Numeric input to select the number of words in the word cloud
+  numericInput("num_words", "Number of Words in Word Cloud", value = 50, min = 1, max = 100),
+  
+  # Radio button to choose between whole interview or specific list
+  radioButtons("wordcloud_source", "Word Cloud Source:",
+               choices = c("Whole Interview", "Specific List"),
+               selected = "Whole Interview"),
+  
   # TabsetPanel for different tabs
   tabsetPanel(
     tabPanel("Table Output",
@@ -46,7 +54,7 @@ ui <- fluidPage(
                )
              )
     ),
-    tabPanel("Word Cloud Output", wordcloud2Output("wordcloud")) #need to create wordcloud
+    tabPanel("Word Cloud Output", wordcloud2Output("wordcloud")) # Word cloud tab
   )
 )
 

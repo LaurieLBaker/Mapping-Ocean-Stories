@@ -14,6 +14,9 @@ server <- function(input, output, session) {
   library(dplyr)
   library(textclean)
   library(DT)
+  library(stopwords)
+  library(tidytext)
+  library(wordcloud2)
   
   # Sample word lists
   word_lists <- list(
@@ -215,6 +218,51 @@ server <- function(input, output, session) {
       write.csv(data, file, row.names = FALSE)
     }
   )
+  
+  # Reactive function to calculate word frequencies from the text column
+  word_frequency_data <- reactive({
+    req(cleaned_interview())
+    text_data <- cleaned_interview()$text
+    # remove punctuation and numbers, and convert to lowercase
+    text_data <- tolower(gsub("[[:punct:][:digit:]]", "", text_data))
+    # text to words
+    word_data <- tibble(text = text_data) %>%
+      unnest_tokens(word, text) 
+    
+    # Remove stop wordsn
+    stop_words <- stopwords::stopwords("en")
+    word_data <- word_data %>%
+      anti_join(data.frame(word = stop_words))
+    
+    word_data <- word_data %>%
+      count(word, sort = TRUE)
+    return(word_data)
+  })
+  
+  # Generate word cloud using the word frequency data
+  output$wordcloud <- renderWordcloud2({
+    word_data <- word_frequency_data()
+    if (!is.null(word_data)) {
+      # Limit the number of words based on the user input
+      num_words <- input$num_words
+      word_data <- head(word_data, num_words)
+      
+      # Check the user's choice for word cloud source
+      if (input$wordcloud_source == "Whole Interview") {
+        # Word cloud from the whole interview
+        wordcloud2(data = word_data, size = 1)
+      } else {
+        # Word cloud from a specific list
+        list_name <- input$wordlist
+        list_words <- word_lists[[list_name]]
+        # Filter the word_data to include only words from the selected list
+        word_data_filtered <- word_data[word_data$word %in% list_words, ]
+        # Rename the "n" column to "freq"
+        word_data_filtered <- word_data_filtered %>% rename(freq = n)
+        wordcloud2(data = word_data_filtered, size = 1)
+      }
+    }
+  })
 }
 shinyApp(ui, server)
 
