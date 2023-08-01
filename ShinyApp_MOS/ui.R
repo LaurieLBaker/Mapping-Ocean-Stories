@@ -50,14 +50,14 @@ column(width = 6,
   tabsetPanel(
     tabPanel("Data Table",
              fluidRow(
-               DTOutput("table_output"),
-               align = "center" # Align the DataTable in the center
-             ),
-             fluidRow(
                column(12,
                       downloadButton("download_original", "Download Original Table"),
                       downloadButton("download_modified", "Download Modified Table")
-               )
+               ),
+             fluidRow(
+               DTOutput("table_output"),
+               align = "center" # Align the DataTable in the center
+             )
              )
     ),
     tabPanel("Word Cloud", wordcloud2Output("wordcloud")),

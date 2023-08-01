@@ -181,11 +181,12 @@ server <- function(input, output, session) {
           list(targets = 3, width = "400px") # Set width of the "text" column to 400px
         ),
         scrollX = TRUE, # Enable horizontal scrolling
-        dom = "lrtip", # Hide the search bar and show processing indicator
+        dom = "ftrlip", # Show the search bar at the top and processing indicator
         autoWidth = TRUE, # Enable automatic column width calculation
         deferRender = TRUE, # Defer rendering of rows for better performance
         ordering = FALSE, # Disable sorting
-        bPaginate = FALSE # Hide pagination controls
+        bPaginate = FALSE,# Hide pagination controls
+        searchHighlight = TRUE # Enable search term highlighting
       )
     )
   })
