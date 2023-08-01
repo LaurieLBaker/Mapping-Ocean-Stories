@@ -7,7 +7,7 @@
 #    http://shiny.rstudio.com/
 
 
-#install.packages(c("shiny", "tm", "wordcloud2", "stringr", "pdftools", "tibble", "readr", "tidyr","dplyr", "textclean", "stopwords", "DT"))
+#install.packages(c("shiny", "tm", "wordcloud2", "stringr", "pdftools", "tibble", "readr", "tidyr","dplyr", "textclean", "stopwords", "DT", "webshot", "htmlwidgets"))
 library(shiny)
 library(tm)
 library(wordcloud2)
@@ -20,6 +20,8 @@ library(dplyr)
 library(textclean)
 library(stopwords)
 library(DT)
+library(htmlwidgets)
+library(webshot)
 
 ui <- fluidPage(
   titlePanel("MOS Interview Coding and Analysis App"),
@@ -43,6 +45,7 @@ column(width = 6,
   radioButtons("wordcloud_source", "Word Cloud Source:",
                choices = c("Whole Interview", "Specific List"),
                selected = "Whole Interview"),
+  downloadButton("download_wordcloud", "Download Word Cloud")
   )
 ),
   

@@ -253,7 +253,6 @@ server <- function(input, output, session) {
       # Limit the number of words based on the user input
       num_words <- input$num_words
       word_data <- head(word_data, num_words)
-      
       # Check the user's choice for word cloud source
       if (input$wordcloud_source == "Whole Interview") {
         # Word cloud from the whole interview
@@ -270,5 +269,24 @@ server <- function(input, output, session) {
       }
     }
   })
+  
+  # Function to capture the word cloud and return a base64 encoded PNG image
+  wordcloud_to_image <- function() {
+    webshot::webshot("www/wordcloud.html", file = "www/wordcloud.png", cliprect = "viewport")
+  }
+  
+  # Output the custom download button for the word cloud
+  output$download_wordcloud <- downloadHandler(
+    filename = function() {
+      "wordcloud.png"
+    },
+    content = function(file) {
+      # Call the wordcloud_to_image function to capture the word cloud as an image
+      wordcloud_to_image()
+      
+      # Move the image file to the download directory
+      file.rename("www/wordcloud.png", file)
+    }
+  )
 }
 shinyApp(ui, server)
