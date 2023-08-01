@@ -238,26 +238,46 @@ wind_direction_1873_long <- wind_direction_1873_long %>%
   mutate(year = "1873")
 ```
 
-```{r morning_rose_plot, fig.height=10, fig.width=15}
+```{r 1873-roseplot}
 # Function to convert degrees to radians for polar coordinates
 to_radians <- function(degrees) {
   return((degrees - 90) * pi / 180)
 }
 
-# Create the plot with polar coordinates for wind_direction_am
+wind_direction_1873_long %>% 
+  ggplot(aes(x = to_radians(wind_degrees))) +
+  geom_bar(aes(fill = stat(count)), 
+           bins = 16, 
+           color = "black") +  
+  scale_fill_viridis_c(option = "plasma", name = "Frequency") + 
+  geom_text(aes(x = to_radians(wind_degrees), 
+                y = 150, label = wind_direction),
+            size = 4, fontface = "bold", 
+            color = "black") +  
+  labs(title = "Wind Directions Mentionned, 1873", 
+       "Only Directions Explicitely Specified by Period",
+       x = NULL, 
+       y = NULL) +
+  theme_minimal() +
+  theme(axis.text = element_blank()) +
+  coord_polar() +
+  scale_y_continuous(name = "Frequency", 
+                     trans = "log10")   # Frequency scale (logarithmic)
+```
+
+```{r period_rose_plot, fig.height=10, fig.width=15}
 wind_direction_1873_long %>% 
   mutate(period = factor(period, levels = c("am", "pm", "night"))) %>%
   ggplot(aes(x = to_radians(wind_degrees))) +
   geom_bar(aes(fill = stat(count)), 
            bins = 16, 
-           color = "black") +  # Color by frequency
-  scale_fill_viridis_c(option = "plasma", name = "Frequency") +  # Color scale
+           color = "black") +  
+  scale_fill_viridis_c(option = "plasma", name = "Frequency") + 
   geom_text(aes(x = to_radians(wind_degrees), 
                 y = 150, label = wind_direction),
             size = 4, fontface = "bold", 
-            color = "black") +  # Add labels around the rose plot
-  labs(title = "Wind Directions 1873", 
-       "Only Directions Explicitely Specified by Period",
+            color = "black") +  
+  labs(title = "Wind Directions Mentionned by Period of the Day, 1873", 
        x = NULL, 
        y = NULL) +
   theme_minimal() +
@@ -267,9 +287,33 @@ wind_direction_1873_long %>%
                      trans = "log10") +  # Frequency scale (logarithmic)
   facet_wrap(~ period)
 ```
-```{r fig.height=10, fig.width=20}
+```{r month-rose-plot, fig.height=8, fig.width=15}
+wind_direction_1873_long %>% 
+  ggplot(aes(x = to_radians(wind_degrees))) +
+  geom_bar(aes(fill = stat(count)), 
+           bins = 16, 
+           color = "black") + 
+  scale_fill_viridis_c(option = "plasma", name = "Frequency") + 
+  geom_text(aes(x = to_radians(wind_degrees), 
+                y = 150, label = wind_direction),
+            size = 4, fontface = "bold", 
+            color = "black") +  
+  labs(title = "Wind Directions Mentioned by Month, 1873",
+       x = NULL, 
+       y = NULL) +
+  theme_minimal() +
+  theme(axis.text = element_blank()) +
+  coord_polar() +
+  scale_y_continuous(name = "Frequency", 
+                     trans = "log10") +  # Frequency scale (logarithmic)
+  facet_wrap(~ month)
+```
+
+
+```{r wind_direction_frequency, fig.height=10, fig.width=20}
 wind_direction_1873_long %>% 
  mutate(wind_direction = ifelse(wind_direction == "NA", NA, wind_direction)) %>%
+  mutate(period = factor(period, levels = c("am", "pm", "night"))) %>%
   drop_na(wind_direction, period, month) %>%
   ggplot(aes(x = wind_direction, fill = period)) +
   geom_bar(position = "stack", color = "black") +
