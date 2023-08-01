@@ -12,6 +12,10 @@ library(readxl)
 library(tidyverse)
 library(tidytext)
 library(ggplot2)
+library(stringr)
+library(dplyr)
+library(textclean)
+library(stopwords)
 ```
 
 ## Read Excel Freeland Bunker Journal Transcription (1873-1874)
@@ -21,17 +25,21 @@ journal_1873 <- read_excel("data/journal_1873.xlsx")
 journal_1874 <- read_excel("data/journal_1874.xlsx")
 ```
 
+```{r month_1873}
+journal_1873 <- journal_1873 %>% 
+  rename(month = date)
+```
+
 ## Exploratory Visualizations
 
 ### Wind Speed 1873
 ```{r wind_speed_1873_pivot_longer}
 wind_speed_1873 <- journal_1873 %>%
   select(date_mdy,
-         date,
+         month,
          wind_speed_am, 
          wind_speed_pm, 
          wind_speed_night) %>% 
-  rename(month = date) %>% 
   mutate(year = "1873") %>% 
   pivot_longer(cols = starts_with("wind_speed"), 
                names_to = "period", 
@@ -226,8 +234,7 @@ wind_direction_1873_long <- wind_direction_1873_long %>%
       period == "pm" ~ convert_wind_direction_to_degrees(wind_direction),
       period == "night" ~ convert_wind_direction_to_degrees(wind_direction)
     )) %>% 
-  select(date_mdy, date, wind_direction, period, wind_degrees) %>% 
-  rename(month = date) %>% 
+  select(date_mdy, month, wind_direction, period, wind_degrees) %>% 
   mutate(year = "1873")
 ```
 
@@ -303,7 +310,7 @@ wind_direction_1874_long <- wind_direction_1874_long %>%
 combined_wind_direction <- rbind(wind_direction_1873_long, wind_direction_1874_long)
 ```
 
-```{r}
+```{r wind_directinon_bar_chart}
 combined_wind_direction %>% 
  mutate(wind_direction = ifelse(wind_direction == "NA", NA, wind_direction)) %>%
   drop_na(wind_direction, period, year) %>%
@@ -313,5 +320,93 @@ combined_wind_direction %>%
        x = "Wind Direction",
        y = "Frequency") +
   coord_flip() 
+```
+
+### Letters
+
+```{r change_reed_to_recd}
+journal_1873 <- journal_1873 %>%
+  mutate(letter = case_when(
+    letter == "read" ~ "received",
+    letter == "read and write" ~ "received and write",
+    TRUE ~ letter  # Keep the original value if none of the conditions match
+  ))
+
+journal_1874 <- journal_1874 %>%
+  mutate(letter = case_when(
+    letter == "read" ~ "received",
+    letter == "read and write" ~ "received and write",
+    TRUE ~ letter  # Keep the original value if none of the conditions match
+  ))
+```
+
+```{r letter_df}
+letters_1873 <- journal_1873 %>%
+  select(date_mdy, month, journal_entry, letter, notes) %>% 
+  mutate(year = "1873")
+
+letters_1874 <- journal_1874 %>%
+  select(date_mdy, month, journal_entry, letter, notes) %>% 
+  mutate(year = "1874")
+```
+
+```{r join_letters_df}
+combined_letters <- rbind(letters_1873, letters_1874)
+```
+
+```{r letter_viz, fig.height=4, fig.width=10}
+combined_letters %>%
+  count(letter, year) %>%
+  mutate(letter = ifelse(letter == "NA", NA, letter)) %>%
+  drop_na(letter) %>%
+  ggplot(aes(x = letter, 
+             y = n, 
+             fill = year)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_wrap(~ year) +
+  labs(title = "Letter Communication",
+       subtitle = "For 1873 and 1874",
+       x = "Letter Status",
+       y = "Frequency",
+       fill = "Year")
+```
+```{r frequency_letter}
+combined_letters %>%
+  mutate(letter = ifelse(letter == "NA", NA, letter)) %>%
+  drop_na(letter) %>%
+  filter(letter != "no letter") %>%
+  count(letter, year) %>%
+  ggplot(aes(x = letter, y = n, fill = year)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_wrap(~ year) +
+  labs(title = "Frequency of Letter Communication Mentioned",
+       subtitle = "For 1873 and 1874",
+       x = "Letter Status",
+       y = "Frequency") +
+  scale_y_continuous(breaks = seq(5, 30, 5))
+```
+
+### Communication (Names & Letters)
+
+```{r communication_df}
+#only rows with letters written or received
+communication <- combined_letters %>%
+  mutate(letter = ifelse(letter == "NA", NA, letter)) %>%
+  drop_na(letter) %>%
+  filter(letter != "no letter")
+```
+
+```{r names_mentionned_list}
+#List by chatgpt from the names and their different variations in the communication table
+names <- c("C.C. Burrill", "Charles C. Burrell", "Geo. N. Loomis", "GN Loomis", "Geo. W. Tracy", "Geo W Tracy", "Thomas Bunker", "T. Smallidge Boston", "Thos Bunker", "Joseph Bunker", "C. Stevens", "Reg of Deeds", "A.J. Gerrish", "Flora Gerrish", "Dresser and Ayer", "Reuben Rand", "R. Rand", "Geo.W Butler", "Geo N Loomis", "GW Butter", "G.W. Butter", "Henry W. Sargent", "T Smallidge", "Henry Geyer", "Galen Smith", "Thos Bunker Cranberry Isles", "L.D. Parsons Bangor", "SD.Parsons Bangor", "Benj Kittridge", "Benj Kittredge", "B. Kittridge", "J.T. Kingsley", "Kellly Kingsley", "E. Kingsley", "Geo A Dyer", "Arno Wiswell", "Charles C. Burrell", "Hannah Goodwin", "Charles Norris", "Nathan Goodwin", "A.G. Brooks", "Mrs FRBunker", "AN Willye", "W. B. McCrate", "James Staples", "Capt. S.L.Tracy", "Wm Joy", "William Stevens", "E. H. Wallace", "Robt Miles", "Nickerson and Rideout", "David Ames", "Joy and Hutchings", "Reg of Deeds","A.D. Crabtree")
+```
+
+```{r extract_names}
+# Function to extract all names
+extract_names <- function(text) {
+  extracted_names <- regmatches(text, gregexpr(paste(names, collapse = "|"), text))
+  return(extracted_names)
+}
+communication$names <- sapply(communication$journal_entry, extract_names)
 ```
 
