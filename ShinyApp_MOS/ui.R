@@ -54,7 +54,8 @@ ui <- fluidPage(
                )
              )
     ),
-    tabPanel("Word Cloud Output", wordcloud2Output("wordcloud")) # Word cloud tab
+    tabPanel("Word Cloud Output", wordcloud2Output("wordcloud")),
+    tabPanel("Term Frequency Graph", )
   )
 )
 

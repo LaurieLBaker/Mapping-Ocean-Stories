@@ -37,7 +37,7 @@ server <- function(input, output, session) {
                "pot warp", "toggle", "single-cylinder boat engine", "four-cylinder boat engine", "six-cylinder boat engine",
                "eight-cylinder boat engine", "diesel engine", "gasoline engine", "hundred and thirty-five horsepower gasoline engine",
                "eighty-horsepower diesel engine", "seine net"),
-    "species" = c("lobsters", "scallops", "lobster", "scallop", "sardine", "sardines")
+    "species" = c("lobsters", "scallops", "lobster", "scallop", "sardine", "sardines", "mackerel", "herring", "salmon", "hake")
   )
   
   # Update checkbox options based on the selected word list
@@ -88,7 +88,7 @@ server <- function(input, output, session) {
   # Interview Clean Function + extract locations
   interview_clean <- function(interview_pdf_name, interview_name, locations, species, gear) {
     # create file name to import
-    file_location <- str_c("data/", interview_pdf_name)
+    file_location <- str_c(interview_pdf_name)
     # import pdf
     interview <- pdftools::pdf_text(file_location)
     # convert to tibble
@@ -152,7 +152,7 @@ server <- function(input, output, session) {
     inFile <- input$file
     if (!is.null(inFile)) {
       # Call interview_clean with the selected word list (locations, gear, species)
-      interview_data <- interview_clean(inFile$name, "Interview 1", word_lists$locations, word_lists$species, word_lists$gear)
+      interview_data <- interview_clean(inFile$datapath, "Interview 1", word_lists$locations, word_lists$species, word_lists$gear)
       # Convert the list of extracted locations, species, and gear to comma-separated strings
       interview_data$extracted_locations <- sapply(interview_data$extracted_locations, toString)
       interview_data$extracted_species <- sapply(interview_data$extracted_species, toString)
@@ -228,11 +228,17 @@ server <- function(input, output, session) {
     # text to words
     word_data <- tibble(text = text_data) %>%
       unnest_tokens(word, text) 
-    
-    # Remove stop wordsn
+  
+    # Remove stop words
     stop_words <- stopwords::stopwords("en")
+    # Create stop words out of 1000 most common english words, could be edited to remove yeah and add any of the most common words that might be interesting
+    custom_stopwords <- pull(read_csv("data/custom_stopwords.csv"))
+    # Create stop words out of 100 chatgpt sourced contractions without apostrophes
+    contraction_stopwords <- pull(read_csv("data/contractions.txt"))
     word_data <- word_data %>%
-      anti_join(data.frame(word = stop_words))
+      anti_join(data.frame(word = stop_words)) %>%
+      anti_join(data.frame(word = custom_stopwords)) %>% 
+      anti_join(data.frame(word = contraction_stopwords))
     
     word_data <- word_data %>%
       count(word, sort = TRUE)
