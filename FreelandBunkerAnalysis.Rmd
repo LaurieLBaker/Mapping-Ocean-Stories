@@ -16,6 +16,9 @@ library(stringr)
 library(dplyr)
 library(textclean)
 library(stopwords)
+library(wordcloud2)
+library(wordcloud)
+library(forcats)
 ```
 
 ## Read Excel Freeland Bunker Journal Transcription (1873-1874)
@@ -364,6 +367,114 @@ combined_wind_direction %>%
        x = "Wind Direction",
        y = "Frequency") +
   coord_flip() 
+```
+
+### Weather Conditions 1873
+```{r weather_con_1873_pivot_longer}
+weather_con_1873_long <- journal_1873 %>%
+  select(date_mdy,
+         month,
+         weather_condition_am, 
+         weather_condition_pm, 
+         weather_condition_night) %>% 
+  mutate(year = "1873") %>% 
+  pivot_longer(cols = starts_with("weather_condition"), 
+               names_to = "period", 
+               values_to = "weather_condition") %>%
+  mutate(period = case_when(
+    period == "weather_condition_am" ~ "am",
+    period == "weather_condition_pm" ~ "pm", 
+    period == "weather_condition_night" ~ "night")) %>% 
+  separate_rows(weather_condition, sep = ",") %>% 
+  mutate(category = case_when(
+    weather_condition %in% c("chilly", "cold", "cool", "extremely cold", "very cold", "quite cold") ~ "cold",
+    weather_condition %in% c("pleasant", "very pleasant") ~ "pleasant",
+    weather_condition %in% c("very warm", "warm", "hot") ~ "warm",
+    weather_condition %in% c("clear", "cleared up", "fine") ~ "clear",
+    weather_condition %in% c("overcast", "cloudy") ~ "cloud",
+    weather_condition %in% c( "pleasant", "quite pleasant", "very pleasant") ~ "pleasant",
+    weather_condition %in% c("calm", "perfectly calm") ~ "calm",
+    weather_condition %in% c("foggy", "foggy", "dense fog", "thick fog", "very foggy", "thick with fog", "very thick with fog") ~ "fog",
+    weather_condition %in% c("heavy showers", "very heavy shower", "shower", "showery", "a little showery") ~ "showers",
+    weather_condition %in% c("drizzle", "drizzling rain") ~ "drizzle",
+    weather_condition %in% c("cold rain", "heavy rain storm", "heavy rain", "fine rain", "raining", "rainy", "rain", "rain spells", "rain squall", "rain storm", "moderate rain", "big rain storm", "very heavy rain") ~ "rain",
+    weather_condition %in% c("little snow", "snow sleet", "light snow", "thick snow", "pleasant snow", "snowy", "snow", "snow spells", "snow squall", "big snow storm", "snow storm", "snowing", "snowing fast", "moderate snow") ~ "snow",
+    weather_condition %in% c("stormy", "tough storm", "very heavy storm", "moderate rainstorm", "heavy storm") ~ "storm",
+    weather_condition %in% c("thunder", "heavy thunder") ~ "thunder",
+    weather_condition %in% c("sharp lightning", "lightning") ~ "lightning",
+    weather_condition %in% c("misty", "good weather", "moderate weather", "sun out", "hail") ~ "other",
+  ))
+```
+
+```{r wordcloud_weather, fig.height=8, fig.width=8}
+weather_con_1873_freq <- weather_con_1873_long %>% 
+  mutate(weather_condition = ifelse(weather_condition == "NA", NA, weather_condition)) %>%
+  drop_na(weather_condition) %>%
+  count(weather_condition)
+
+category_colors <- c(
+  "cold" = "#16324a",
+  "pleasant" = "#ccf146",
+  "warm" = "#b5a642",
+  "clear" = "#9467bd",
+  "cloud" = "#8c564b",
+  "calm" = "#2ca02c",
+  "fog" = "#e377c2",
+  "showers" = "#1f77b4",
+  "drizzle" = "#004f95",
+  "rain" = "#17becf",
+  "snow" = "#bbbbbb",
+  "storm" = "#ff7f0e",
+  "thunder" = "#d62728",
+  "lightning" = "#ff9896",
+  "other" = "#c5b0d5"
+)
+wordcloud(
+  weather_con_1873_freq$weather_condition,
+  weather_con_1873_freq$n,
+  colors = category_colors, #not currently working
+  random.order = FALSE,
+  scale = c(5, 1),
+  min.freq = 1,
+  max.words = Inf
+)
+```
+
+```{r}
+weather_con_1873_long %>% 
+  mutate(weather_condition = ifelse(weather_condition == "NA", NA, weather_condition)) %>%
+  drop_na( weather_condition, period, category) %>%
+  group_by( weather_condition, period, category) %>%
+  summarize(n = n()) %>%
+  mutate(period = factor(period, levels = c("am", "pm", "night"))) %>%
+  ggplot(aes(x =  weather_condition, 
+             y = n, 
+             fill = category)) +
+  geom_bar(stat = "identity", 
+           position = "dodge") +
+  labs(title = "Weather Condition Frequency by Period of the Day 1873",
+       x = "Weather Condition Vocabulary", 
+       y = "Frequency", 
+       fill = "Category") +
+  theme_minimal() +
+  coord_flip() +
+  facet_wrap(~ period)
+```
+
+```{r weather_frequency}
+weather_con_1873_long %>%
+  mutate(weather_condition = ifelse(weather_condition == "NA", NA, weather_condition)) %>%
+  drop_na(weather_condition, category, month) %>%
+  group_by(month) %>% 
+  count(category) %>% 
+  ggplot(aes(x = factor(month, levels = c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")), y = n, fill = category )) +
+  geom_col(position = "stack") +
+  scale_fill_brewer(palette = "Spectral") +
+  labs(title = "Weather Frequency By Category per month",
+       fill = "Caterogy",
+        x = "Month",
+       y = "Number of occurrences") +
+  coord_polar()
 ```
 
 ### Letters
