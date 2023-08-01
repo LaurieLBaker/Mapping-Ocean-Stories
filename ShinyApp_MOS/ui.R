@@ -23,7 +23,9 @@ library(DT)
 
 ui <- fluidPage(
   titlePanel("MOS Interview Coding and Analysis App"),
-  fileInput("file", "Choose a PDF file"),
+  
+fluidRow(column(width = 6,
+  fileInput("file", "Upload a PDF file"),
   
   # Select word list(s)
   checkboxGroupInput("wordlist", "Select word list(s):",
@@ -31,18 +33,22 @@ ui <- fluidPage(
   
   # Checkbox group for individual words within selected word list
   uiOutput("wordlist_options"),
+  ),
   
+column(width = 6,
   # Numeric input to select the number of words in the word cloud
-  numericInput("num_words", "Number of Words in Word Cloud", value = 50, min = 1, max = 100),
+  numericInput("num_words", "Choose Number of Words in Word Cloud", value = 50, min = 1, max = 100),
   
   # Radio button to choose between whole interview or specific list
   radioButtons("wordcloud_source", "Word Cloud Source:",
                choices = c("Whole Interview", "Specific List"),
                selected = "Whole Interview"),
+  )
+),
   
   # TabsetPanel for different tabs
   tabsetPanel(
-    tabPanel("Table Output",
+    tabPanel("Data Table",
              fluidRow(
                DTOutput("table_output"),
                align = "center" # Align the DataTable in the center
@@ -54,8 +60,9 @@ ui <- fluidPage(
                )
              )
     ),
-    tabPanel("Word Cloud Output", wordcloud2Output("wordcloud")),
-    tabPanel("Term Frequency Graph", )
+    tabPanel("Word Cloud", wordcloud2Output("wordcloud")),
+    tabPanel("Term Frequency Graph"),
+    tabPanel("Location Network")
   )
 )
 
