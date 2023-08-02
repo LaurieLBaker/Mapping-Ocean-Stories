@@ -17,6 +17,7 @@ library(dplyr)
 library(textclean)
 library(stopwords)
 library(wordcloud2)
+library(RColorBrewer)
 library(wordcloud)
 library(forcats)
 ```
@@ -44,6 +45,12 @@ journal_1873 <- journal_1873 %>%
 #I corrected some typos in journal_entry and in the letter column when create the names_journal_1874, which is why I am keeping these columns from names_journal_1874
  journal_1874 <- left_join(names_journal_1874, journal_1874, by = c("date_mdy", "month", "journal_entry", "letter"))
 ```
+
+```{r rbind_journals}
+colnames(journal_1874)[13] <- "transcription_accuracy"
+combined_journals <- rbind(journal_1873, journal_1874)
+```
+
 ## Exploratory Visualizations
 
 ### Wind Speed 1873
@@ -788,4 +795,47 @@ communication %>%
   facet_wrap(~ year)
 ```
 
+
+### Boats
+
+```{r boat_list}
+#this is is from master_journal_lists as of 08/2023
+boats <- c("Signal", "Amulet", "Black Warrior", "Sea Flower", "A.G. Brooks", "Henrietta", "Mermaid", "Harp", "Woodcock", "Roamer", "Virgin", "Neptune", "Banner", "Old Chad", "Sea Pigeon", "Elizabeth", "Wyoming", "Mary & Eliza", "Mars Hill", "Nauseag", "Washington", "Lebanon")
+```
+
+```{r boats_wordcloud, fig.height=5, fig.width=5}
+boats_lower <- tolower(boats)
+
+journal_entry_ngram <- combined_journals %>% 
+  unnest_tokens(bigram, journal_entry, token = "ngrams", n = 2)
+
+journal_entry_ngram_lower <- journal_entry_ngram %>%
+  mutate(bigram = tolower(bigram))
+
+bigram_counts_lower <- journal_entry_ngram_lower %>%
+  separate(bigram, c("word1", "word2"), sep = " ") %>% 
+  filter(
+    (word1 %in% boats_lower & !word2 %in% stop_words$word) | 
+    (word2 %in% boats_lower & !word1 %in% stop_words$word)
+  ) %>%
+  count(word1, word2, sort = TRUE)
+
+boats_mentions_filtered <- bigram_counts_lower %>%
+  filter(word1 %in% boats_lower | word2 %in% boats_lower)
+
+boats_freq <- bind_rows(
+  data.frame(word = boats_mentions_filtered$word1, freq = boats_mentions_filtered$n),
+  data.frame(word = boats_mentions_filtered$word2, freq = boats_mentions_filtered$n)
+)
+
+boats_freq <- boats_freq %>% 
+  count(word)
+
+boats_freq <- boats_freq %>%
+  filter(word %in% boats_lower)
+
+boats_freq$word <- tools::toTitleCase(boats_freq$word)
+
+wordcloud2(boats_freq, size = 1, color = "random-light", backgroundColor = "black", minSize = 1, minRotation = 0)
+```
 
