@@ -255,7 +255,7 @@ plot(network_location_2, vertex.color = colors[V(network_location_2)$initials])
 # Mostly working (good enough for now)
 connection_list_3 <- connection_list_2 %>%
   group_by(group) %>%
-  summarize(combination = list(combn(location, 2, simplify = FALSE))) %>%
+  summarize(combination = list(combn(location, 2, simplify = FALSE))) %>% #create associations
   unnest(combination) %>%
   separate(combination, into = c("from", "to"), sep = ", ", convert = TRUE) %>% 
   mutate(from = gsub("^c\\(|\\)$|\"|'", "", from),
@@ -293,6 +293,119 @@ connection_list_3 %>%
   #       legend.key.width = unit(2, "cm")) + #this formatting of the color legend is also not working
   theme_graph() 
 ```
+```{r general__steps_location_function}
+# location_connections <- cleaned_interview %>%
+#   filter(location != "character(0)") %>% # Filter for the rows with locations only
+#   unnest(location) %>% 
+#   group_by(group, initials) %>%
+#   filter(n() > 1)  #filter rows with more than one location
+#   group_by(group) %>%
+#     summarize(combination = list(combn(location, 2, simplify = FALSE))) %>% #create associations
+#     unnest(combination) %>%
+#     separate(combination, into = c("from", "to"), sep = ", ", convert = TRUE) %>% 
+#     mutate(from = gsub("^c\\(|\\)$|\"|'", "", from),
+#            to = gsub("^c\\(|\\)$|\"|'", "", to))
+#   
+# # Calculate the number of connections for each node (to display the size accordingly)
+# node_connections <- location_connections %>%
+#   count(from, name = "connections") %>%
+#   bind_rows(location_connections %>% count(to, name = "connections")) %>%
+#   group_by(from) %>%
+#   summarize(max_connections = max(connections, na.rm = TRUE))
+# 
+# # Merge node_degrees
+# location_connections <- left_join(location_connections, node_connections, by = c("from" = "from"))
+#   
+# # Combine the 'group' and '(from, to)' variables to create unique ids
+# location_connections_3 <- location_connections %>%
+#   mutate(unique_id = interaction(group, from, to))
+# 
+# location_connections %>%
+#   ggraph(layout = "nicely") + #see other layout options
+#   geom_edge_link(aes(alpha = 2, 
+#                      color = unique_id),  #to color by group
+#                  show.legend = TRUE, #put to false to only have colors displayed but not legend
+#                  arrow = arrow(length = unit(1.5, "mm")),
+#                  start_cap = circle(3, "mm"),
+#                  end_cap = circle(3, "mm")) +
+#   geom_node_text(aes(label = name),
+#                  size = 6) +  # size by max_connection doesn't work here
+#   scale_size_continuous(range = c(6, 12), 
+#                         guide = "legend") +  # legend of size not working
+#   scale_color_viridis_d() +
+#   theme_graph() 
+```
+
+```{r location_function}
+# create_location_connections <- function(cleaned_interview) {
+#   # Filter for the rows with locations only
+#   location_connections <- cleaned_interview %>%
+#     filter(!is.na(extracted_locations)) %>%
+#     unnest_tokens(extracted_locations) %>%
+#     group_by(group, initials) %>%
+#     filter(n() > 1)  # Filter rows with more than one location
+# 
+#   # Create associations between locations
+#   location_connections <- location_connections %>%
+#     group_by(group) %>%
+#     summarize(combination = list(combn(extracted_locations, 2, simplify = FALSE))) %>%
+#     unnest(combination) %>%
+#     separate(combination, into = c("from", "to"), sep = ", ", convert = TRUE) %>%
+#     mutate(from = gsub("^c\\(|\\)$|\"|'", "", from),
+#            to = gsub("^c\\(|\\)$|\"|'", "", to))
+# 
+#   # Calculate the number of connections for each node (to display the size accordingly)
+#   node_connections <- location_connections %>%
+#     count(from, name = "connections") %>%
+#     bind_rows(location_connections %>% count(to, name = "connections")) %>%
+#     group_by(from) %>%
+#     summarize(max_connections = max(connections, na.rm = TRUE))
+# 
+#   # Merge node_degrees
+#   location_connections <- left_join(location_connections, node_connections, by = c("from" = "from"))
+# 
+#   # Combine the 'group' and '(from, to)' variables to create unique ids
+#   location_connections$unique_id <- interaction(location_connections$group, location_connections$from, location_connections$to)
+# 
+#   return(location_connections)
+# }
+# 
+#   # Create the location connections dataframe using the cleaned_interview
+#   location_connections <- reactive({
+#     req(cleaned_interview())
+#     create_location_connections(cleaned_interview())
+#   })
+#   
+#   # Generate the location network visualization
+#   output$location_network <- renderPlot({
+#     location_connections_data <- location_connections()
+#     
+#     if (nrow(location_connections_data) > 0) {
+#       location_connections_data %>%
+#         ggraph(layout = "nicely") +
+#         geom_edge_link(aes(alpha = 2, color = unique_id),
+#                        show.legend = TRUE,
+#                        arrow = arrow(length = unit(1.5, "mm")),
+#                        start_cap = circle(3, "mm"),
+#                        end_cap = circle(3, "mm")) +
+#         geom_node_text(aes(label = from),
+#                        size = 6) +
+#         scale_size_continuous(range = c(6, 12), guide = "legend") +
+#         scale_color_viridis_d() +
+#         theme_graph()
+#     } else {
+#       # If there are no location connections, display a message
+#       plot(1, 1, type = "n", xlab = "", ylab = "", xlim = c(0, 1), ylim = c(0, 1))
+#       text(0.5, 0.5, "No location connections found.", cex = 1.2)
+#     }
+#   })
+# }
+```
+
+```{r location_testing}
+# location_connections <- create_location_connections("connection_list_2")
+```
+
 
 
 ## Gear Extraction from list ChatGPT EL1
