@@ -49,7 +49,7 @@ column(width = 6,
   )
 ),
   
-  # TabsetPanel for different tabs
+  # TabsetPanel for different tabs ----
   tabsetPanel(
     tabPanel("Data Table",
              fluidRow(
@@ -64,7 +64,7 @@ column(width = 6,
              )
     ),
     tabPanel("Word Cloud", wordcloud2Output("wordcloud")),
-    tabPanel("Term Frequency Graph"),
+    tabPanel("Term Frequency Graph", plotOutput("term_frequency_plot"), width = 50, height = 2000),
     tabPanel("Location Network")
   )
 )

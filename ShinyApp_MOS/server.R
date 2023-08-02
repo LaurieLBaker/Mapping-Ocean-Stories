@@ -209,7 +209,7 @@ server <- function(input, output, session) {
     }
   )
   
-  # Download the modified table as a CSV file
+  # Download the modified table as a CSV file ----
   output$download_modified <- downloadHandler(
     filename = function() {
       "modified_table.csv"
@@ -220,7 +220,7 @@ server <- function(input, output, session) {
     }
   )
   
-  # Reactive function to calculate word frequencies from the text column
+  # Reactive function to calculate word frequencies from the text column ----
   word_frequency_data <- reactive({
     req(cleaned_interview())
     text_data <- cleaned_interview()$text
@@ -288,5 +288,21 @@ server <- function(input, output, session) {
       file.rename("www/wordcloud.png", file)
     }
   )
+  
+  #Generate term frequency plot with word frequency data
+  output$term_frequency_plot <- renderPlot({
+    word_data <- word_frequency_data()
+    if (!is.null(word_data)) {
+      num_words <- input$num_words
+      # Limit the number of words based on the user input
+      word_data %>% 
+        slice_max(n, n = num_words) %>%
+        ggplot(aes(n, fct_reorder(word, n))) + 
+        geom_col(fill = "black") +
+        labs(title = "Term Frequency Plot",
+             y = "Term",
+             x = "Frequency")
+    }
+  })
 }
 shinyApp(ui, server)
