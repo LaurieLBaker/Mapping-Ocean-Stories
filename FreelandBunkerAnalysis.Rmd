@@ -85,7 +85,7 @@ wind_speed_1873 %>%
   coord_flip() +
   facet_wrap(~ period)
 ```
-```{r coodpolar_wind_speed_frequency_1873, fig.height=5, fig.width=10}
+```{r coodpolar_wind_speed_frequency_1873, fig.height=3, fig.width=6}
   wind_speed_1873 %>%
   mutate(wind_speed = ifelse(wind_speed == "NA", NA, wind_speed)) %>%
   drop_na(wind_speed, period, category) %>%
@@ -101,7 +101,7 @@ wind_speed_1873 %>%
        x = "Wind Speed Vocabulary", 
        y = "Frequency", 
        fill = "Category") +
-  theme_minimal() +
+  theme_minimal(base_size = 7) +
   coord_polar() +
   scale_y_log10() # to better see smaller frequencies
 ```
@@ -369,6 +369,56 @@ combined_wind_direction %>%
   coord_flip() 
 ```
 
+### Wind Direction and Wind Speed
+
+```{r join_wind}
+combined_wind <- full_join(combined_wind_direction, combined_wind_speed, by = c("date_mdy", "month", "year", "period"))
+
+combined_wind <- combined_wind %>% 
+ mutate(wind_direction = ifelse(wind_direction == "NA", NA, wind_direction)) %>%
+  mutate(wind_speed = ifelse(wind_speed  == "NA", NA, wind_speed )) %>%
+           drop_na(wind_direction, wind_speed)
+```
+
+```{r heatmap_wind, fig.height=6, fig.width=10}
+freq_combined_wind <- combined_wind %>%
+  group_by(wind_speed, 
+           wind_direction) %>%
+  summarize(frequency = n())
+
+freq_combined_wind %>% 
+  ggplot(aes(x = wind_direction, 
+             y = wind_speed, 
+             fill = frequency)) +
+  geom_tile() +
+  scale_fill_viridis_c() +
+  labs(title = "Wind Speed and Wind Direction Heat Map",
+       x = "Wind Direction",
+       y = "Wind Speed",
+       fill = "Frequency") +
+    scale_fill_viridis_c(direction = -1) #for darker = higehr frequency
+```
+
+```{r year-heatmap_wind, fig.height=8, fig.width=14}
+combined_wind %>%
+  group_by(wind_speed, 
+           wind_direction,
+           year) %>%
+  summarize(frequency = n()) %>% 
+  ggplot(aes(x = wind_direction, 
+             y = wind_speed, 
+             fill = frequency)) +
+  geom_tile() +
+  scale_fill_viridis_c() +
+  labs(title = "Wind Speed and Wind Direction Heat Map by Year",
+       x = "Wind Direction",
+       y = "Wind Speed",
+       fill = "Frequency") +
+  scale_fill_viridis_c(direction = -1) +
+  facet_wrap(~ year)
+```
+
+
 ### Weather Conditions 1873
 ```{r weather_con_1873_pivot_longer}
 weather_con_1873_long <- journal_1873 %>%
@@ -432,7 +482,7 @@ category_colors <- c(
 wordcloud(
   weather_con_1873_freq$weather_condition,
   weather_con_1873_freq$n,
-  colors = category_colors, #not currently working
+  colors = category_colors,
   random.order = FALSE,
   scale = c(5, 1),
   min.freq = 1,
