@@ -26,13 +26,24 @@ library(forcats)
 ```{r read_excel}
 journal_1873 <- read_excel("data/journal_1873.xlsx")
 journal_1874 <- read_excel("data/journal_1874.xlsx")
+names_journal_1873 <- read_excel("data/names_journal_1873.xlsx")
+names_journal_1874 <- read_excel("data/names_journal_1874.xlsx")
 ```
 
-```{r month_1873}
+```{r correct_month_1873}
 journal_1873 <- journal_1873 %>% 
   rename(month = date)
 ```
 
+```{r join_names_journal_1873}
+#I corrected some typos in journal_entry and in the letter column when create the names_journal_187, which is why I am keeping these columns from names_journal_1873
+ journal_1873 <- left_join(names_journal_1873, journal_1873, by = c("date_mdy", "month", "journal_entry", "letter"))
+```
+
+```{r join_names_journal_1874}
+#I corrected some typos in journal_entry and in the letter column when create the names_journal_1874, which is why I am keeping these columns from names_journal_1874
+ journal_1874 <- left_join(names_journal_1874, journal_1874, by = c("date_mdy", "month", "journal_entry", "letter"))
+```
 ## Exploratory Visualizations
 
 ### Wind Speed 1873
@@ -518,7 +529,9 @@ weather_con_1873_long %>%
   drop_na(weather_condition, category, month) %>%
   group_by(month) %>% 
   count(category) %>% 
-  ggplot(aes(x = factor(month, levels = c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")), y = n, fill = category )) +
+  ggplot(aes(x = factor(month, levels = c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")), 
+             y = n, 
+             fill = category )) +
   geom_col(position = "stack") +
   scale_fill_brewer(palette = "Spectral") +
   labs(title = "Weather Frequency By Category per month",
@@ -640,11 +653,11 @@ journal_1874 <- journal_1874 %>%
 
 ```{r letter_df}
 letters_1873 <- journal_1873 %>%
-  select(date_mdy, month, journal_entry, letter, notes) %>% 
+  select(date_mdy, month, journal_entry, letter, letter_from, letter_to, notes, ) %>% 
   mutate(year = "1873")
 
 letters_1874 <- journal_1874 %>%
-  select(date_mdy, month, journal_entry, letter, notes) %>% 
+  select(date_mdy, month, journal_entry, letter,letter_from, letter_to, notes) %>% 
   mutate(year = "1874")
 ```
 
@@ -682,8 +695,28 @@ combined_letters %>%
   labs(title = "Frequency of Letter Communication Mentioned",
        subtitle = "For 1873 and 1874",
        x = "Letter Status",
-       y = "Frequency") +
+       y = "Frequency", 
+       fill = "Year") +
   scale_y_continuous(breaks = seq(5, 30, 5))
+```
+```{r frequency_letter_month, fig.height=5, fig.width=12}
+month_order <- c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
+
+combined_letters %>%
+  mutate(letter = ifelse(letter == "NA", NA, letter)) %>%
+  drop_na(letter) %>%
+  filter(letter != "no letter") %>%
+  mutate(month = factor(month, levels = month_order)) %>%
+  count(letter, year, month) %>%
+  ggplot(aes(x = letter, y = n, fill = year)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_wrap(~ year) +
+  labs(title = "Frequency of Letter Communication Mentioned per Month",
+       subtitle = "For 1873 and 1874",
+       x = "Letter Status",
+       y = "Frequency",
+       fill = "Year") +
+  facet_wrap(~ month)
 ```
 
 ### Communication (Names & Letters)
@@ -693,20 +726,66 @@ combined_letters %>%
 communication <- combined_letters %>%
   mutate(letter = ifelse(letter == "NA", NA, letter)) %>%
   drop_na(letter) %>%
-  filter(letter != "no letter")
+  filter(letter != "no letter") %>% 
+  separate_rows(letter_from, sep = ", ") %>% 
+  separate_rows(letter_to, sep = ", ") %>% 
+  mutate(letter_from = case_when(
+    letter_from %in% c("Perlley and Russel", "Perley and Russell") ~ "Perley and Russell",
+    letter_from %in% c("G.L. Hodgkins", "G. L. Hodgkins", "G. L Hodgins") ~ "G. L. Hodgkins",
+    letter_from %in% c("Charles C. Burrill", "C.C. Burrill", "C. C. Burrill", "C.C Burrill", "C.C Burill") ~ "C. C. Burrill",
+    letter_from %in% c("Benj Kittridge", "Benj. Kittridge") ~ "Benj. Kittridge",
+    letter_from %in% c("Reg. of Deeds", "Reg of Deed") ~ "Reg of Deeds",
+    TRUE ~ letter_from)) %>% 
+  mutate(letter_to = case_when(
+    letter_to %in% c("C. C. Burrill", "C.C Burrill") ~ "C. C. Burrill",
+    letter_to %in% c("Benj. Kittrige", "Benj. Kittridge") ~ "Benj. Kittridge",
+    TRUE ~ letter_to))
 ```
 
-```{r names_mentionned_list}
-#List by chatgpt from the names and their different variations in the communication table
-names <- c("C.C. Burrill", "Charles C. Burrell", "Geo. N. Loomis", "GN Loomis", "Geo. W. Tracy", "Geo W Tracy", "Thomas Bunker", "T. Smallidge Boston", "Thos Bunker", "Joseph Bunker", "C. Stevens", "Reg of Deeds", "A.J. Gerrish", "Flora Gerrish", "Dresser and Ayer", "Reuben Rand", "R. Rand", "Geo.W Butler", "Geo N Loomis", "GW Butter", "G.W. Butter", "Henry W. Sargent", "T Smallidge", "Henry Geyer", "Galen Smith", "Thos Bunker Cranberry Isles", "L.D. Parsons Bangor", "SD.Parsons Bangor", "Benj Kittridge", "Benj Kittredge", "B. Kittridge", "J.T. Kingsley", "Kellly Kingsley", "E. Kingsley", "Geo A Dyer", "Arno Wiswell", "Charles C. Burrell", "Hannah Goodwin", "Charles Norris", "Nathan Goodwin", "A.G. Brooks", "Mrs FRBunker", "AN Willye", "W. B. McCrate", "James Staples", "Capt. S.L.Tracy", "Wm Joy", "William Stevens", "E. H. Wallace", "Robt Miles", "Nickerson and Rideout", "David Ames", "Joy and Hutchings", "Reg of Deeds","A.D. Crabtree")
+```{r letters_received_month, fig.height=7, fig.width=10}
+communication %>% 
+  select(letter_from, month, year) %>% 
+  count(letter_from, month, year) %>% 
+  drop_na(letter_from) %>% 
+  group_by(month, letter_from) %>% 
+  mutate(last_word = str_extract_all(letter_from, "\\S+") %>% map_chr(tail, 1)) %>%
+  arrange(last_word) %>% # to arrange by alphabetical order based on last word
+  ggplot(aes(x = factor(letter_from, levels = unique(letter_from)), 
+             y = n, 
+             fill = month)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  labs(title = "Frequency of Letters Received by Freeland Bunker",
+       subtitle = "In 1873 and 1874",
+       x = "People Sending the Letters",
+       y = "Frequency", 
+       fill = "Month") +
+  scale_fill_discrete(labels = c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")) +
+  coord_flip() +
+  facet_wrap(~ year)
 ```
 
-```{r extract_names}
-# Function to extract all names
-extract_names <- function(text) {
-  extracted_names <- regmatches(text, gregexpr(paste(names, collapse = "|"), text))
-  return(extracted_names)
-}
-communication$names <- sapply(communication$journal_entry, extract_names)
+```{r letters_written_month, fig.height=8, fig.width=10}
+communication %>% 
+  select(letter_to, month, year) %>% 
+  count(letter_to, month, year) %>% 
+  drop_na(letter_to) %>% 
+  group_by(month, letter_to, year) %>% 
+  mutate(last_word = str_extract_all(letter_to, "\\S+") %>% map_chr(tail, 1)) %>%
+  arrange(last_word) %>% #to arrange by alphabetical order
+  ggplot(aes(x = factor(letter_to, levels = unique(letter_to)), 
+             y = n, 
+             fill = month)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  labs(title = "Frequency of Letters Written by Freeland Bunker",
+       subtitle = "In 1873 and 1874",
+       x = "Letter Recipients",
+       y = "Frequency", 
+       fill = "Month") +
+  scale_fill_discrete(labels = c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")) +
+  coord_flip() +
+  facet_wrap(~ year)
 ```
+
 
