@@ -21,7 +21,7 @@ library(wordcloud)
 library(forcats)
 ```
 
-## Read Excel Freeland Bunker Journal Transcription (1873-1874)
+#### Read Excel Freeland Bunker Journal Transcription (1873-1874)
 
 ```{r read_excel}
 journal_1873 <- read_excel("data/journal_1873.xlsx")
@@ -419,7 +419,8 @@ combined_wind %>%
 ```
 
 
-### Weather Conditions 1873
+### Weather Conditions
+
 ```{r weather_con_1873_pivot_longer}
 weather_con_1873_long <- journal_1873 %>%
   select(date_mdy,
@@ -456,7 +457,7 @@ weather_con_1873_long <- journal_1873 %>%
   ))
 ```
 
-```{r wordcloud_weather, fig.height=8, fig.width=8}
+```{r wordcloud_weather_1873, fig.height=8, fig.width=8}
 weather_con_1873_freq <- weather_con_1873_long %>% 
   mutate(weather_condition = ifelse(weather_condition == "NA", NA, weather_condition)) %>%
   drop_na(weather_condition) %>%
@@ -490,7 +491,7 @@ wordcloud(
 )
 ```
 
-```{r}
+```{r weather_frequency_1873}
 weather_con_1873_long %>% 
   mutate(weather_condition = ifelse(weather_condition == "NA", NA, weather_condition)) %>%
   drop_na( weather_condition, period, category) %>%
@@ -511,7 +512,7 @@ weather_con_1873_long %>%
   facet_wrap(~ period)
 ```
 
-```{r weather_frequency}
+```{r weather_category_month_1873}
 weather_con_1873_long %>%
   mutate(weather_condition = ifelse(weather_condition == "NA", NA, weather_condition)) %>%
   drop_na(weather_condition, category, month) %>%
@@ -525,6 +526,98 @@ weather_con_1873_long %>%
         x = "Month",
        y = "Number of occurrences") +
   coord_polar()
+```
+
+```{r weather_conditions_1874}
+weather_con_1874_long <- journal_1874 %>%
+  select(date_mdy,
+         month,
+         weather_condition_am, 
+         weather_condition_pm, 
+         weather_condition_night) %>% 
+  mutate(year = "1874") %>% 
+  pivot_longer(cols = starts_with("weather_condition"), 
+               names_to = "period", 
+               values_to = "weather_condition") %>%
+  mutate(period = case_when(
+    period == "weather_condition_am" ~ "am",
+    period == "weather_condition_pm" ~ "pm", 
+    period == "weather_condition_night" ~ "night")) %>% 
+  separate_rows(weather_condition, sep = ",") %>% 
+  mutate(category = case_when(
+    weather_condition %in% c("chilly", "cold", "cool", "extremely cold", "very cold", "quite cold") ~ "cold",
+    weather_condition %in% c("pleasant", "very pleasant") ~ "pleasant",
+    weather_condition %in% c("very warm", "warm", "hot") ~ "warm",
+    weather_condition %in% c("clear", "cleared up", "fine") ~ "clear",
+    weather_condition %in% c("overcast", "cloudy") ~ "cloud",
+    weather_condition %in% c( "pleasant", "quite pleasant", "very pleasant") ~ "pleasant",
+    weather_condition %in% c("calm", "perfectly calm") ~ "calm",
+    weather_condition %in% c("foggy", "foggy", "dense fog", "thick fog", "very foggy", "thick with fog", "very thick with fog") ~ "fog",
+    weather_condition %in% c("heavy showers", "very heavy shower", "shower", "showery", "a little showery") ~ "showers",
+    weather_condition %in% c("drizzle", "drizzling rain") ~ "drizzle",
+    weather_condition %in% c("cold rain", "heavy rain storm", "heavy rain", "fine rain", "raining", "rainy", "rain", "rain spells", "rain squall", "rain storm", "moderate rain", "big rain storm", "very heavy rain") ~ "rain",
+    weather_condition %in% c("little snow", "snow sleet", "light snow", "thick snow", "pleasant snow", "snowy", "snow", "snow spells", "snow squall", "big snow storm", "snow storm", "snowing", "snowing fast", "moderate snow") ~ "snow",
+    weather_condition %in% c("stormy", "tough storm", "very heavy storm", "moderate rainstorm", "heavy storm") ~ "storm",
+    weather_condition %in% c("thunder", "heavy thunder") ~ "thunder",
+    weather_condition %in% c("sharp lightning", "lightning") ~ "lightning",
+    weather_condition %in% c("misty", "good weather", "moderate weather", "sun out", "hail") ~ "other",
+  ))
+```
+
+```{r bind_weathercont}
+weather_con <- rbind(weather_con_1873_long, weather_con_1874_long)
+```
+
+### Wind Speed and Weather Conditions
+```{r join_wind_weather}
+#currently only have the 1873 weather
+wind_weather <- full_join(combined_wind, weather_con, by = c("date_mdy", "month", "year", "period"))
+
+wind_weather  <- wind_weather  %>% 
+ mutate(wind_direction = ifelse(wind_direction == "NA", NA, wind_direction)) %>%
+  mutate(wind_speed = ifelse(wind_speed  == "NA", NA, wind_speed )) %>%
+  mutate(weather_condition = ifelse(weather_condition  == "NA", NA, weather_condition )) %>%
+           drop_na(wind_direction, wind_speed, weather_condition)
+```
+
+```{r wind-weather-heatmap, fig.height=3, fig.width=13}
+freq_wind_weather <- wind_weather %>%
+  group_by(wind_speed, 
+           weather_condition) %>%
+  summarize(frequency = n())
+
+freq_wind_weather %>% 
+  ggplot(aes(x = weather_condition, 
+             y = wind_speed, 
+             fill = frequency)) +
+  geom_tile() +
+  scale_fill_viridis_c() +
+  labs(title = "Wind Speed and Weather Conditions Heat Map",
+       x = "Weather Condition",
+       y = "Wind Speed",
+       fill = "Frequency") +
+  coord_flip() +
+  scale_fill_viridis_c(direction = -1) #for darker = higehr frequency
+```
+
+```{r wind-weather-year, fig.height=5, fig.width=14}
+wind_weather %>% 
+   group_by(wind_speed, 
+           weather_condition,
+           year) %>%
+  summarize(frequency = n()) %>% 
+  ggplot(aes(x = weather_condition, 
+             y = wind_speed, 
+             fill = frequency)) +
+  geom_tile() +
+  scale_fill_viridis_c() +
+  labs(title = "Wind Speed and Weather Conditions by Year Heat Map",
+       x = "Weather Condition",
+       y = "Wind Speed",
+       fill = "Frequency") +
+  facet_wrap(~ year, nrow = 2) +
+  coord_flip() +
+  scale_fill_viridis_c(direction = -1) #for darker = higehr frequency
 ```
 
 ### Letters
@@ -575,6 +668,8 @@ combined_letters %>%
        y = "Frequency",
        fill = "Year")
 ```
+
+
 ```{r frequency_letter}
 combined_letters %>%
   mutate(letter = ifelse(letter == "NA", NA, letter)) %>%
