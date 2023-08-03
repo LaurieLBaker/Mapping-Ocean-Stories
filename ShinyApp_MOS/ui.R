@@ -39,7 +39,7 @@ fluidRow(column(width = 6,
   
 column(width = 6,
   # Numeric input to select the number of words in the word cloud
-  numericInput("num_words", "Choose Number of Words in Word Cloud", value = 50, min = 1, max = 100),
+  numericInput("num_words", "Choose Number of Words for Word Cloud and Term Frequency Graph", value = 50, min = 1, max = 100),
   
   # Radio button to choose between whole interview or specific list
   radioButtons("wordcloud_source", "Word Cloud Source:",
