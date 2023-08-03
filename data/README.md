@@ -18,6 +18,8 @@ Here's a codebook for the variables used in this project:
 | unit             | Used in conjunction with quantity and item to express the unit of multiple items                                                     | Character   |
 | item             | Used in conjunction with quantity and unit to express the type of multiple items                                                     | Character   |
 | letter           | Specifies whether there is a mention of receiving or writing letters in the entry                                                     | Factor   |
+| letter_from      | Specifies from whom was the letter received by Freeland Bunker                                                                          | Character  |
+| letter_to        | Specifies to whom Freeland Bunker is writing a letter                                                                                   | Character |
 | wind_direction_am| Records of the wind direction in morning                                                                                               | Character   |
 | wind_direction_pm| Records of the wind direction in afternoon                                                                                             | Character   |
 | wind_direction_night                                                                                               | Records of the wind direction in night                                                                                                 | Character   |
