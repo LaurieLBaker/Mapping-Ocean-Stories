@@ -45,7 +45,8 @@ column(width = 6,
   radioButtons("wordcloud_source", "Word Cloud Source:",
                choices = c("Whole Interview", "Specific List"),
                selected = "Whole Interview"),
-  downloadButton("download_wordcloud", "Download Word Cloud")
+  downloadButton("download_wordcloud", "Download Word Cloud"),
+  downloadButton("download_tfplot", "Download Term Frequency Graph")
   )
 ),
   
@@ -64,7 +65,7 @@ column(width = 6,
              )
     ),
     tabPanel("Word Cloud", wordcloud2Output("wordcloud")),
-    tabPanel("Term Frequency Graph", plotOutput("term_frequency_plot"), width = 50, height = 2000),
+    tabPanel("Term Frequency Graph", plotOutput("term_frequency_plot", width = 970, height = 650)),
     tabPanel("Location Network")
   )
 )

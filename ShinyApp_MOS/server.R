@@ -17,6 +17,8 @@ server <- function(input, output, session) {
   library(stopwords)
   library(tidytext)
   library(wordcloud2)
+  library(tidyverse)
+  library(htmlwidgets)
   
   # Sample word lists
   word_lists <- list(
@@ -257,6 +259,7 @@ server <- function(input, output, session) {
       if (input$wordcloud_source == "Whole Interview") {
         # Word cloud from the whole interview
         wordcloud2(data = word_data, size = 1)
+        
       } else {
         # Word cloud from a specific list
         list_name <- input$wordlist
@@ -277,16 +280,13 @@ server <- function(input, output, session) {
   
   # Output the custom download button for the word cloud
   output$download_wordcloud <- downloadHandler(
-    filename = function() {
-      "wordcloud.png"
-    },
+    filename = function() {"wordcloud.png"},
     content = function(file) {
-      # Call the wordcloud_to_image function to capture the word cloud as an image
-      wordcloud_to_image()
-      
-      # Move the image file to the download directory
-      file.rename("www/wordcloud.png", file)
-    }
+    # saveWidget(widget = wordcloud2(), "temp.html", selfcontained = FALSE)
+    # webshot("temp.html", file = "wordcloud.png", cliprect = "viewport")
+    
+    },
+    contentType = "image/png"
   )
   
   #Generate term frequency plot with word frequency data
@@ -301,8 +301,18 @@ server <- function(input, output, session) {
         geom_col(fill = "black") +
         labs(title = "Term Frequency Plot",
              y = "Term",
-             x = "Frequency")
+             x = "Frequency") +
+        theme(axis.text = element_text(size = 14))
     }
   })
+  
+  #Download term frequency plot
+  output$download_tfplot <- downloadHandler(
+    filename = function() {"term_frequency.png"},
+    content = function(file) {ggsave(file, device = "png")
+    },
+    contentType = "image/png"
+  )
 }
+
 shinyApp(ui, server)
