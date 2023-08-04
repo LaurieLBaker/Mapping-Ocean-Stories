@@ -9,9 +9,9 @@ Here's a codebook for the variables used in this project:
 | journal_entry    | Transcript of the given entry, recording all original punctuation, spelling and capitalism.                                           | Character |
 | location         | Locations mentioned in given entry   | Character |
 | location_accuracy| Specifies whether location was outright stated or is just assumed                                                                      | Factor |
-| latitude         | The latitude of the location mentioned in the entry.                                                                                   | Numeric   |
+| latitude         | The latitude of the location mentioned in the entry  as degrees and minutes. Some additonnal calculations will need to be made to convert it to decimal degrees                                                                                   | Numeric   |
 | latitude_origin  | The origin of the latitude pulled out from the journal entry and entered in the latitude column.                                      | Factor  |
-| longitude        | The longitude of the location mentioned in the entry.                                                                                  | Numeric   |
+| longitude        | The longitude of the location mentioned in the entry as degrees and minutes. Some additonnal calculations will need to be made to convert it to decimal degrees.                                                                                  | Numeric   |
 | longitude_origin | The origin of the longitude pulled out from the journal entry and entered in the latitude column                                       | Factor   |
 | transcription_accuracy                                                                                             | Indicator of how confident the recorder is of the transcription                                                                        | Factor |
 | quantity         | Used in conjunction with unit and item to express quantities of multiple items                                                     | Numeric   |
