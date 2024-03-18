@@ -170,6 +170,7 @@ lawson1t_merged %>%
   count(location) %>% 
   summarize(sum = location)
 ```
+
 ```{r function_location_EL_list}
 # #function to extract locations from compiled EL list
 extract_locations_EL <- function(text)
