@@ -8,6 +8,8 @@ name: "Delphine Demaisy"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+#### Install the various packages & libraries
+
 ```{r install_packages}
 library(pdftools)
 library(tidyverse)
@@ -24,17 +26,14 @@ library(reshape2) #for LDA topic modelling
 library(igraph) #for network graph
 library(shiny) #for shiny app
 library(data.table) # to modify data.table
-# install.packages("spacyr")
-# library(spacyr)
-# spacy_download_langmodel("en") #need to install Anaconda on computer (not currently working)
-# spacy_initialize("en")
 ```
 
-## Reading in the data EL1
+#### Reading in the data of the first Edwin Lawson Interview (10131972) from pdf and create lawson1_full_text
 ```{r read_data}
 lawson1_full_text <- pdftools::pdf_text(pdf = "data/Lawson_Edwin_10131972.pdf")
 ```
 
+#### Create a lawson1, a tibble to contain the text as character lines
 ```{r string-data}
 # convert text to string
 lawson1_full_text <- toString(lawson1_full_text)
@@ -46,10 +45,11 @@ lawson1 <- tibble(lawson1)
 lawson1 <- rename(lawson1, text = lawson1)
 ```
 
-## Cleaning table EL1
+#### Cleaning the lawson1 table by extracting creating a column for initials and extracting the initials from the text. Then remove the metadata (first two pages of general information about the interview) to only have a table containing text, it is called lawson1t. With Lawson1t, correct the first few row to include the right initials in the initials column, then remove these initials from the text. Remove white spaces in the text and all empty rows. Then merge the rows that have the same consecutive initials to get the whole chunk of text one person was saying in a single row, this dataset becomes Lawson1t_merged. Create the group column to keep track of the oder of people talking in the interview. Extract the time stamps from the text and put them in a time column, then remove the time stamps from the text column.
 
 ```{r data_cleaning}
 lawson1 <- lawson1 %>% 
+#extract initials
   mutate(initials = str_extract(text, pattern = "[A-Z]{1,3}\\:")) %>%
   fill(initials, .direction = "down")
 #remove the metadata and only look at interview
@@ -81,7 +81,7 @@ time_unnested <- lawson1t_merged %>%
 lawson1t_merged$text <- gsub("\\[\\d{2}:\\d{2}:\\d{2}\\.\\d\\]", "",lawson1t_merged$text)
 ```
 
-## Extracting keyword + words of the same sentence before and after EL1(need to figure out how to deal with multiple mentions in the same row)
+#### Create a function to extract a keyword and extract the beginning of the sentence, and end of the sentence containing that key word. This creates the lawson1t_merged_keyword containing the column "before", "keyword_occurences", "after" and "count_keyword". The issue with this current code is for the rows/groups where the keyword occurs more than one time in different sentences. This code will only extract the beginning and end of the sentence for one keyword per row --> this should be fixed in the future.
 
 ```{r extract_keyword}
 # Choose a  keyword
@@ -134,17 +134,7 @@ lawson1t_merged_keyword %>%
   pull(text)
 ```
 
-## SpacyR location extraction EL1 
-
-### (I believe we need to also have Python installed on computer with the SpaCy for spacyr to work. I don't have it, anyone does?)
-
-```{r spacryr_location_extraction}
-# parsed_text <- spacy_parse(lawson1t_merged$text)
-# location_entities <- spacy_entity(parsed_text, entity = "GPE")
-# locations <- location_entities$ent_text
-```
-
-## Location extraction from list and ChatGPT EL1
+#### A list of location mentionned in Edwin Lawson's first interview was collected trough ChatGPT and is called locations. A list of all locations mentioned was created as Delphine and Will were coding the 4 EL interviews, it therefore contains more locations and is called locations_EL.
 
 ```{r location_list_chatgpt}
 # List of locations from ChatGPT with EL interview 1 only
@@ -158,6 +148,8 @@ locations <- c("West Tremont", "home", "Seal Cove", "Ship Harbor", "Tremont",
 locations_EL <- c("Swan's Island", "home", "Southwest Harbor", "Manset", "Worcester", "Massachusetts", "California", "Pasadena", "Florida", "Lake Worth", "Palm Beach", "Westward", "Cherryfield", "Canada", "Hancock", "Bangor", "Castine", "Ship Harbor", "West", "Boston", "Gloucester", "New York", "Black Island", "Mitchell's Cove", "Placentia", "Bass Harbor", "Blue Hill", "Blue Hill Bay", "Hardwood Island", "Stonington", "Seal Cove", "Mitchell’s Cove", "Goose Cove", "West Tremont", "Lynn", "Marblehead", "Maine", "Bass Harbor Head", "Bear Island", "Ship Island Ledges", "Ship Island", "bay", "Gulf", "Wilson", "Bernard", "Portland", "Rockland", "Mt. Desert Island/ Mount Desert Island", "Chester", "England", "Tremont", "Ellsworth", "Cranberry Island", "Mt. Desert Rock/ Mount Desert Rocks", "Duck Island", "Duck Cove", "Cape Cod", "Camden", "Norway", "Saugus", "Nova Scotia", "Atlantic", "Brooklin", "Corea", "Prospect Harbor", "Orono", "New Hampshire", "Hancock county", "Bar Harbor", "Northeast Harbor", "Vinalhaven", "Eastward", "Oak Point", "Long Ledge", "Platt's Point", "Somesville", "England")
 ```
 
+#### A function is created to extract the locations from the the text column of lawson1t_merged in relations to the locations of the list location.The locations are extracted into a column called location.
+
 ```{r function_location_list}
 #function to extract location
 extract_location <- function(text) 
@@ -170,6 +162,9 @@ lawson1t_merged %>%
   count(location) %>% 
   summarize(sum = location)
 ```
+
+#### This is a function extracting the locations from the text in reference to the locations_EL to make sure that ChatGPT did not miss any locations from the first interview when it was create the location list. There are slight differences depending on considering West Tremont also as West and Tremont on their own. 
+
 
 ```{r function_location_EL_list}
 # #function to extract locations from compiled EL list
@@ -185,7 +180,7 @@ lawson1t_merged %>%
 #this gives 5 more locations than the list from ChatGPT. It separated West Tremont into two like West and Tremont. These have been mentioned both together and as separate. The locations were still picked out wich means that ChatGPT was still accurate. However by only using ChatGPT we might also miss a few.
 ```
 
-## Location network EL1
+#### This was a trial of Location network trough the lawson1t_merged dataset that was filtered for only the rows with locations extracted based on the location list. This network does not work. It was left here since it could potentially be modified and use the locations as the center bubbles and have relevant words/text hovering around. This visualization attempt could also be deleted.
 
 ```{r location_network_trial1, fig.height=15, fig.width=15}
 #This one is not working (might want to use this template for locations and their keywords associated to it)
@@ -217,6 +212,9 @@ colors <- ifelse(grepl("^RS:", initials), "red", "blue")
 # Plot network
 plot(network_location_1, vertex.color = colors)
 ```
+
+#### Here is a second try at a location network, and it also doesn't work. It was left here for someone to pick up or modify like mentioned for the first location network graph, but it could also be deleted. 
+
 ```{r network_location_trial2}
 #This one is not working
 # Filter for the rows with locations
@@ -252,11 +250,13 @@ colors <- ifelse(grepl("^RS:", initials), "red", "blue")
 plot(network_location_2, vertex.color = colors[V(network_location_2)$initials])
 ```
 
+#### This is a thrid trial at a location netwrok graph, and IT WORKS! It is grouping all the locations by groups and creating a column from and a column to in the connection_list_3 in order to get all associations of locations that were mentioned within the same group.An attempt at calculating the connections for each node was made in order to display the size of the location according to its frequency/amount of connections. This part of the visualization is currently not working. It could be left as is, or modified to eventually work. The formatting and size of the colour legend is also not working superwell. The goal was to have it more on the vertical side. It could be modified or left as is. Overall this visualizations is valuable even if not perfect.
+
 ```{r geom_edge_link_location, fig.height=12, fig.width=30}
 # Mostly working (good enough for now)
 connection_list_3 <- connection_list_2 %>%
   group_by(group) %>%
-  summarize(combination = list(combn(location, 2, simplify = FALSE))) %>%
+  summarize(combination = list(combn(location, 2, simplify = FALSE))) %>% #create associations
   unnest(combination) %>%
   separate(combination, into = c("from", "to"), sep = ", ", convert = TRUE) %>% 
   mutate(from = gsub("^c\\(|\\)$|\"|'", "", from),
@@ -295,19 +295,135 @@ connection_list_3 %>%
   theme_graph() 
 ```
 
+#### This code aims to generalize the steps used above for the location netwrok visualizations so that it could be included in the MOS Shiny App as a tab. It is all commented in order to knit the document since it it referencing datasets that are not present in this Rmd file, since it is meant to work with the workflow set up in the App.
 
-## Gear Extraction from list ChatGPT EL1
+```{r general__steps_location_function}
+# location_connections <- cleaned_interview %>%
+#   filter(location != "character(0)") %>% # Filter for the rows with locations only
+#   unnest(location) %>% 
+#   group_by(group, initials) %>%
+#   filter(n() > 1)  #filter rows with more than one location
+#   group_by(group) %>%
+#     summarize(combination = list(combn(location, 2, simplify = FALSE))) %>% #create associations
+#     unnest(combination) %>%
+#     separate(combination, into = c("from", "to"), sep = ", ", convert = TRUE) %>% 
+#     mutate(from = gsub("^c\\(|\\)$|\"|'", "", from),
+#            to = gsub("^c\\(|\\)$|\"|'", "", to))
+#   
+# # Calculate the number of connections for each node (to display the size accordingly)
+# node_connections <- location_connections %>%
+#   count(from, name = "connections") %>%
+#   bind_rows(location_connections %>% count(to, name = "connections")) %>%
+#   group_by(from) %>%
+#   summarize(max_connections = max(connections, na.rm = TRUE))
+# 
+# # Merge node_degrees
+# location_connections <- left_join(location_connections, node_connections, by = c("from" = "from"))
+#   
+# # Combine the 'group' and '(from, to)' variables to create unique ids
+# location_connections_3 <- location_connections %>%
+#   mutate(unique_id = interaction(group, from, to))
+# 
+# location_connections %>%
+#   ggraph(layout = "nicely") + #see other layout options
+#   geom_edge_link(aes(alpha = 2, 
+#                      color = unique_id),  #to color by group
+#                  show.legend = TRUE, #put to false to only have colors displayed but not legend
+#                  arrow = arrow(length = unit(1.5, "mm")),
+#                  start_cap = circle(3, "mm"),
+#                  end_cap = circle(3, "mm")) +
+#   geom_node_text(aes(label = name),
+#                  size = 6) +  # size by max_connection doesn't work here
+#   scale_size_continuous(range = c(6, 12), 
+#                         guide = "legend") +  # legend of size not working
+#   scale_color_viridis_d() +
+#   theme_graph() 
+```
+
+#### This chunck uses the more generic code above to create the functions that could be included in the Shiny App. This is a "best guess" but it has not yet been tried in the app and it might need some modifications before it actually. It is all commented out for the same reasons as the chunk above. Be careful because of the line in this chunk (and the one above) are actual comments to express the different steps of the code. 
+```{r location_function}
+# create_location_connections <- function(cleaned_interview) {
+#   # Filter for the rows with locations only
+#   location_connections <- cleaned_interview %>%
+#     filter(!is.na(extracted_locations)) %>%
+#     unnest_tokens(extracted_locations) %>%
+#     group_by(group, initials) %>%
+#     filter(n() > 1)  # Filter rows with more than one location
+# 
+#   # Create associations between locations
+#   location_connections <- location_connections %>%
+#     group_by(group) %>%
+#     summarize(combination = list(combn(extracted_locations, 2, simplify = FALSE))) %>%
+#     unnest(combination) %>%
+#     separate(combination, into = c("from", "to"), sep = ", ", convert = TRUE) %>%
+#     mutate(from = gsub("^c\\(|\\)$|\"|'", "", from),
+#            to = gsub("^c\\(|\\)$|\"|'", "", to))
+# 
+#   # Calculate the number of connections for each node (to display the size accordingly)
+#   node_connections <- location_connections %>%
+#     count(from, name = "connections") %>%
+#     bind_rows(location_connections %>% count(to, name = "connections")) %>%
+#     group_by(from) %>%
+#     summarize(max_connections = max(connections, na.rm = TRUE))
+# 
+#   # Merge node_degrees
+#   location_connections <- left_join(location_connections, node_connections, by = c("from" = "from"))
+# 
+#   # Combine the 'group' and '(from, to)' variables to create unique ids
+#   location_connections$unique_id <- interaction(location_connections$group, location_connections$from, location_connections$to)
+# 
+#   return(location_connections)
+# }
+# 
+#   # Create the location connections dataframe using the cleaned_interview
+#   location_connections <- reactive({
+#     req(cleaned_interview())
+#     create_location_connections(cleaned_interview())
+#   })
+#   
+#   # Generate the location network visualization
+#   output$location_network <- renderPlot({
+#     location_connections_data <- location_connections()
+#     
+#     if (nrow(location_connections_data) > 0) {
+#       location_connections_data %>%
+#         ggraph(layout = "nicely") +
+#         geom_edge_link(aes(alpha = 2, color = unique_id),
+#                        show.legend = TRUE,
+#                        arrow = arrow(length = unit(1.5, "mm")),
+#                        start_cap = circle(3, "mm"),
+#                        end_cap = circle(3, "mm")) +
+#         geom_node_text(aes(label = from),
+#                        size = 6) +
+#         scale_size_continuous(range = c(6, 12), guide = "legend") +
+#         scale_color_viridis_d() +
+#         theme_graph()
+#     } else {
+#       # If there are no location connections, display a message
+#       plot(1, 1, type = "n", xlab = "", ylab = "", xlim = c(0, 1), ylim = c(0, 1))
+#       text(0.5, 0.5, "No location connections found.", cex = 1.2)
+#     }
+#   })
+# }
+```
+
+```{r location_testing}
+# location_connections <- create_location_connections("connection_list_2")
+```
+
+#### This is a list of gear that was extracted by ChatGPT from Edwin Lawson's first interview. This list is also what is currently in the Shiny App. It is far from being comprehensive and some words might not be appropriate, but we left it as it since we were using it for trials and creating the App rather than actually using it to code for interviews. It will need to be changed and made more comprehensive in the future.
 
 ```{r gear_list}
 gear <- c("tape recorder", "battery", "sardine weir", "fishing lines", "lobster traps", "rowboat", "lobster smack", "lobster buyers", "lobster companies", "lobster boat", "lobster catcher", "outboard motor", "two and a half horsepower outboard motor", "wooden lobster traps", "softwood traps", "second-hand traps", "laths", "boughs", "bottoms", "frames", "nylon twine", "cotton twine", "manila twine", "polyethylene twine", "plastic buoys", "foam buoys", "styrofoam buoys", "wooden buoys", "cedar wood", "oak wood", "spruce wood", "pot warp", "toggle", "single-cylinder boat engine", "four-cylinder boat engine", "six-cylinder boat engine", "eight-cylinder boat engine", "diesel engine", "gasoline engine", "hundred and thirty-five horsepower gasoline engine", "eighty-horsepower diesel engine","seine net")
 ```
 
+#### Here we create the lawson1t_merged_lower to more easily extract all the grea from the text column. This was not done earlier since we needed the Uppercase words to search and match the locations.
 ```{r lower_case_text}
-#we need all the text to be in lower case and the list to be in lower case to extract all the gear. However we need to keep the Uppercase when we want to extract Location, which is why the location extraction should stay first.
 lawson1t_merged_lower <- lawson1t_merged %>%
   mutate(text = tolower(text))
 ```
 
+#### This is a function to extract the gear from the text column and put it in a gear column (similar to locations)
 ```{r function_gear_list}
 #function to extract gear
 extract_gear <- function(text) 
@@ -317,12 +433,13 @@ extract_gear <- function(text)
 lawson1t_merged_lower$gear <- sapply(lawson1t_merged_lower$text, extract_gear)
 ```
 
-## Species Extraction from list ChatGPT EL1
+#### This is a list of species extracted by ChatGPT from the first EL interview. Like for the gear and locations, it will need to be enhanced.
 
 ```{r species_list}
 species <- c("lobsters", "scallops", "lobster", "scallop", "sardine", "sardines")
 ```
 
+#### This is the function that extracts the species from the text in reference to the species list and put them in a column called species, using the lawson1t_merged_lower dataset. 
 ```{r species_list_function}
 #function to extract species
 extract_species <- function(text) 
@@ -332,20 +449,7 @@ extract_species <- function(text)
 lawson1t_merged_lower$species <- sapply(lawson1t_merged_lower$text, extract_species)
 ```
 
-
-## Explore Data.Table Packages with version of lawson1t_merged_lower (extraction of location, gear, species)
-
-### It is possible in R to change the content of the cells trough simple code, but we NEED shiny to be able to have someone modify the content of the cells and add their initials directly to the data table. Then it is also possible to make a copy of the original data table before it is modified.
-
-```{r data.table}
-#keep in mind that data.table modifies the data directly!!!
-
-lawson_to_modify <- data.table(lawson1t_merged_lower)
-```
-
-## Explore Text Wrapping
-
-### Doesn't seem to be working super well in R directly, but ChatGPT says that it will be more useful within the shiny App --> we will probably see results there.
+#### THis was a trial at text wrapping in RStudio for the table in order to better see the text column. It is not working here, but ChatGPT says that it will be more useful within the shiny App --> as a matter of fact, using data.table in the Shiny App is helpful and allows for a more user friendly data table that the user can also modify.
 ```{r text-wrapping}
 # Convert to data.table
 setDT(lawson1t_merged_lower)
@@ -364,7 +468,7 @@ wrap_lawson1t_merged_lower <- lawson1t_merged_lower[, wrap_text_lines(text, widt
 print(wrap_lawson1t_merged_lower)
 ```
 
-## Word frequency EL1
+#### This is a generic term frequency graph for the first Edwin Lawson interview, created trough the lawson1_word dataset where the text column was unnested to separate each word.
 
 ```{r word_frequency_plot}
 lawson1_word <- lawson1t %>% 
@@ -375,10 +479,9 @@ lawson1_word %>%
   slice_max(n, n = 20) %>%
   ggplot(aes(n, fct_reorder(word, n))) + 
   geom_col()
-#see comments about this in Trello
 ```
 
-## TF EL1
+#### This is a calculation of the term frequency values for EL1
 
 ```{r term_frequency}
 lawson1_word <- lawson1t %>%
@@ -394,10 +497,10 @@ word_document_freq_1 <- lawson1_word %>%
 print(word_document_freq_1)
 ```
 
-## Word cloud list
+#### The word_list was created by asking ChapGPT for the words with the higest frequency and that were the most relevant to the content of the first Edwin Lawson Interview. We beleived it could give a more meaningful summary of the content of the interview than the top words from the word frequency. A wordcloud was then created using this word_list.
 
 ```{r list_frequencies_wordcloud, fig.height=8, fig.width=8}
-#words provided by ChatGPT + added bay, summer, harbor, dollars from the word frequency plot above. (total of 37 words --> decide what amount of words would be best) I also added weiring and dragging (they are not of high frequency, but it is mentionned, which would be good to portray)
+#words provided by ChatGPT + added bay, summer, harbor, dollars from the word frequency plot above. (total of 37 words --> decide what amount of words would be best) I also added weiring and dragging (they are not of high frequency, but it is mentioned, which would be good to portray)
 word_list <- c("lobster", "boat", "traps", "fishermen", "water", "lobstering", "oil", "clothes",
                "motor", "work", "years", "fishing", "rowboat", "wharf", "season", "boats",
                "diesel", "buoys", "accidents", "licence", "gasoline", "engine", "swim", "son",
@@ -416,9 +519,7 @@ wordcloud(
 )
 ```
 
-## Topic Modeling 
-
-###(is not very conclusive for now, perhaps adding more documents (more interviews) could make the topic modelling more relevant?)
+#### This was an attempt at topic modeling, which was not super conclusive since it was performed only with the first Edwin Lawson Interview. This will need to be done with a corpus of interview to become relevant!
 
 ```{r LDA_topic_modeling}
 lawson1_word <- lawson1_word  %>% 
@@ -439,11 +540,13 @@ document_topics <- tidy(lda_model, matrix = "gamma") %>%
   group_by(document) %>%
   top_n(1, gamma)
 ```
-## Reading in the data EL2
+
+#### Reading in the second Edwin Lawson interview (10201972) and creating the lawson2_full_text dataset (like for EL1)
 ```{r read_data_EL2}
 lawson2_full_text <- pdftools::pdf_text(pdf = "data/Lawson_Edwin_10201972.pdf")
 ```
 
+#### Creating the lawson_2 tibble of text (like for EL1)
 ```{r string-data_EL2}
 # convert text to string
 lawson2_full_text <- toString(lawson2_full_text)
@@ -455,7 +558,7 @@ lawson2 <- tibble(lawson2)
 lawson2 <- rename(lawson2, text = lawson2)
 ```
 
-## Cleaning table EL2
+#### Cleaning table for EL2, like done previously for EL1
 ```{r data_cleaning_EL2}
 lawson2 <- lawson2 %>% 
   mutate(initials = str_extract(text, pattern = "[A-Z]{1,3}\\:")) %>%
@@ -493,7 +596,7 @@ time_unnested <- lawson2t_merged %>%
 lawson2t_merged$text <- gsub("\\[\\d{2}:\\d{2}:\\d{2}\\.\\d{2}\\]", "",lawson2t_merged$text)
 ```
 
-## TF-IDF (EL1 and EL2)
+#### Term Frequency calculation for the EL2
 ```{r term_frequency_EL2}
 lawson2_word <- lawson2t %>%
   unnest_tokens(word, text) 
@@ -507,6 +610,9 @@ word_document_freq_2 <- lawson2_word %>%
 
 print(word_document_freq_2)
 ```
+
+#### TF-IDF between EL1 and EL2. Here we seen that more stop words need to be excluded to get more relevant results.
+
 ```{r tf-idf_EL1_EL2}
 #do we perhaps also want to create a running list of our own stop_words to add so that we can remove them and they won't show up here (eg: that's, there's, they're, can't)
 lawson1t <- lawson1t %>% 
@@ -527,7 +633,7 @@ interviews_tf_idf <- interviews_word %>%
 interviews_tf_idf %>%
   arrange(-tf_idf)
 ```
-### Word Frequency Plot TF-IDF (EL1 and EL2)
+#### Word Frequency Plot TF-IDF (EL1 and EL2)
 
 ```{r tf-idf_word_frequency_viz, fig.height=8, fig.width=5}
 interviews_tf_idf %>%
@@ -538,7 +644,7 @@ interviews_tf_idf %>%
   facet_wrap(~interview, scales = "free")
 ```
 
-### WordCloud TF-IDF (EL1 and EL2)
+#### WordCloud visualization based on TF-IDF (EL1 and EL2)
 
 ```{r word_cloud_tf-idf, fig.height=8, fig.width=8}
 wordcloud(

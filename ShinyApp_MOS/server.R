@@ -17,6 +17,8 @@ server <- function(input, output, session) {
   library(stopwords)
   library(tidytext)
   library(wordcloud2)
+  library(tidyverse)
+  library(htmlwidgets)
   
   # Sample word lists
   word_lists <- list(
@@ -209,7 +211,7 @@ server <- function(input, output, session) {
     }
   )
   
-  # Download the modified table as a CSV file
+  # Download the modified table as a CSV file ----
   output$download_modified <- downloadHandler(
     filename = function() {
       "modified_table.csv"
@@ -220,7 +222,7 @@ server <- function(input, output, session) {
     }
   )
   
-  # Reactive function to calculate word frequencies from the text column
+  # Reactive function to calculate word frequencies from the text column ----
   word_frequency_data <- reactive({
     req(cleaned_interview())
     text_data <- cleaned_interview()$text
@@ -257,6 +259,7 @@ server <- function(input, output, session) {
       if (input$wordcloud_source == "Whole Interview") {
         # Word cloud from the whole interview
         wordcloud2(data = word_data, size = 1)
+        
       } else {
         # Word cloud from a specific list
         list_name <- input$wordlist
@@ -277,16 +280,39 @@ server <- function(input, output, session) {
   
   # Output the custom download button for the word cloud
   output$download_wordcloud <- downloadHandler(
-    filename = function() {
-      "wordcloud.png"
-    },
+    filename = function() {"wordcloud.png"},
     content = function(file) {
-      # Call the wordcloud_to_image function to capture the word cloud as an image
-      wordcloud_to_image()
-      
-      # Move the image file to the download directory
-      file.rename("www/wordcloud.png", file)
+    # saveWidget(widget = wordcloud2(), "temp.html", selfcontained = FALSE)
+    # webshot("temp.html", file = "wordcloud.png", cliprect = "viewport")
+    
+    },
+    contentType = "image/png"
+  )
+  
+  #Generate term frequency plot with word frequency data
+  output$term_frequency_plot <- renderPlot({
+    word_data <- word_frequency_data()
+    if (!is.null(word_data)) {
+      num_words <- input$num_words
+      # Limit the number of words based on the user input
+      word_data %>% 
+        slice_max(n, n = num_words) %>%
+        ggplot(aes(n, fct_reorder(word, n))) + 
+        geom_col(fill = "black") +
+        labs(title = "Term Frequency Plot",
+             y = "Term",
+             x = "Frequency") +
+        theme(axis.text = element_text(size = 14))
     }
+  })
+  
+  #Download term frequency plot
+  output$download_tfplot <- downloadHandler(
+    filename = function() {"term_frequency.png"},
+    content = function(file) {ggsave(file, device = "png")
+    },
+    contentType = "image/png"
   )
 }
+
 shinyApp(ui, server)

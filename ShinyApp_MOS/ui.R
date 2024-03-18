@@ -39,17 +39,18 @@ fluidRow(column(width = 6,
   
 column(width = 6,
   # Numeric input to select the number of words in the word cloud
-  numericInput("num_words", "Choose Number of Words in Word Cloud", value = 50, min = 1, max = 100),
+  numericInput("num_words", "Choose Number of Words for Word Cloud and Term Frequency Graph", value = 50, min = 1, max = 100),
   
   # Radio button to choose between whole interview or specific list
   radioButtons("wordcloud_source", "Word Cloud Source:",
                choices = c("Whole Interview", "Specific List"),
                selected = "Whole Interview"),
-  downloadButton("download_wordcloud", "Download Word Cloud")
+  downloadButton("download_wordcloud", "Download Word Cloud"),
+  downloadButton("download_tfplot", "Download Term Frequency Graph")
   )
 ),
   
-  # TabsetPanel for different tabs
+  # TabsetPanel for different tabs ----
   tabsetPanel(
     tabPanel("Data Table",
              fluidRow(
@@ -64,7 +65,7 @@ column(width = 6,
              )
     ),
     tabPanel("Word Cloud", wordcloud2Output("wordcloud")),
-    tabPanel("Term Frequency Graph"),
+    tabPanel("Term Frequency Graph", plotOutput("term_frequency_plot", width = 970, height = 650)),
     tabPanel("Location Network")
   )
 )

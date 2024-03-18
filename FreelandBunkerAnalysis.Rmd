@@ -2,7 +2,7 @@
 title: "Freeland Bunker Analysis"
 output: html_document
 date: "2023-07-28"
-name: "Delphine Demais and Will Draxler"
+name: "Delphine Demaisy"
 ---
 
 ```{r install.packages}
@@ -12,26 +12,60 @@ library(readxl)
 library(tidyverse)
 library(tidytext)
 library(ggplot2)
+library(stringr)
+library(dplyr)
+library(textclean)
+library(stopwords)
+library(wordcloud2)
+library(RColorBrewer)
+library(wordcloud)
+library(forcats)
 ```
 
-## Read Excel Freeland Bunker Journal Transcription (1873-1874)
+#### Read Excel Freeland Bunker Journal Transcription (1873-1874)
 
 ```{r read_excel}
 journal_1873 <- read_excel("data/journal_1873.xlsx")
 journal_1874 <- read_excel("data/journal_1874.xlsx")
+names_journal_1873 <- read_excel("data/names_journal_1873.xlsx")
+names_journal_1874 <- read_excel("data/names_journal_1874.xlsx")
+```
+
+```{r correct_month_1873}
+#The column name for this journal only was originally date --> the journal has been updated in drive
+journal_1873 <- journal_1873 %>% 
+  rename(month = date)
+```
+
+```{r join_names_journal_1873}
+# I corrected some typos in journal_entry and in the letter column when create the names_journal_187, which is why I am keeping these columns from names_journal_1873
+# The current 1873 and 1874 journals have been updated in drive, there should be no future need to join datasets
+ journal_1873 <- left_join(names_journal_1873, journal_1873, by = c("date_mdy", "month", "journal_entry", "letter"))
+```
+
+```{r join_names_journal_1874}
+#I corrected some typos in journal_entry and in the letter column when create the names_journal_1874, which is why I am keeping these columns from names_journal_1874
+ journal_1874 <- left_join(names_journal_1874, journal_1874, by = c("date_mdy", "month", "journal_entry", "letter"))
+```
+
+```{r rbind_journals}
+# There was a typo in the name of the "transcription_accuracy column, it has been updated in the drive
+colnames(journal_1874)[13] <- "transcription_accuracy"
+combined_journals <- rbind(journal_1873, journal_1874)
 ```
 
 ## Exploratory Visualizations
 
 ### Wind Speed 1873
+#### Categories might need to be redefined and given levels to be more meaningful 
+
 ```{r wind_speed_1873_pivot_longer}
 wind_speed_1873 <- journal_1873 %>%
   select(date_mdy,
-         date,
+         month,
          wind_speed_am, 
          wind_speed_pm, 
          wind_speed_night) %>% 
-  rename(month = date) %>% 
   mutate(year = "1873") %>% 
   pivot_longer(cols = starts_with("wind_speed"), 
                names_to = "period", 
@@ -74,7 +108,7 @@ wind_speed_1873 %>%
   coord_flip() +
   facet_wrap(~ period)
 ```
-```{r coodpolar_wind_speed_frequency_1873, fig.height=5, fig.width=10}
+```{r coodpolar_wind_speed_frequency_1873, fig.height=3, fig.width=6}
   wind_speed_1873 %>%
   mutate(wind_speed = ifelse(wind_speed == "NA", NA, wind_speed)) %>%
   drop_na(wind_speed, period, category) %>%
@@ -90,7 +124,7 @@ wind_speed_1873 %>%
        x = "Wind Speed Vocabulary", 
        y = "Frequency", 
        fill = "Category") +
-  theme_minimal() +
+  theme_minimal(base_size = 7) +
   coord_polar() +
   scale_y_log10() # to better see smaller frequencies
 ```
@@ -111,6 +145,7 @@ wind_speed_1873 %>%
 ```
 
 ### Wind Speed Comparison 1873-1874
+#### Categories might need to be redefined and given levels to be more meaningful 
 
 ```{r wind_speed_1874_pivot_longer}
 wind_speed_1874 <- journal_1874 %>%
@@ -163,7 +198,7 @@ combined_wind_speed %>%
   facet_wrap(~ year)
 ```
 
-```{r}
+```{r month_wind_speed}
 combined_wind_speed %>%
   mutate(wind_speed = ifelse(wind_speed == "NA", NA, wind_speed)) %>%
   drop_na(wind_speed, period, category, year) %>%
@@ -226,31 +261,50 @@ wind_direction_1873_long <- wind_direction_1873_long %>%
       period == "pm" ~ convert_wind_direction_to_degrees(wind_direction),
       period == "night" ~ convert_wind_direction_to_degrees(wind_direction)
     )) %>% 
-  select(date_mdy, date, wind_direction, period, wind_degrees) %>% 
-  rename(month = date) %>% 
+  select(date_mdy, month, wind_direction, period, wind_degrees) %>% 
   mutate(year = "1873")
 ```
 
-```{r morning_rose_plot, fig.height=10, fig.width=15}
+```{r 1873-roseplot}
 # Function to convert degrees to radians for polar coordinates
 to_radians <- function(degrees) {
   return((degrees - 90) * pi / 180)
 }
 
-# Create the plot with polar coordinates for wind_direction_am
+wind_direction_1873_long %>% 
+  ggplot(aes(x = to_radians(wind_degrees))) +
+  geom_bar(aes(fill = stat(count)), 
+           bins = 16, 
+           color = "black") +  
+  scale_fill_viridis_c(option = "plasma", name = "Frequency") + 
+  geom_text(aes(x = to_radians(wind_degrees), 
+                y = 150, label = wind_direction),
+            size = 4, fontface = "bold", 
+            color = "black") +  
+  labs(title = "Wind Directions Mentionned, 1873", 
+       "Only Directions Explicitely Specified by Period",
+       x = NULL, 
+       y = NULL) +
+  theme_minimal() +
+  theme(axis.text = element_blank()) +
+  coord_polar() +
+  scale_y_continuous(name = "Frequency", 
+                     trans = "log10")   # Frequency scale (logarithmic)
+```
+
+```{r period_rose_plot, fig.height=10, fig.width=15}
 wind_direction_1873_long %>% 
   mutate(period = factor(period, levels = c("am", "pm", "night"))) %>%
   ggplot(aes(x = to_radians(wind_degrees))) +
   geom_bar(aes(fill = stat(count)), 
            bins = 16, 
-           color = "black") +  # Color by frequency
-  scale_fill_viridis_c(option = "plasma", name = "Frequency") +  # Color scale
+           color = "black") +  
+  scale_fill_viridis_c(option = "plasma", name = "Frequency") + 
   geom_text(aes(x = to_radians(wind_degrees), 
                 y = 150, label = wind_direction),
             size = 4, fontface = "bold", 
-            color = "black") +  # Add labels around the rose plot
-  labs(title = "Wind Directions 1873", 
-       "Only Directions Explicitely Specified by Period",
+            color = "black") +  
+  labs(title = "Wind Directions Mentionned by Period of the Day, 1873", 
        x = NULL, 
        y = NULL) +
   theme_minimal() +
@@ -260,9 +314,33 @@ wind_direction_1873_long %>%
                      trans = "log10") +  # Frequency scale (logarithmic)
   facet_wrap(~ period)
 ```
-```{r fig.height=10, fig.width=20}
+```{r month-rose-plot, fig.height=8, fig.width=15}
+wind_direction_1873_long %>% 
+  ggplot(aes(x = to_radians(wind_degrees))) +
+  geom_bar(aes(fill = stat(count)), 
+           bins = 16, 
+           color = "black") + 
+  scale_fill_viridis_c(option = "plasma", name = "Frequency") + 
+  geom_text(aes(x = to_radians(wind_degrees), 
+                y = 150, label = wind_direction),
+            size = 4, fontface = "bold", 
+            color = "black") +  
+  labs(title = "Wind Directions Mentioned by Month, 1873",
+       x = NULL, 
+       y = NULL) +
+  theme_minimal() +
+  theme(axis.text = element_blank()) +
+  coord_polar() +
+  scale_y_continuous(name = "Frequency", 
+                     trans = "log10") +  # Frequency scale (logarithmic)
+  facet_wrap(~ month)
+```
+
+
+```{r wind_direction_frequency, fig.height=10, fig.width=20}
 wind_direction_1873_long %>% 
  mutate(wind_direction = ifelse(wind_direction == "NA", NA, wind_direction)) %>%
+  mutate(period = factor(period, levels = c("am", "pm", "night"))) %>%
   drop_na(wind_direction, period, month) %>%
   ggplot(aes(x = wind_direction, fill = period)) +
   geom_bar(position = "stack", color = "black") +
@@ -303,7 +381,7 @@ wind_direction_1874_long <- wind_direction_1874_long %>%
 combined_wind_direction <- rbind(wind_direction_1873_long, wind_direction_1874_long)
 ```
 
-```{r}
+```{r wind_directinon_bar_chart}
 combined_wind_direction %>% 
  mutate(wind_direction = ifelse(wind_direction == "NA", NA, wind_direction)) %>%
   drop_na(wind_direction, period, year) %>%
@@ -313,5 +391,461 @@ combined_wind_direction %>%
        x = "Wind Direction",
        y = "Frequency") +
   coord_flip() 
+```
+
+### Wind Direction and Wind Speed
+#### Categories might need to be redefined and given levels to be more meaningful 
+```{r join_wind}
+combined_wind <- full_join(combined_wind_direction, combined_wind_speed, by = c("date_mdy", "month", "year", "period"))
+
+combined_wind <- combined_wind %>% 
+ mutate(wind_direction = ifelse(wind_direction == "NA", NA, wind_direction)) %>%
+  mutate(wind_speed = ifelse(wind_speed  == "NA", NA, wind_speed )) %>%
+           drop_na(wind_direction, wind_speed)
+```
+
+```{r heatmap_wind, fig.height=6, fig.width=10}
+freq_combined_wind <- combined_wind %>%
+  group_by(wind_speed, 
+           wind_direction) %>%
+  summarize(frequency = n())
+
+freq_combined_wind %>% 
+  ggplot(aes(x = wind_direction, 
+             y = wind_speed, 
+             fill = frequency)) +
+  geom_tile() +
+  scale_fill_viridis_c() +
+  labs(title = "Wind Speed and Wind Direction Heat Map",
+       x = "Wind Direction",
+       y = "Wind Speed",
+       fill = "Frequency") +
+    scale_fill_viridis_c(direction = -1) #for darker = higehr frequency
+```
+
+```{r year-heatmap_wind, fig.height=8, fig.width=14}
+combined_wind %>%
+  group_by(wind_speed, 
+           wind_direction,
+           year) %>%
+  summarize(frequency = n()) %>% 
+  ggplot(aes(x = wind_direction, 
+             y = wind_speed, 
+             fill = frequency)) +
+  geom_tile() +
+  scale_fill_viridis_c() +
+  labs(title = "Wind Speed and Wind Direction Heat Map by Year",
+       x = "Wind Direction",
+       y = "Wind Speed",
+       fill = "Frequency") +
+  scale_fill_viridis_c(direction = -1) +
+  facet_wrap(~ year)
+```
+
+
+### Weather Conditions
+#### Categories might need to be redefined and given levels to be more meaningful 
+```{r weather_con_1873_pivot_longer}
+weather_con_1873_long <- journal_1873 %>%
+  select(date_mdy,
+         month,
+         weather_condition_am, 
+         weather_condition_pm, 
+         weather_condition_night) %>% 
+  mutate(year = "1873") %>% 
+  pivot_longer(cols = starts_with("weather_condition"), 
+               names_to = "period", 
+               values_to = "weather_condition") %>%
+  mutate(period = case_when(
+    period == "weather_condition_am" ~ "am",
+    period == "weather_condition_pm" ~ "pm", 
+    period == "weather_condition_night" ~ "night")) %>% 
+  separate_rows(weather_condition, sep = ",") %>% 
+  mutate(category = case_when(
+    weather_condition %in% c("chilly", "cold", "cool", "extremely cold", "very cold", "quite cold") ~ "cold",
+    weather_condition %in% c("pleasant", "very pleasant") ~ "pleasant",
+    weather_condition %in% c("very warm", "warm", "hot") ~ "warm",
+    weather_condition %in% c("clear", "cleared up", "fine") ~ "clear",
+    weather_condition %in% c("overcast", "cloudy") ~ "cloud",
+    weather_condition %in% c( "pleasant", "quite pleasant", "very pleasant") ~ "pleasant",
+    weather_condition %in% c("calm", "perfectly calm") ~ "calm",
+    weather_condition %in% c("foggy", "foggy", "dense fog", "thick fog", "very foggy", "thick with fog", "very thick with fog") ~ "fog",
+    weather_condition %in% c("heavy showers", "very heavy shower", "shower", "showery", "a little showery") ~ "showers",
+    weather_condition %in% c("drizzle", "drizzling rain") ~ "drizzle",
+    weather_condition %in% c("cold rain", "heavy rain storm", "heavy rain", "fine rain", "raining", "rainy", "rain", "rain spells", "rain squall", "rain storm", "moderate rain", "big rain storm", "very heavy rain") ~ "rain",
+    weather_condition %in% c("little snow", "snow sleet", "light snow", "thick snow", "pleasant snow", "snowy", "snow", "snow spells", "snow squall", "big snow storm", "snow storm", "snowing", "snowing fast", "moderate snow") ~ "snow",
+    weather_condition %in% c("stormy", "tough storm", "very heavy storm", "moderate rainstorm", "heavy storm") ~ "storm",
+    weather_condition %in% c("thunder", "heavy thunder") ~ "thunder",
+    weather_condition %in% c("sharp lightning", "lightning") ~ "lightning",
+    weather_condition %in% c("misty", "good weather", "moderate weather", "sun out", "hail") ~ "other",
+  ))
+```
+
+```{r wordcloud_weather_1873, fig.height=8, fig.width=8}
+weather_con_1873_freq <- weather_con_1873_long %>% 
+  mutate(weather_condition = ifelse(weather_condition == "NA", NA, weather_condition)) %>%
+  drop_na(weather_condition) %>%
+  count(weather_condition)
+
+category_colors <- c(
+  "cold" = "#16324a",
+  "pleasant" = "#ccf146",
+  "warm" = "#b5a642",
+  "clear" = "#9467bd",
+  "cloud" = "#8c564b",
+  "calm" = "#2ca02c",
+  "fog" = "#e377c2",
+  "showers" = "#1f77b4",
+  "drizzle" = "#004f95",
+  "rain" = "#17becf",
+  "snow" = "#bbbbbb",
+  "storm" = "#ff7f0e",
+  "thunder" = "#d62728",
+  "lightning" = "#ff9896",
+  "other" = "#c5b0d5"
+)
+
+wordcloud(
+  weather_con_1873_freq$weather_condition,
+  weather_con_1873_freq$n,
+  colors = category_colors, #this is not currently working
+  random.order = FALSE,
+  scale = c(5, 1),
+  min.freq = 1,
+  max.words = Inf
+)
+```
+
+```{r weather_frequency_1873}
+weather_con_1873_long %>% 
+  mutate(weather_condition = ifelse(weather_condition == "NA", NA, weather_condition)) %>%
+  drop_na( weather_condition, period, category) %>%
+  group_by( weather_condition, period, category) %>%
+  summarize(n = n()) %>%
+  mutate(period = factor(period, levels = c("am", "pm", "night"))) %>%
+  ggplot(aes(x =  weather_condition, 
+             y = n, 
+             fill = category)) +
+  geom_bar(stat = "identity", 
+           position = "dodge") +
+  labs(title = "Weather Condition Frequency by Period of the Day 1873",
+       x = "Weather Condition Vocabulary", 
+       y = "Frequency", 
+       fill = "Category") +
+  theme_minimal() +
+  coord_flip() +
+  facet_wrap(~ period)
+```
+
+```{r weather_category_month_1873}
+weather_con_1873_long %>%
+  mutate(weather_condition = ifelse(weather_condition == "NA", NA, weather_condition)) %>%
+  drop_na(weather_condition, category, month) %>%
+  group_by(month) %>% 
+  count(category) %>% 
+  ggplot(aes(x = factor(month, levels = c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")), 
+             y = n, 
+             fill = category )) +
+  geom_col(position = "stack") +
+  scale_fill_brewer(palette = "Spectral") +
+  labs(title = "Weather Frequency By Category per month",
+       fill = "Caterogy",
+        x = "Month",
+       y = "Number of occurrences") +
+  coord_polar()
+```
+
+```{r weather_conditions_1874}
+weather_con_1874_long <- journal_1874 %>%
+  select(date_mdy,
+         month,
+         weather_condition_am, 
+         weather_condition_pm, 
+         weather_condition_night) %>% 
+  mutate(year = "1874") %>% 
+  pivot_longer(cols = starts_with("weather_condition"), 
+               names_to = "period", 
+               values_to = "weather_condition") %>%
+  mutate(period = case_when(
+    period == "weather_condition_am" ~ "am",
+    period == "weather_condition_pm" ~ "pm", 
+    period == "weather_condition_night" ~ "night")) %>% 
+  separate_rows(weather_condition, sep = ",") %>% 
+  mutate(category = case_when(
+    weather_condition %in% c("chilly", "cold", "cool", "extremely cold", "very cold", "quite cold") ~ "cold",
+    weather_condition %in% c("pleasant", "very pleasant") ~ "pleasant",
+    weather_condition %in% c("very warm", "warm", "hot") ~ "warm",
+    weather_condition %in% c("clear", "cleared up", "fine") ~ "clear",
+    weather_condition %in% c("overcast", "cloudy") ~ "cloud",
+    weather_condition %in% c( "pleasant", "quite pleasant", "very pleasant") ~ "pleasant",
+    weather_condition %in% c("calm", "perfectly calm") ~ "calm",
+    weather_condition %in% c("foggy", "foggy", "dense fog", "thick fog", "very foggy", "thick with fog", "very thick with fog") ~ "fog",
+    weather_condition %in% c("heavy showers", "very heavy shower", "shower", "showery", "a little showery") ~ "showers",
+    weather_condition %in% c("drizzle", "drizzling rain") ~ "drizzle",
+    weather_condition %in% c("cold rain", "heavy rain storm", "heavy rain", "fine rain", "raining", "rainy", "rain", "rain spells", "rain squall", "rain storm", "moderate rain", "big rain storm", "very heavy rain") ~ "rain",
+    weather_condition %in% c("little snow", "snow sleet", "light snow", "thick snow", "pleasant snow", "snowy", "snow", "snow spells", "snow squall", "big snow storm", "snow storm", "snowing", "snowing fast", "moderate snow") ~ "snow",
+    weather_condition %in% c("stormy", "tough storm", "very heavy storm", "moderate rainstorm", "heavy storm") ~ "storm",
+    weather_condition %in% c("thunder", "heavy thunder") ~ "thunder",
+    weather_condition %in% c("sharp lightning", "lightning") ~ "lightning",
+    weather_condition %in% c("misty", "good weather", "moderate weather", "sun out", "hail") ~ "other",
+  ))
+```
+
+```{r bind_weathercont}
+weather_con <- rbind(weather_con_1873_long, weather_con_1874_long)
+```
+
+### Wind Speed and Weather Conditions
+#### Categories might need to be redefined and given levels to be more meaningful 
+```{r join_wind_weather}
+#currently only have the 1873 weather
+wind_weather <- full_join(combined_wind, weather_con, by = c("date_mdy", "month", "year", "period"))
+
+wind_weather  <- wind_weather  %>% 
+ mutate(wind_direction = ifelse(wind_direction == "NA", NA, wind_direction)) %>%
+  mutate(wind_speed = ifelse(wind_speed  == "NA", NA, wind_speed )) %>%
+  mutate(weather_condition = ifelse(weather_condition  == "NA", NA, weather_condition )) %>%
+           drop_na(wind_direction, wind_speed, weather_condition)
+```
+
+```{r wind-weather-heatmap, fig.height=3, fig.width=13}
+freq_wind_weather <- wind_weather %>%
+  group_by(wind_speed, 
+           weather_condition) %>%
+  summarize(frequency = n())
+
+freq_wind_weather %>% 
+  ggplot(aes(x = weather_condition, 
+             y = wind_speed, 
+             fill = frequency)) +
+  geom_tile() +
+  scale_fill_viridis_c() +
+  labs(title = "Wind Speed and Weather Conditions Heat Map",
+       x = "Weather Condition",
+       y = "Wind Speed",
+       fill = "Frequency") +
+  coord_flip() +
+  scale_fill_viridis_c(direction = -1) #for darker = higehr frequency
+```
+
+```{r wind-weather-year, fig.height=5, fig.width=14}
+wind_weather %>% 
+   group_by(wind_speed, 
+           weather_condition,
+           year) %>%
+  summarize(frequency = n()) %>% 
+  ggplot(aes(x = weather_condition, 
+             y = wind_speed, 
+             fill = frequency)) +
+  geom_tile() +
+  scale_fill_viridis_c() +
+  labs(title = "Wind Speed and Weather Conditions by Year Heat Map",
+       x = "Weather Condition",
+       y = "Wind Speed",
+       fill = "Frequency") +
+  facet_wrap(~ year, nrow = 2) +
+  coord_flip() +
+  scale_fill_viridis_c(direction = -1) #for darker = higehr frequency
+```
+
+### Letters
+#### all journals should be modified to change the "read" as "received" and "read and write" to "received and write" for the letter column
+```{r change_reed_to_recd}
+journal_1873 <- journal_1873 %>%
+  mutate(letter = case_when(
+    letter == "read" ~ "received",
+    letter == "read and write" ~ "received and write",
+    TRUE ~ letter  # Keep the original value if none of the conditions match
+  ))
+
+journal_1874 <- journal_1874 %>%
+  mutate(letter = case_when(
+    letter == "read" ~ "received",
+    letter == "read and write" ~ "received and write",
+    TRUE ~ letter  # Keep the original value if none of the conditions match
+  ))
+```
+
+```{r letter_df}
+letters_1873 <- journal_1873 %>%
+  select(date_mdy, month, journal_entry, letter, letter_from, letter_to, notes, ) %>% 
+  mutate(year = "1873")
+
+letters_1874 <- journal_1874 %>%
+  select(date_mdy, month, journal_entry, letter,letter_from, letter_to, notes) %>% 
+  mutate(year = "1874")
+```
+
+```{r join_letters_df}
+combined_letters <- rbind(letters_1873, letters_1874)
+```
+
+```{r letter_viz, fig.height=4, fig.width=10}
+combined_letters %>%
+  count(letter, year) %>%
+  mutate(letter = ifelse(letter == "NA", NA, letter)) %>%
+  drop_na(letter) %>%
+  ggplot(aes(x = letter, 
+             y = n, 
+             fill = year)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_wrap(~ year) +
+  labs(title = "Letter Communication",
+       subtitle = "For 1873 and 1874",
+       x = "Letter Status",
+       y = "Frequency",
+       fill = "Year")
+```
+
+
+```{r frequency_letter}
+combined_letters %>%
+  mutate(letter = ifelse(letter == "NA", NA, letter)) %>%
+  drop_na(letter) %>%
+  filter(letter != "no letter") %>%
+  count(letter, year) %>%
+  ggplot(aes(x = letter, y = n, fill = year)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_wrap(~ year) +
+  labs(title = "Frequency of Letter Communication Mentioned",
+       subtitle = "For 1873 and 1874",
+       x = "Letter Status",
+       y = "Frequency", 
+       fill = "Year") +
+  scale_y_continuous(breaks = seq(5, 30, 5))
+```
+```{r frequency_letter_month, fig.height=5, fig.width=12}
+month_order <- c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
+
+combined_letters %>%
+  mutate(letter = ifelse(letter == "NA", NA, letter)) %>%
+  drop_na(letter) %>%
+  filter(letter != "no letter") %>%
+  mutate(month = factor(month, levels = month_order)) %>%
+  count(letter, year, month) %>%
+  ggplot(aes(x = letter, y = n, fill = year)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_wrap(~ year) +
+  labs(title = "Frequency of Letter Communication Mentioned per Month",
+       subtitle = "For 1873 and 1874",
+       x = "Letter Status",
+       y = "Frequency",
+       fill = "Year") +
+  facet_wrap(~ month)
+```
+
+### Communication (Names & Letters)
+#### There are still issues with a person being mentioned trough different names or with different punctuations for initials. The current journals have been updated since these visualizations were made, but it will be critical to keep an eye out for the variations when visualizing these.
+
+```{r communication_df}
+#only rows with letters written or received
+communication <- combined_letters %>%
+  mutate(letter = ifelse(letter == "NA", NA, letter)) %>%
+  drop_na(letter) %>%
+  filter(letter != "no letter") %>% 
+  separate_rows(letter_from, sep = ", ") %>% 
+  separate_rows(letter_to, sep = ", ") %>% 
+  mutate(letter_from = case_when(
+    letter_from %in% c("Perlley and Russel", "Perley and Russell") ~ "Perley and Russell",
+    letter_from %in% c("G.L. Hodgkins", "G. L. Hodgkins", "G. L Hodgins") ~ "G. L. Hodgkins",
+    letter_from %in% c("Charles C. Burrill", "C.C. Burrill", "C. C. Burrill", "C.C Burrill", "C.C Burill") ~ "C. C. Burrill",
+    letter_from %in% c("Benj Kittridge", "Benj. Kittridge") ~ "Benj. Kittridge",
+    letter_from %in% c("Reg. of Deeds", "Reg of Deed") ~ "Reg of Deeds",
+    TRUE ~ letter_from)) %>% 
+  mutate(letter_to = case_when(
+    letter_to %in% c("C. C. Burrill", "C.C Burrill") ~ "C. C. Burrill",
+    letter_to %in% c("Benj. Kittrige", "Benj. Kittridge") ~ "Benj. Kittridge",
+    TRUE ~ letter_to))
+```
+
+```{r letters_received_month, fig.height=7, fig.width=10}
+communication %>% 
+  select(letter_from, month, year) %>% 
+  count(letter_from, month, year) %>% 
+  drop_na(letter_from) %>% 
+  group_by(month, letter_from) %>% 
+  mutate(last_word = str_extract_all(letter_from, "\\S+") %>% map_chr(tail, 1)) %>%
+  arrange(last_word) %>% # to arrange by alphabetical order based on last word
+  ggplot(aes(x = factor(letter_from, levels = unique(letter_from)), 
+             y = n, 
+             fill = month)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  labs(title = "Frequency of Letters Received by Freeland Bunker",
+       subtitle = "In 1873 and 1874",
+       x = "People Sending the Letters",
+       y = "Frequency", 
+       fill = "Month") +
+  scale_fill_discrete(labels = c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")) +
+  coord_flip() +
+  facet_wrap(~ year)
+```
+
+```{r letters_written_month, fig.height=8, fig.width=10}
+communication %>% 
+  select(letter_to, month, year) %>% 
+  count(letter_to, month, year) %>% 
+  drop_na(letter_to) %>% 
+  group_by(month, letter_to, year) %>% 
+  mutate(last_word = str_extract_all(letter_to, "\\S+") %>% map_chr(tail, 1)) %>%
+  arrange(last_word) %>% #to arrange by alphabetical order
+  ggplot(aes(x = factor(letter_to, levels = unique(letter_to)), 
+             y = n, 
+             fill = month)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  labs(title = "Frequency of Letters Written by Freeland Bunker",
+       subtitle = "In 1873 and 1874",
+       x = "Letter Recipients",
+       y = "Frequency", 
+       fill = "Month") +
+  scale_fill_discrete(labels = c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")) +
+  coord_flip() +
+  facet_wrap(~ year)
+```
+
+
+### Boats
+#### Boats like the A. G. Brooks and Sea Flower, notably are not currently being picked up and displayed in the word cloud. More thoughts need to be given to create a foolpoof functions that could pick out all boats mentioned. N grams wil probably more appropriate than bigram.
+
+```{r boat_list}
+#this is is from master_journal_lists as of 08/2023 --> it will keep growing so more thoughts need to be put in ways to keep track of the progression of the lists
+boats <- c("Signal", "Amulet", "Black Warrior", "Sea Flower", "A.G. Brooks", "Henrietta", "Mermaid", "Harp", "Woodcock", "Roamer", "Virgin", "Neptune", "Banner", "Old Chad", "Sea Pigeon", "Elizabeth", "Wyoming", "Mary and Eliza", "Mars Hill", "Nauseag", "Washington", "Lebanon")
+```
+
+```{r boats_wordcloud, fig.height=5, fig.width=5}
+boats_lower <- tolower(boats)
+
+journal_entry_ngram <- combined_journals %>% 
+  unnest_tokens(bigram, journal_entry, token = "ngrams", n = 2)
+
+journal_entry_ngram_lower <- journal_entry_ngram %>%
+  mutate(bigram = tolower(bigram))
+
+bigram_counts_lower <- journal_entry_ngram_lower %>%
+  separate(bigram, c("word1", "word2"), sep = " ") %>% 
+  filter(
+    (word1 %in% boats_lower & !word2 %in% stop_words$word) | 
+    (word2 %in% boats_lower & !word1 %in% stop_words$word)
+  ) %>%
+  count(word1, word2, sort = TRUE)
+
+boats_mentions_filtered <- bigram_counts_lower %>%
+  filter(word1 %in% boats_lower | word2 %in% boats_lower)
+
+boats_freq <- bind_rows(
+  data.frame(word = boats_mentions_filtered$word1, freq = boats_mentions_filtered$n),
+  data.frame(word = boats_mentions_filtered$word2, freq = boats_mentions_filtered$n)
+)
+
+boats_freq <- boats_freq %>% 
+  count(word)
+
+boats_freq <- boats_freq %>%
+  filter(word %in% boats_lower)
+
+boats_freq$word <- tools::toTitleCase(boats_freq$word)
+
+wordcloud2(boats_freq, size = 1, color = "random-light", backgroundColor = "black", minSize = 1, minRotation = 0)
 ```
 

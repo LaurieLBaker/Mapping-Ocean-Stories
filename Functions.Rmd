@@ -5,6 +5,7 @@ library(tidytext)
 library(dplyr)
 library(textclean)
 library(stopwords)
+
 ```
 
 #Attemping a general interview to cleaned text function
@@ -64,6 +65,24 @@ term_search <- function(text, word) {
 #term_search(lawson1t, fish)
 ```
 
+```{r}
+term_frequency <- function(term_number) {
+interview_word <- interview %>% 
+  unnest_tokens(word, text)
+
+interview_word %>% 
+  anti_join(get_stopwords(source = "smart")) %>%
+  count(word, sort = TRUE) %>%
+  slice_max(n, n = term_number) %>%
+  ggplot(aes(n, fct_reorder(word, n))) + 
+  geom_col()+
+  labs(title = "Term Frequency Plot",
+       y = "Term",
+       x = "Frequency")
+}
+
+term_frequency(10)
+```
 
 
 
