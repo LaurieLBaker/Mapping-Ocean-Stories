@@ -19,6 +19,7 @@ editor_options:
   chunk_output_type: console
 ---
 
+
 ```{r libraries, results='hide', message = FALSE, echo = FALSE,  warning = FALSE}
 
 #install.packages("tidyverse")
@@ -50,6 +51,8 @@ knitr::opts_chunk$set(message=FALSE, warning=FALSE, hiline=TRUE)
 xaringanExtra::use_xaringan_extra(include = c("panelset", "tile_view", "share_again", "use_broadcast"))
 
 xaringanExtra::style_share_again(share_buttons = c("twitter", "linkedin", "pocket"))
+
+
 
 
 ```
@@ -136,9 +139,6 @@ class: middle, left
 
 .right-column[
 
-.center[
-## `r icons::fontawesome("satellite")` 
-]
 ### Spatial and temporal patterns in human and biological systems
 
 ### - Disease spread
@@ -146,33 +146,6 @@ class: middle, left
 ### - Fisheries management
 
 ]
-
----
-class: middle, left
-# Research Interests
-
-.left-column[
-.center[
-<img style="border-radius: 5%;" src="images/ecology.png" width="500px"/>
-]
-]
-
-.right-column[
-.center[
-## `r icons::fontawesome("satellite")` 
-### Use of novel data sources to inform policy
-]
-
-### - Acoustic and GPS tracking
-### - Oral Histories
-
-
-]
-
-???
-
-My work occurs at the intersection of Ecology, Math and Statistics, and Computer Science.
-
 
 ---
 # Mapping Ocean Stories
@@ -196,10 +169,24 @@ My work occurs at the intersection of Ecology, Math and Statistics, and Computer
 
 ---
 class: 
+# Mapping Ocean Stories - Inspiration
+
+
+```{r, echo=FALSE, out.width=1000, fig.align='center', fig.alt="Map of Cod Spawning Grounds on the Coast of Maine"}
+
+knitr::include_graphics("images/cod-ted-ames.png")
+
+```
+
+???
+In Maine we have a rich history of collecting and sharing local ecological knowledge. Ted Ames collected and analyzed stories from 61- to 94-year-old Maine fishermen to show where cod had historically spawned and been caught along the coast of Maine and used this in addition to catch records to study movements of Atlantic cod. 
+
+---
+class: 
 # Mapping Ocean Stories
 
-### March 2023 received a grant from the Maine Community Foundation to further develop two key outputs: Maine Sound + Story and the Maine Historic Fisheries Atlas.
-### `r icons::fontawesome("globe")` Use text analysis and spatial coding to understand the past and present use of Frenchman and Penobscot Bays
+### `r icons::fontawesome("headphones")` March 2023 received a grant to further develop two key outputs: Maine Sound + Story and the Maine Historic Fisheries Atlas.
+### `r icons::fontawesome("lightbulb")` Use text analysis and spatial coding to understand the past and present use of Frenchman and Penobscot Bays
 
 ---
 class: center
@@ -219,16 +206,17 @@ Maine Sound & Story seeks to document and preserve the collective history, memor
 class: center
 # Maine Historic Fisheries Atlas
 
-.center[
-<iframe src="https://mos-data-coagis.hub.arcgis.com/pages/data-entry" width="940" height="456" frameBorder="0"></iframe>
+.left-column[
+```{r, echo=FALSE, out.width=500, fig.align='center', fig.alt="Spatial Data Entry System"}
+
+knitr::include_graphics("images/mos-data-entry.png")
+
+```
 ]
+.right-column[
 
-[Maine Sound and Story](https://mainesoundandstory.com)
-
-???
-Maine Sound & Story seeks to document and preserve the collective history, memory, and stories of Maine through sound, images, and oral history.
-
-
+**Demo** [MOS Data Entry System](https://mos-data-coagis.hub.arcgis.com/pages/data-entry)
+]
 ---
 class: center
 
@@ -272,9 +260,9 @@ class: center
 
 <figure>
     <img src="images/codebook.png"
-         alt="Diagram" width="650" 
+         alt="Diagram" width="675" 
           height="450">
-    <figcaption>Figure 3. Subset of the codebook showing the domain, subdomain, observation type and observation levels for the fisheries domain.</figcaption>
+    <figcaption>Figure 3. Subset of the codebook showing the domain, subdomain, observation type and observation levels.</figcaption>
 </figure>
 
 ???
@@ -287,18 +275,54 @@ observations (e.g. by species for fishing)
 - **Who** 
 - **When**
 ---
-class: center
-# Spatial Classification Scheme
+# Conducting a spatial interview
 
-<figure>
-    <img src="images/spatial_classification_scheme.png"
-         alt="Diagram" width="650" 
-          height="450">
-    <figcaption>Figure 4. Spatial classification scheme by geomethod.</figcaption>
-</figure>
+```{r, echo=FALSE, out.width=500, fig.align='center', fig.cap="Frenchman Bay Coding Example 1"}
+
+knitr::include_graphics("images/fb-jp-ex.jpeg")
+
+```
 
 ---
 # Conducting a spatial interview
+
+```{r, echo=FALSE, out.width=550, fig.align='center', fig.cap="Frenchman Bay Coding Example 2"}
+
+knitr::include_graphics("images/fb-jk-ex.jpeg")
+
+```
+
+---
+# From the oral history transcript:
+
+### *"But we would go up and fish the channels, which is on the other side of Long [Porcupine] and you could always fish all the way up to Bald Rock and then back to the [southern?]. You could tow up and down through there and catch a couple of hundred an hour of shrimp on a good day, a couple hundred pounds an hour. So some of the best fishing I’d ever seen was just on that side of that island, just like a whole bunch of boats going back and forth. And shrimp were–it was a lot of shrimp."*
+
+.footnote[Kane, Josh, Frenchman Bay Oral History Project, June 22nd, 2023, by Camden Hunt, 22 pages, Maine Sound and Story. Online: https://mainesoundandstory.s3.us-east-2.amazonaws.com/wp-content/uploads/2023/09/24154031/Kane_Josh_06.22.2023.pdf (Last Accessed: 03/18/2024).]
+
+---
+# Shrimp Tow
+
+```{r, echo=FALSE, out.width=600, fig.align='center', fig.cap="Shrimp Tow"}
+
+knitr::include_graphics("images/shrimp_trawl_large.png")
+
+```
+
+---
+# Expanding the Spatial Glossary
+
+```{r, echo=FALSE, out.width=800, fig.align='center', fig.cap="Spatial Glossary"}
+
+knitr::include_graphics("images/mos-spatial-glossary.png")
+
+```
+
+**Demo:** [MOS Spatial Glossary](https://mos-data-coagis.hub.arcgis.com/apps/a6c101ea5fc643bbb3c7067a0b8d86a4)
+
+---
+class: inverse, center, middle
+# Can we use text analysis to help us in the spatial coding process?
+ 
 
 ---
 class: center
@@ -380,7 +404,7 @@ kane <- kane %>%
 ---
 # Transcript Text
 
-```{r echo = FALSE}
+```{r echo = FALSE, out.width = "600px", out.height = "400px"}
 kane %>%
   DT::datatable()
 ```
@@ -477,6 +501,27 @@ kane %>%
   arrange(desc(n))
 
 ```
+
+---
+class: center
+# Creating a Spatial Classification Scheme
+
+<figure>
+    <img src="images/spatial_classification_scheme.png"
+         alt="Diagram" width="650" 
+          height="450">
+    <figcaption>Figure 4. Spatial classification scheme by geomethod.</figcaption>
+</figure>
+
+---
+class: left
+# Future Work
+
+### - Continue to develop data collection and text analysis processes
+### - Expand training opportunities for the public to contribute data
+### - Develop the uncertainty quantification and spatial classification schemes
+
+
 ---
 # Thank You!
 
@@ -502,9 +547,3 @@ The chakra comes from [remark.js](https://remarkjs.com), [**knitr**](http://yihu
 - Ben Meader (Haley Ward); Eliza Carter, Vincent Falardeau, and Emily Meader (Rhumbline Maps)
 
 ]
-
----
-class: inverse, center, middle
-# Additional slides
-
-???
