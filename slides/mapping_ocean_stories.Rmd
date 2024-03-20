@@ -153,13 +153,21 @@ class: middle, left
 .pull-left[
 
 .center[
-<img style="border-radius: 5%;" src="images/coastal_map.png" width="600px"/>
+<img style="border-radius: 5%;" src="images/student_class.jpeg" width="600px"/>
 ]
 ]
 
 .pull-right[
-### `r icons::fontawesome("graduation-cap")` Collaboration between The Island Institute, Maine Sea Grant, The First Coast, and The College of the Atlantic.
-### `r icons::fontawesome("headphones")` Series of oral history and audio storytelling projects, courses, and exhibits.
+
+#### `r icons::fontawesome("graduation-cap")` Collaboration between Island Institute, Maine Sea Grant, The First Coast, and College of the Atlantic.
+#### `r icons::fontawesome("headphones")` Series of oral history and audio storytelling projects, courses, and exhibits.
+
+```{r, echo=FALSE, out.width=450, fig.align='center', fig.cap="Stonington Soundwalk map by Kristina Buckley © 2023"}
+
+knitr::include_graphics("images/stonington_soundwalk.jpeg")
+
+```
+
 
 ]
 
@@ -216,7 +224,16 @@ knitr::include_graphics("images/mos-data-entry.png")
 .right-column[
 
 **Demo** [MOS Data Entry System](https://mos-data-coagis.hub.arcgis.com/pages/data-entry)
+
+```{r, echo=FALSE, out.width=400, fig.align='center', fig.alt="Scallop Dragging"}
+
+knitr::include_graphics("images/toby-scallops.png")
+
+```
+
 ]
+
+
 ---
 class: center
 
@@ -533,17 +550,20 @@ knitr::include_graphics("images/coastal_map.png")
 ```
 
 
-Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
-
-The chakra comes from [remark.js](https://remarkjs.com), [**knitr**](http://yihui.name/knitr), and [R Markdown](https://rmarkdown.rstudio.com).
-]
+To listen to Island Institute’s podcast visit [https://www.islandinstitute.org/stories/podcast/](https://www.islandinstitute.org/stories/podcast/)
+To listen to Coastal Conversations visit [https://seagrant.umaine.edu/coastal-conversations-radio-program/](https://seagrant.umaine.edu/coastal-conversations-radio-program/)
+For more information about Maine Sound + Story visit [www.mainesoundandstory.com](www.mainesoundandstory.com)
+To explore The First Coast’s exhibits visit [www.thefirstcoast.org](www.thefirstcoast.org)
+To explore the spatial data visit: [https://mos-data-coagis.hub.arcgis.com/](https://mos-data-coagis.hub.arcgis.com/).
 
 .right-column[
 
-**College of the Atlantic, Maine Sea Grant,  and Rhumbline Maps**:  
+**College of the Atlantic, Maine Sea Grant, Island Institute, Haley Ward, and Rhumbline Maps**:  
 - Natalie Springuel (Maine Sea Grant)
 - Todd Little-Siebold (College of the Atlantic) 
-- Galen Koch (The First Coast/College of the Atlantic)
+- Galen Koch (The First Coast/College of the Atlantic/Island Institute)
 - Ben Meader (Haley Ward); Eliza Carter, Vincent Falardeau, and Emily Meader (Rhumbline Maps)
 
+**Funding Support:**
+- The Maine Community Foundation
 ]
