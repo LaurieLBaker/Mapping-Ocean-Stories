@@ -1,7 +1,7 @@
 ---
 title: "Mapping Ocean Stories"
 subtitle: "Woods Hole Oceanographic Institute"  
-author: "Dr. Laurie Baker"
+author: "Dr. Laurie Baker, College of the Atlantic"
 institute: "@llbaker1707"
 date: '19 and 20 March, 2024'
 output:
@@ -146,6 +146,72 @@ class: middle, left
 ### - Fisheries management
 
 ]
+
+---
+# Target species in the Chilean longline fishery
+
+.pull-left[
+
+.center[
+<img style="border-radius: 5%;" src="images/congrio_centolla.jpg" width="700px"/>
+]
+
+]
+
+.pull-right[
+## Topics
+### `r icons::fontawesome("fish")`  **Fisheries Management**
+### `r icons::fontawesome("globe")` **Spatial Statistics**
+
+]
+
+### `r icons::fontawesome("lightbulb")` What factors influence a fisher's target species (market value, weather, location, time of year) under different management practices?
+
+???
+I used catch composition and machine learning to infer a fisher's target species and used generalized additive models to explore the factors influencing target species.
+
+---
+# Grey seals as bioprobes
+.pull-left[
+
+.center[
+<img style="border-radius: 5%;" src="images/grey_seal.jpg" width="700px"/>
+]
+
+]
+
+.pull-right[
+## Topics
+
+### `r icons::fontawesome("fish")`  **Ecology**
+### `r icons::fontawesome("globe")` **Animal Movement**
+]
+
+### `r icons::fontawesome("lightbulb")` What is the detection efficiency of acoustic tags in the field? What potential is there to use grey seals to sample the marine environment?
+
+???
+
+
+---
+# Spread and control of fox rabies in Europe
+
+.pull-left[
+
+.center[
+<img style="border-radius: 5%;" src="images/rabies_retreat.png" width="700px"/>
+]
+]
+
+.pull-right[
+## Topics
+
+### `r icons::fontawesome("fish")`  **Ecology**
+### `r icons::fontawesome("syringe")`  **Public Health**
+### `r icons::fontawesome("globe")` **Spatial Statistics**
+
+]
+
+### `r icons::fontawesome("lightbulb")` What can we learn about vaccination planning from the successful elimination of rabies in Western Europe?
 
 ---
 # Mapping Ocean Stories
