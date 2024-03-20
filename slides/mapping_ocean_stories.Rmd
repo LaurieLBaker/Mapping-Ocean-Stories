@@ -194,7 +194,11 @@ class:
 # Mapping Ocean Stories
 
 ### `r icons::fontawesome("headphones")` March 2023 received a grant to further develop two key outputs: Maine Sound + Story and the Maine Historic Fisheries Atlas.
-### `r icons::fontawesome("lightbulb")` Use text analysis and spatial coding to understand the past and present use of Frenchman and Penobscot Bays
+
+### - Transcribing and archiving interviews
+### - Developing a coding scheme for spatial data mentioned in interviews.
+
+### `r icons::fontawesome("lightbulb")` Aim: Use text analysis and spatial coding to understand the past and present use of Frenchman and Penobscot Bays
 
 ---
 class: center
@@ -225,7 +229,7 @@ knitr::include_graphics("images/mos-data-entry.png")
 
 **Demo** [MOS Data Entry System](https://mos-data-coagis.hub.arcgis.com/pages/data-entry)
 
-```{r, echo=FALSE, out.width=400, fig.align='center', fig.alt="Scallop Dragging"}
+```{r, echo=FALSE, out.width=475, fig.align='center', fig.alt="Scallop Dragging"}
 
 knitr::include_graphics("images/toby-scallops.png")
 
@@ -277,9 +281,9 @@ class: center
 
 <figure>
     <img src="images/codebook.png"
-         alt="Diagram" width="675" 
-          height="450">
-    <figcaption>Figure 3. Subset of the codebook showing the domain, subdomain, observation type and observation levels.</figcaption>
+         alt="Diagram" width="700" 
+          height="475">
+    <figcaption>Figure 3. Subset of the codebook showing the domain, subdomain, and data fields.</figcaption>
 </figure>
 
 ???
@@ -289,35 +293,54 @@ The spatial information for each activity is then classified by the geomethod an
 Aquaculture, Recreation)
 - **Subdomain** Subcategorization and specificity for
 observations (e.g. by species for fishing)
-- **Who** 
-- **When**
----
-# Conducting a spatial interview
 
-```{r, echo=FALSE, out.width=500, fig.align='center', fig.cap="Frenchman Bay Coding Example 1"}
+---
+class: center
+# Spatial Classification Scheme
+
+<figure>
+    <img src="images/spatial_classification_scheme.png"
+         alt="Diagram" width="650" 
+          height="450">
+    <figcaption>Figure 4. Spatial classification scheme by geomethod.</figcaption>
+</figure>
+
+---
+# Gathering the Spatial Data: Illustrated
+
+```{r, echo=FALSE, out.width=500, fig.align='center', fig.cap="Spatial Interview: Frenchman Bay Coding Example 1"}
 
 knitr::include_graphics("images/fb-jp-ex.jpeg")
 
 ```
 
 ---
-# Conducting a spatial interview
+# Gathering the Spatial Data: Map Overlay
 
-```{r, echo=FALSE, out.width=550, fig.align='center', fig.cap="Frenchman Bay Coding Example 2"}
+```{r, echo=FALSE, out.width=800, fig.align='center', fig.cap="Spatial Interview: Frenchman Bay Coding Example"}
 
-knitr::include_graphics("images/fb-jk-ex.jpeg")
+knitr::include_graphics("images/fb-jp-map-overlay-opaque.png")
 
 ```
 
 ---
-# From the oral history transcript:
+# Gathering the Spatial Data: Digitization
+
+```{r, echo=FALSE, out.width=800, fig.align='center', fig.cap="Spatial Interview: Frenchman Bay Coding Example"}
+
+knitr::include_graphics("images/fb-jp-ex-polygon-large.png")
+
+```
+
+---
+# Gathering the Spatial Data from Audio
 
 ### *"But we would go up and fish the channels, which is on the other side of Long [Porcupine] and you could always fish all the way up to Bald Rock and then back to the [southern?]. You could tow up and down through there and catch a couple of hundred an hour of shrimp on a good day, a couple hundred pounds an hour. So some of the best fishing I’d ever seen was just on that side of that island, just like a whole bunch of boats going back and forth. And shrimp were–it was a lot of shrimp."*
 
 .footnote[Kane, Josh, Frenchman Bay Oral History Project, June 22nd, 2023, by Camden Hunt, 22 pages, Maine Sound and Story. Online: https://mainesoundandstory.s3.us-east-2.amazonaws.com/wp-content/uploads/2023/09/24154031/Kane_Josh_06.22.2023.pdf (Last Accessed: 03/18/2024).]
 
 ---
-# Shrimp Tow
+# Shrimp Tow: Referential
 
 ```{r, echo=FALSE, out.width=600, fig.align='center', fig.cap="Shrimp Tow"}
 
@@ -335,6 +358,17 @@ knitr::include_graphics("images/mos-spatial-glossary.png")
 ```
 
 **Demo:** [MOS Spatial Glossary](https://mos-data-coagis.hub.arcgis.com/apps/a6c101ea5fc643bbb3c7067a0b8d86a4)
+
+
+---
+# Understanding prepositions in a marine context
+
+```{r, echo=FALSE, out.width=600, fig.align='center', fig.cap="Prepositions"}
+
+knitr::include_graphics("images/prepositions.jpeg")
+
+```
+
 
 ---
 class: inverse, center, middle
@@ -368,19 +402,15 @@ class: center
 ### - Identify relevant sections for spatial coding
 ### - Collect information related to key questions
 
----
-# In Practice - packages
-```{r message = FALSE, warning = FALSE}
+```{r message = FALSE, warning = FALSE, echo = FALSE}
 library(pdftools) # read in pdf
 library(tidyverse) # data wrangling and visualization
 library(tidytext) # text analysis
 library(stopwords) # stop words
 ```
 
----
-# In Practice - reading in the transcript
 
-```{r message = FALSE, warning = FALSE}
+```{r message = FALSE, warning = FALSE, echo = FALSE}
 kane_full_text <- pdftools::pdf_text(pdf = "../data/Kane_Josh_06.22.2023.pdf")
 
 # convert text to string
@@ -398,10 +428,8 @@ kane <- kane %>%
   filter(interview_section == "main")
 ```
 
----
-# In Practice - identifying speakers
 
-```{r }
+```{r echo = FALSE}
 kane <- kane %>%
   mutate(initials = str_extract(text, pattern = "[A-Z]{1,3}\\:")) %>%
   mutate(initials = str_replace(initials, pattern = ":", replacement = "")) %>%
@@ -478,15 +506,101 @@ kane %>%
   filter(str_detect(text, pattern = species)) %>%
   DT::datatable()
 ```
+---
+class: left
+# Future Work
+
+### - Continue to develop data collection and text analysis processes
+### - Understand spatial semantics in the marine environment
+### - Complete spatial data entry system and open platform to public
+### - Further develop the uncertainty quantification and spatial classification schemes
+### - Explore the potential for Large Language Models
+
 
 ---
-# Prepositions
+# Thank You!
 
-```{r, echo=FALSE, out.width=600, fig.align='center', fig.cap="Prepositions"}
+.left-column[
 
-knitr::include_graphics("images/prepositions.jpeg")
+**College of the Atlantic, Maine Sea Grant, Island Institute, Haley Ward, and Rhumbline Maps**:  
+- Natalie Springuel (Maine Sea Grant)
+- Todd Little-Siebold (College of the Atlantic) 
+- Galen Koch (The First Coast/College of the Atlantic/Island Institute)
+- Ben Meader (Haley Ward); Eliza Carter, Vincent Falardeau, and Emily Meader (Rhumbline Maps)
 
+**Funding Support:**
+- The Maine Community Foundation
+]
+
+.right-column[
+**MOS Outputs**
+- Island Institute’s podcast: [https://www.islandinstitute.org/stories/podcast/](https://www.islandinstitute.org/stories/podcast/)
+
+- Coastal Conversations radio show: [https://seagrant.umaine.edu/coastal-conversations-radio-program/](https://seagrant.umaine.edu/coastal-conversations-radio-program/)
+- Maine Sound + Story Archive: [www.mainesoundandstory.com](www.mainesoundandstory.com)
+- The First Coast’s exhibits:  [www.thefirstcoast.org](www.thefirstcoast.org)
+- Historic Fisheries Atlas: [https://mos-data-coagis.hub.arcgis.com/](https://mos-data-coagis.hub.arcgis.com/).
+
+]
+
+
+---
+class: inverse, center, middle
+# Additional slides
+
+???
+
+---
+
+# Text Analysis In Practice - packages
+```{r message = FALSE, warning = FALSE}
+library(pdftools) # read in pdf
+library(tidyverse) # data wrangling and visualization
+library(tidytext) # text analysis
+library(stopwords) # stop words
 ```
+
+---
+# In Practice - reading in the transcript
+
+```{r message = FALSE, warning = FALSE}
+kane_full_text <- pdftools::pdf_text(pdf = "../data/Kane_Josh_06.22.2023.pdf")
+
+# convert text to string
+kane_full_text <- toString(kane_full_text)
+
+# convert text to character lines
+kane <- read_lines(kane_full_text)
+
+kane <- tibble(kane)
+kane <- kane %>%
+  rename(text = kane) %>%
+  filter(text != "") %>% 
+  mutate(interview_section = if_else(str_detect(text, pattern = "0:00:00"), "main", NA)) %>%
+  fill(interview_section, .direction = "down") %>%
+  filter(interview_section == "main")
+```
+
+---
+# In Practice - identifying speakers
+
+```{r }
+kane <- kane %>%
+  mutate(initials = str_extract(text, pattern = "[A-Z]{1,3}\\:")) %>%
+  mutate(initials = str_replace(initials, pattern = ":", replacement = "")) %>%
+  fill(initials, .direction = "down") %>%
+  filter(is.na(initials) == FALSE) %>%
+  mutate(text = str_replace_all(text, "[A-Z]{1,3}:", "")) %>%
+  mutate(group = cumsum(initials != lag(initials, default = "")))
+
+kane <- kane %>%
+  group_by(initials, group) %>%
+  summarise(text = str_c(text, collapse = " ")) %>%
+  mutate(text = str_squish(text)) %>%
+  ungroup() %>% 
+  arrange(group)
+```
+
 ---
 # Breaking down into words
 
@@ -518,52 +632,3 @@ kane %>%
   arrange(desc(n))
 
 ```
-
----
-class: center
-# Creating a Spatial Classification Scheme
-
-<figure>
-    <img src="images/spatial_classification_scheme.png"
-         alt="Diagram" width="650" 
-          height="450">
-    <figcaption>Figure 4. Spatial classification scheme by geomethod.</figcaption>
-</figure>
-
----
-class: left
-# Future Work
-
-### - Continue to develop data collection and text analysis processes
-### - Expand training opportunities for the public to contribute data
-### - Develop the uncertainty quantification and spatial classification schemes
-
-
----
-# Thank You!
-
-.left-column[
-```{r, echo=FALSE, out.width=400, fig.align='center', fig.cap="Coastal_Map"}
-
-knitr::include_graphics("images/coastal_map.png")
-
-```
-
-
-To listen to Island Institute’s podcast visit [https://www.islandinstitute.org/stories/podcast/](https://www.islandinstitute.org/stories/podcast/)
-To listen to Coastal Conversations visit [https://seagrant.umaine.edu/coastal-conversations-radio-program/](https://seagrant.umaine.edu/coastal-conversations-radio-program/)
-For more information about Maine Sound + Story visit [www.mainesoundandstory.com](www.mainesoundandstory.com)
-To explore The First Coast’s exhibits visit [www.thefirstcoast.org](www.thefirstcoast.org)
-To explore the spatial data visit: [https://mos-data-coagis.hub.arcgis.com/](https://mos-data-coagis.hub.arcgis.com/).
-
-.right-column[
-
-**College of the Atlantic, Maine Sea Grant, Island Institute, Haley Ward, and Rhumbline Maps**:  
-- Natalie Springuel (Maine Sea Grant)
-- Todd Little-Siebold (College of the Atlantic) 
-- Galen Koch (The First Coast/College of the Atlantic/Island Institute)
-- Ben Meader (Haley Ward); Eliza Carter, Vincent Falardeau, and Emily Meader (Rhumbline Maps)
-
-**Funding Support:**
-- The Maine Community Foundation
-]
