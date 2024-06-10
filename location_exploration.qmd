@@ -1,0 +1,135 @@
+---
+title: "Location Exploration"
+author: "Laurie Baker"
+format: html
+editor: visual
+---
+
+## Spatial Glossary Exploration
+
+### Reading in the data and libraries
+
+```{r}
+library(wordcloud2)
+library(readxl)
+library(tidyverse)
+library(stringr)
+library(tidytext)
+
+spatial_glossary <- read_excel("ShinyApp_MOS/data/SpatialGlossary20240411.xls")
+
+
+
+full_name_glossary <- spatial_glossary %>%
+  mutate(feature_na = str_replace(feature_na, pattern = "The ", replacement = "")) %>%
+  select(feature_na) %>%
+  distinct(feature_na) %>%
+  mutate(feature_na = str_to_title(feature_na))
+
+```
+
+What are the names that might be shortened?
+
+```{r}
+short_name_glossary <- full_name_glossary %>%
+  mutate(feature_na = str_replace(feature_na, pattern = "The ", replacement = "")) %>%
+  mutate(feature_na = str_replace(feature_na, pattern = "\\b(?:Island(?:s)?|Rock(?:s)?|Mountain(?:s)?|Ledge(?:s)?|Beach(?:s)?|Cove(?:s)?|Shoal(?:s)?|Lake(?:s)?)\\b|Harbor(?:s)?)\\b", replacement = "")) %>%
+  mutate(feature_na = str_squish(feature_na))
+
+
+location_list <- rbind(full_name_glossary, short_name_glossary)
+
+location_list <- location_list %>%
+  rename(location = feature_na) %>%
+  distinct(location) %>%
+  filter(nchar(location) > 2) %>%
+  filter(location != "Great") %>%
+  arrange(desc(nchar(location))) %>%
+  mutate(location_regex = str_c("\\b", location, "\\b"))
+
+
+
+write_csv(location_list, file = "ShinyApp_MOS/data/location_list.csv")
+```
+
+What are the unique single search words?
+
+```{r}
+key_word_glossary <- spatial_glossary %>%
+  unnest_tokens(word, feature_na) %>%
+  anti_join(stop_words)  %>%
+  anti_join(get_stopwords(language = "fr")) %>%
+  distinct(word) %>%
+  pull(word)
+
+counties <- c("Androscoggin", "Aroostook",
+"Cumberland",
+"Franklin",
+"Hancock",
+"Kennebec",
+"Knox",
+"Lincoln",
+"Oxford",
+"Penobscot",
+"Piscataquis",
+"Sagadahoc",
+"Somerset",
+"Waldo",
+"Washington",
+"York")
+
+coastal_towns <- c(
+"Bar Harbor", "Boothbay Harbor", "Camden", "Kennebunkport", "Ogunquit", "Rockland", "York", "Wells", "Bath", "Belfast", "Portland", "Brunswick", "Freeport", "Scarborough", "Lubec", "Eastport", "Castine")
+
+
+location_search_terms <- c(full_name_glossary) #, #key_word_glossary)
+location_df <- data.frame(location = location_search_terms)
+
+location_df <- location_df %>%
+  distinct(location) %>%
+  filter(!location %in% c("the", "hat", "rim", "hop", letters))
+
+write_csv(location_df, file = "ShinyApp_Mos/data/location_list.csv")
+```
+
+What are the most common last words?
+
+```{r}
+spatial_glossary %>%
+  distinct(feature_na, .keep_all = TRUE) %>%
+  mutate(last_word = word(feature_na, -1)) %>%
+  count(last_word) %>%
+  slice_max(n > 15) %>%
+  ggplot(aes(n, fct_reorder(last_word, n))) + 
+        geom_col(fill = "black") +
+        labs(title = "Most Common Word Endings",
+             y = "Term",
+             x = "Frequency") +
+        theme(axis.text = element_text(size = 14))
+```
+
+```{r word_cloud}
+last_word <- spatial_glossary %>%
+  distinct(feature_na, .keep_all = TRUE) %>%
+  mutate(last_word = word(feature_na, -1)) %>%
+  count(last_word) %>%
+  filter(n > 3)
+
+wordcloud2(data = last_word)
+```
+
+```{r}
+spatial_glossary %>%
+  mutate(first_word = word(feature_na, 1)) %>%
+  filter(Source == "GNIS" & first_word != "The") %>%
+  count(first_word, feature_cl) %>%
+  slice_max(n > 6) %>%
+  ggplot(aes(n, fct_reorder(first_word, .fun = sum, n), fill = feature_cl)) + 
+    geom_col(position = "stack") +
+    labs(title = "Most Common First Words by Geographic Type",
+         y = "Term",
+         x = "Frequency", 
+         fill = "Feature Type") +
+    theme(axis.text = element_text(size = 14)) +
+  facet_wrap(. ~ feature_cl, scales = "free_y")
+```

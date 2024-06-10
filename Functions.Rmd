@@ -1,55 +1,167 @@
-```{r intall_packages}
+```{r install_packages}
 library(pdftools)
 library(tidyverse)
 library(tidytext)
 library(dplyr)
 library(textclean)
 library(stopwords)
+library(spacyr)
 
 ```
+# A general species, gear, and location look up
 
-#Attemping a general interview to cleaned text function
+```{r}
+  # Define the extract_location function
+  extract_location <- function(text, locations) {
+    extracted_location <- str_extract_all(text, paste(locations, collapse = "|"))
+    return(extracted_location)
+  }
+  
+  # Define the extract_species function
+  extract_species <- function(text, species) {
+    extracted_species <- str_extract_all(text, paste(species, collapse = "|"))
+    return(extracted_species)
+  }
+  
+  # Define the extract_gear function
+  extract_gear <- function(text, gear) {
+    extracted_gear <- str_extract_all(text, paste(gear, collapse = "|"))
+    return(extracted_gear)
+  }
+```
+
+
+
+# General interview to cleaned text function
 
 ```{r interview_function}
-interview_clean <- function(interview_pdf_name, interview_name){
-  #create file name to import
+interview_clean <- function(interview_pdf_name, locations, species, gear){
+  # Create file name to import
   file_location = str_c("data/", (interview_pdf_name))
-  #import pdf
+  # Import pdf
   interview <- pdftools::pdf_text(file_location)
-  #convert to tibble
+  # Convert to tibble
   interview <- interview %>% 
     toString() %>% 
     read_lines() %>% 
     tibble()
+  
+  
+  # Identify main parts of the interview
+  
+  interview <- interview %>%
+    rename(text = names(interview)) %>%
+    filter(text != "") %>%
+    mutate(interview_section = if_else(str_detect(text, pattern = "\\[0{1,2}:0{2}:\\d{1,2}"),
+                                       "main", NA)) %>%
+    fill(interview_section, .direction = "down") %>%
+    mutate(interview_section = if_else(is.na(interview_section), "meta", interview_section))
+  
+  meta_data <- interview %>%
+    filter(interview_section == "meta")
+  
+  interview <- interview %>%
+    filter(interview_section == "main")
+  
   #add initials
-  interview <- interview %>% 
-  mutate(initials = str_extract(., pattern = "[A-Z]{1,3}\\: ")) %>%
-  fill(initials, .direction = "down")
-  #remove start and end
-  start_end <- interview %>% 
-    mutate(line = row_number()) %>%
-    filter(str_starts(., pattern = "\\[")) %>% 
-    select(line)
-  start_row <- start_end$line[1]
-  end_row <- start_end$line[nrow(start_end)]
-  interview <- interview %>% 
-    mutate(line = row_number()) %>% 
-    filter(line > start_row) %>% 
-    filter(line < end_row)
-  #remove initials from text
-  interview$. <- str_replace_all(interview$., "[A-Z]{1,3}: ", "")
-  #remove white spaces
-  interview$. <- gsub("\\s{2,}", "", interview$.)
-  #remove empty rows
-  interview <- interview[!is.na(interview$.), ]
   
+  interview <- interview %>%
+  mutate(initials = str_extract(text, pattern = "[A-Z]{1,3}\\:")) %>%
+  mutate(initials = str_replace(initials, pattern = ":", replacement = "")) %>%
+  fill(initials, .direction = "down") %>%
+  filter(is.na(initials) == FALSE) %>%
+  mutate(text = str_replace_all(text, "[A-Z]{1,3}:", "")) %>%
+  mutate(group = cumsum(initials != lag(initials, default = "")))
 
-  
+ interview <- interview %>%
+   group_by(initials, group) %>%
+   summarize(text = str_c(text, collapse = " ")) %>%
+   mutate(text = str_squish(text)) %>%
+   ungroup() %>%
+   arrange(group)
+ 
+ interview <- interview %>%
+      mutate(time = str_extract(text, "\\[\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1,2}\\]"))
+ 
+     #remove time stamps from text
+    interview <- interview %>%
+  mutate(text = str_replace_all(text, "\\[\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1,2}\\]", ""))
+    
+    # extract locations
+    interview$extracted_locations <- extract_location(interview$text, locations)
+    # extract species
+    interview$extracted_species <- extract_species(interview$text, species)
+    # extract locations
+    interview$extracted_gear <- extract_gear(interview$text, gear)
+    return(interview)
 }
 ```
 
+
+```{r interview_function_simple}
+interview_clean_simple <- function(interview_pdf_name){
+  # Create file name to import
+  file_location = str_c("data/", (interview_pdf_name))
+  # Import pdf
+  interview <- pdftools::pdf_text(file_location)
+  # Convert to tibble
+  interview <- interview %>% 
+    toString() %>% 
+    read_lines() %>% 
+    tibble()
+  
+  
+  # Identify main parts of the interview
+  
+  interview <- interview %>%
+    rename(text = names(interview)) %>%
+    filter(text != "") %>%
+    mutate(interview_section = if_else(str_detect(text, pattern = "\\[0{1,2}:0{2}:\\d{1,2}"),
+                                       "main", NA)) %>%
+    fill(interview_section, .direction = "down") %>%
+    mutate(interview_section = if_else(is.na(interview_section), "meta", interview_section))
+  
+  meta_data <- interview %>%
+    filter(interview_section == "meta")
+  
+  interview <- interview %>%
+    filter(interview_section == "main")
+  
+  #add initials
+  
+  interview <- interview %>%
+  mutate(initials = str_extract(text, pattern = "[A-Z]{1,3}\\:")) %>%
+  mutate(initials = str_replace(initials, pattern = ":", replacement = "")) %>%
+  fill(initials, .direction = "down") %>%
+  filter(is.na(initials) == FALSE) %>%
+  mutate(text = str_replace_all(text, "[A-Z]{1,3}:", "")) %>%
+  mutate(group = cumsum(initials != lag(initials, default = "")))
+
+ interview <- interview %>%
+   group_by(initials, group) %>%
+   summarize(text = str_c(text, collapse = " ")) %>%
+   mutate(text = str_squish(text)) %>%
+   ungroup() %>%
+   arrange(group)
+ 
+ interview <- interview %>%
+      mutate(time = str_extract(text, "\\[\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1,2}\\]"))
+ 
+     #remove time stamps from text
+    interview <- interview %>%
+  mutate(text = str_replace_all(text, "\\[\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1,2}\\]", ""))
+    
+       return(interview)
+}
+```
+
+
 ```{r function_testing}
-interview <- interview_clean("Lawson_Edwin_10131972.pdf", "Lawson_interview")
+interview <- interview_clean("Lawson_Edwin_10131972.pdf", locations = c("Castine", "Bass Harbor"), species = c("lobster", "shrimp"), gear = c("traps", "weirs"))
+```
+
+```{r function_testing}
+interview2 <- interview_clean_simple("Kane_Josh_06.22.2023.pdf")
 ```
 
 Word search function
@@ -61,6 +173,7 @@ term_search <- function(text, word) {
     unnest_tokens(word, text)
 }
 ```
+
 ```{r search_function_testing}
 #term_search(lawson1t, fish)
 ```
@@ -85,5 +198,8 @@ term_frequency(10)
 ```
 
 
+```{r location identifier}
+parsed_interview <- spacy_parse(interview2$text, pos = TRUE, entity = TRUE, lemma = FALSE)
+```
 
 

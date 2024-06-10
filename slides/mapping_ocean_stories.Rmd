@@ -590,7 +590,7 @@ class: left
 
 **College of the Atlantic, Maine Sea Grant, Island Institute, Haley Ward, and Rhumbline Maps**:  
 - Natalie Springuel (Maine Sea Grant)
-- Todd Little-Siebold (College of the Atlantic) 
+- Todd Little-Siebold, Delphine DeMaisy, Will Draxler, Ilham Santoso, Linnea Goh (College of the Atlantic) 
 - Galen Koch (The First Coast/College of the Atlantic/Island Institute)
 - Ben Meader (Haley Ward); Eliza Carter, Vincent Falardeau, and Emily Meader (Rhumbline Maps)
 

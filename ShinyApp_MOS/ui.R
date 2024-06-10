@@ -21,37 +21,35 @@ library(textclean)
 library(stopwords)
 library(DT)
 library(htmlwidgets)
-library(webshot)
+
+location_list <- read_csv("data/location_list.csv")
 
 ui <- fluidPage(
   titlePanel("MOS Interview Coding and Analysis App"),
   
 fluidRow(column(width = 6,
   fileInput("file", "Upload a PDF file"),
-  
+  textInput("link", "Provide a link to a PDF file", value = "https://mainesoundandstory.s3.us-east-2.amazonaws.com/wp-content/uploads/2023/09/24154031/Kane_Josh_06.22.2023.pdf"),
+  selectizeInput("location", label = "Search Locations", choices = location_list$location, multiple = TRUE, options = list(create = TRUE)),
   # Select word list(s)
-  checkboxGroupInput("wordlist", "Select word list(s):",
-                     choices = c("locations", "gear", "species")),
+  # checkboxGroupInput("wordlist", "Select word list(s):",
+  #                    choices = c("locations", "gear", "species", "activity", "time")),
+  # # Numeric input to select the number of words in the word cloud
+  numericInput("num_words", "Choose Number of Words for Word Cloud and Term Frequency Graph", value = 25, min = 1, max = 50)
+  #,
   
   # Checkbox group for individual words within selected word list
-  uiOutput("wordlist_options"),
-  ),
-  
-column(width = 6,
-  # Numeric input to select the number of words in the word cloud
-  numericInput("num_words", "Choose Number of Words for Word Cloud and Term Frequency Graph", value = 50, min = 1, max = 100),
-  
-  # Radio button to choose between whole interview or specific list
-  radioButtons("wordcloud_source", "Word Cloud Source:",
-               choices = c("Whole Interview", "Specific List"),
-               selected = "Whole Interview"),
-  downloadButton("download_wordcloud", "Download Word Cloud"),
-  downloadButton("download_tfplot", "Download Term Frequency Graph")
+#  uiOutput("wordlist_options"),
   )
 ),
   
   # TabsetPanel for different tabs ----
   tabsetPanel(
+    tabPanel("Meta Data",
+             fluidRow(
+               DTOutput("meta_output")
+               )
+             ),
     tabPanel("Data Table",
              fluidRow(
                column(12,
@@ -64,9 +62,16 @@ column(width = 6,
              )
              )
     ),
-    tabPanel("Word Cloud", wordcloud2Output("wordcloud")),
-    tabPanel("Term Frequency Graph", plotOutput("term_frequency_plot", width = 970, height = 650)),
-    tabPanel("Location Network")
-  )
+    tabPanel("Word Cloud 1", wordcloud2Output("wordcloud1")),
+    tabPanel("Word Cloud 2", wordcloud2Output("wordcloud2")),
+    tabPanel("Term Frequency Graph 1", column(width = 12,
+                                              # Numeric input to select the number of words in the word cloud
+                                              downloadButton("download_tf", "Download Term Frequency Plot")
+    ), plotOutput("term_frequency_plot1", width = 970, height = 650)),
+    tabPanel("Term Frequency Graph 2", column(width = 12,
+                                              # Numeric input to select the number of words in the word cloud
+                                              downloadButton("download_tf2", "Download Term Frequency Plot")
+    ), plotOutput("term_frequency_plot2", width = 970, height = 650))
+    )
 )
 
