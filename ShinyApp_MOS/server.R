@@ -19,16 +19,21 @@ library(wordcloud2)
 library(tidyverse)
 library(htmlwidgets)
 library(readr)
+library(tm)
 
 source("Functions.R")
 
 location_list <- read_csv("data/location_list.csv")
 
+species_df <- read_csv("data/species_codebook.csv")
+
+species_list <- unique(species_df$`Common name`)
+
 server <- function(input, output, session) {
   
   # Sample word lists
   word_lists <- list(
-    "locations" = c("[Ff]renchm[ea]n['’]s\\s+[Bb]ay", location_list$location_regex, "\\b(?:\\w+(?:'\\w+)?(?:-\\w+)?\\s+)?\\w+(?:'\\w+)?(?:-\\w+)?\\s+Island\\b", "\\b(?:\\w+(?:'\\w+)?(?:-\\w+)?\\s+)?\\w+(?:'\\w+)?(?:-\\w+)?\\s+Creek\\b", "\\b(?:\\w+(?:'\\w+)?(?:-\\w+)?\\s+)?\\w+(?:'\\w+)?(?:-\\w+)?\\s+Ledg[es]\\b", "\\b(?:\\w+(?:'\\w+)?(?:-\\w+)?\\s+)?\\w+(?:'\\w+)?(?:-\\w+)?\\s+Rock\\b", "\\b\\w+(?:'\\w+)?(?:-\\w+)?\\s+Harbou?r\\b", "\\b\\w+(?:'\\w+)?(?:-\\w+)?\\s+Bay\\b", "\\b\\w+(?:'\\w+)?(?:-\\w+)?\\s+cove\\b", "\\b\\w+(?:'\\w+)?(?:-\\w+)?\\s+Port\\b", "home", "Georges Bank", "Massachusetts", "islands?", "ledges?", "harbou?rs?", "coves?", "shoals?"),
+    "locations" = c("[Ff]renchm[ea]n['’]s\\s+[Bb]ay", location_list$location_regex, "\\b(?:[A-Z]\\w+(?:'[A-Z]\\w+)?(?:-[A-Z]\\w+)?\\s+)?[A-Z]\\w+(?:'[A-Z]\\w+)?(?:-[A-Z]\\w+)?\\s+[Ii]sland\\b", "\\b(?:[A-Z]\\w+(?:'[A-Z]\\w+)?(?:-[A-Z]\\w+)?\\s+)?[A-Z]\\w+(?:'[A-Z]\\w+)?(?:-[A-Z]\\w+)?\\s+[Cc]reek\\b", "\\b(?:\\w+(?:'\\w+)?(?:-\\w+)?\\s+)?\\w+(?:'\\w+)?(?:-\\w+)?\\s+Ledg[es]\\b", "\\b(?:[A-Z]\\w+(?:'[A-Z]\\w+)?(?:-[A-Z]\\w+)?\\s+)?[A-Z]\\w+(?:'[A-Z]\\w+)?(?:-[A-Z]\\w+)?\\s+Rock\\b", "\\b\\w+(?:'\\w+)?(?:-\\w+)?\\s+Harbou?r\\b", "\\b[A-Z]\\w+(?:'[A-Z]\\w+)?(?:-[A-Z]\\w+)?\\s+[Bb]ay\\b", "\\b[A-Z]\\w+(?:'[A-Z]\\w+)?(?:-[A-Z]\\w+)?\\s+[Cc]ove\\b", "\\b[A-Z]\\w+(?:'[A-Z]\\w+)?(?:-[A-Z]\\w+)?\\s+[Pp]ort\\b", "home", "Georges Bank", "Massachusetts", "islands?", "ledges?", "harbou?rs?", "coves?", "shoals?", "[Bb]ay"),
     "gear" = c("tape recorder", "battery", "sardine weir", "fishing lines", "lobster traps", "rowboat", "lobster smack",
                "lobster buyers", "lobster companies", "lobster boat", "lobster catcher", "outboard motor", 
                "two and a half horsepower outboard motor", "wooden lobster traps", "softwood traps", "second-hand traps",
@@ -37,8 +42,8 @@ server <- function(input, output, session) {
                "pot warp", "toggle", "single-cylinder boat engine", "four-cylinder boat engine", "six-cylinder boat engine",
                "eight-cylinder boat engine", "diesel engine", "gasoline engine", "hundred and thirty-five horsepower gasoline engine",
                "eighty-horsepower diesel engine", "seine net"),
-    "species" = c("lobster", "scallop", "sardine", "starfish", "mackerel", "herring", "salmon", "hake", "pogies", "pogey", "oyster", "clam", "shrimp", "eel", "monkfish", "dogfish", "crab", "jonah crab", "green crab", "sea urchin", "urchin", "halibut", "tuna", "groundfish", "elver", "sea squirts", "quahogs", "little neck", "sea cucumbers", "bluefish", "stripers", "mussel", "kelp", "seaweed", "algae"),
-    "activity" = c("longlining", "dragging", "longline", "groundfishing", "drag", "tow", "pickling", "seine", "weir", "fishing", "fish\\b", "fished", "shrimping", "shrimped", "scalloped", "lobster", "lobstering", "digging", "raking", "rake", "dig", "clamming", "trapping", "trap", "lobstering"),
+    "species" = c(species_list),
+    "activity" = c("longlining", "dragging", "longline", "groundfishing", "\\bdrag\\b", "\\btow\\b", "pickling", "seine", "weir", "fishing", "fish\\b", "fished", "shrimping", "shrimped", "scalloped", "lobster", "lobstering", "digging", "raking", "\\brake\\b", "dig\\b", "dug\\b", "clamming", "trapping", "trap", "lobstering"),
     "time" = c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December", "Autumn", "Fall", "Winter", "Spring", "Summer", "Solstice", "Equinox", "Halloween", "New Year", "\'?\\d{2,4}s?")
   )
   
