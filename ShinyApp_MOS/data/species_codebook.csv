@@ -1,112 +1,112 @@
-Common name,Scientific name
-lobster,Homarus americanus
-scallop,Placopecten magellanicus
-sardine,Clupea harengus
-herring,Clupea harengus
-starfish,"Asterias forbesi, Asterias rubens"
-sea star,"Asterias forbesi, Asterias rubens"
-forbes starfish,Asterias forbesi
-northern starfish,Asterias rubens
-mackerel,Scomber scombus
-caballa,Scomber scombus
-salmon,Salmo salar
-menhaden,Brevoortia tyrannus
-pogies,Brevoortia tyrannus
-pogey,Brevoortia tyrannus
-bunker,Brevoortia tyrannus
-massbunker,Brevoortia tyrannus
-mossbunker,Brevoortia tyrannus
-alewife,Alosa pseudoharengus
-tuna,Thunnus thynnus
-bluefin,Thunnus thynnus
-groundfish,"Gadus morhua, Melanogrammus aeglefinus, Limanda ferruginea, Pollachius virens, Hippoglossiodes platessoides, Glyptocephalus cynoglossus, Urophycis tenuis, Scophthalmus aquosus, Psuedopleronectes americanus, Sebastes fasciatus, Hippoglossus hippoglosus, Anarhichas lupus, Macrozoarces americanus. Microgadus tomcod"
-cod,Gadus morhua
-tomcod,Microgadus tomcod
-halibut,Hippoglossus hippoglossus
-hake,Urophycis tenuis
-haddock,Melanogrammus aeglefinus
-flounder,"Limanda ferruginea, Pseudopleuronectes americanus, Gluptocephalus cynoglossus, Schophthalmus aquosus"
-pollock,Pollachius virens
-plaice,Hippoglossoides platessoides
-winter flounder ,Pseudopleuronectes americanus
-yellowtail flounder,Limanda ferruginea
-witch flounder,Gluptocephalus cynoglossus
-windowpane flounder,Schophthalmus aquosus
-redfish,Sebastes fasciatus
-pout,Macrozoarces americanus
-monkfish,Lophius americanus
-goosefish,Lophius americanus
-monktails,Lophius americanus
-angler,Lophius americanus
-molligut,Lophius americanus
-dogfish,Squalus acanthias
-bluefish,Pomatomus saltatrix
-stripers,Morone saxatilis
-bass,Morone saxatilis
-rockfish,Morone saxatilis
-linesider,Morone saxatilis
-oyster,Crassostera virginica
-clam,"Mya arenaria, Mercienaria mercenaria, Ensis directus, Leukoma staminea"
-soft shell clam,Mya arenaria
-hard shell clam,Mercenaria mercenaria
-quahogs,Mercenaria mercenaria
-razor clam,Ensis directus
-little neck,Leukoma staminea
-cockle,Leukoma staminea
-shrimp,Pandalus borealis
-crab,"Cancer borealis, Cancer irroratus, Carcinus maenas"
-jonah crab,Cancer borealis
-rock crab,Cancer irroratus
-green crab,Carcinus maenas
-sea urchin,Strongylocentrotus droebachiensis
-urchin,Strongylocentrotus droebachiensis
-elver,Anguilla rostrata
-eel,Anguilla rostrata
-sea squirts,"Molgula spp., Ciona intestinalis, Boltenia ovifera, Botryllus schlosseri, Halocynthia aurantium"
-tunicate,"Molgula spp., Ciona intestinalis, Boltenia ovifera, Botryllus schlosseri, Halocynthia aurantium"
-sea grape,Molgula spp.
-sea vase,Ciona intestinalis
-sea potato,Boltenia ovifera
-stalked tunicate,Boltenia ovifera
-golden star tunicate,Botryllus schlosseri
-sea peach,Halocynthia aurantium
-sea cucumbers,Cucumaria frondosa
-mussel,"Mytilus edulis, Modiolus modiolus"
-blue mussel,Mytilus edulis
-horse mussel,Modiolus modiolus
-kelp,"Saccarina latissima, Laminaria digitata, Alaria esculenta"
-seaweed,"Saccharina latissima, Laminaria digitata, Alaria esculenta, Palmaria palmata, Chondrus crispus, Porphyra umbilicalis, Ulva lactuca, Ascophyllum nodosum, Fucus vesiculosus"
-algae,"Saccharina latissima, Laminaria digitata, Alaria esculenta, Palmaria palmata, Chondrus crispus, Porphyra umbilicalis, Ulva lactuca, Ascophyllum nodosum, Fucus vesiculosus"
-sea vegetable,"Saccharina latissima, Laminaria digitata, Alaria esculenta, Palmaria palmata, Chondrus crispus, Porphyra umbilicalis, Ulva lactuca, Ascophyllum nodosum, Fucus vesiculosus"
-rockweed,Ascophyllum nodusm
-sugar kelp,Saccarina latissima
-skinny kelp,Saccarina latissima
-horsetail kelp,Laminaria digita
-winged kelp,Alaria esculenta
-dulse,Palmaria palmata
-irish moss,Chodrus crispus
-laver,Porphyra umbilicalis
-sea lettuce,Ulva lactuca
-bladderwrack,Fucus vesiculosus
-wrinkles,"Littorina saxatilis, Littorina littorea, Littorina obtusata"
-periwinkles,"Littorina saxatilis, Littorina littorea, Littorina obtusata"
-common periwinkle,Littorina littorea
-smouth periwinkle,Littorina obtusata
-rough periwinkle,Littorina saxatilis
-whelks,"Nucella lapillus, Buccinum undatum"
-dog whelks,Nucella lapillus
-waved whelks,Buccinum undatum
-worms,"Glycera dibranchiata, Nereis virens"
-blood worm,GLycera dibranchiata
-sand worm,Nereins virens
-seal,"Phoca vitulina, Halichoerus grypus, Cystophora cristata, Pagophilus groenlandicus"
-harbor seal,Phoca vitulina
-grey seal,Halichoerus grypus
-hooded seal,Cystophora cristata
-harp seal,Pagophilus groenlandicus
-whale,"Megaptera novaeangliae, Balaenoptera acutorostrata, Phocoena phocoena, Eubalaena glacialis, Balaenoptera physalus"
-humpback whale,Megaptera novaeangliae
-minke whale,Balaenoptera acutorostrata
-porpoise,Phocoena phocoena
-right whale,Eubalaena glacialis
-fin whale,Balaenoptera physalus
+Common name,Scientific name,Regular expression
+lobster,Homarus americanus,lobster
+scallop,Placopecten magellanicus,scallop
+sardine,Clupea harengus,sardine
+herring,Clupea harengus,herring
+starfish,"Asterias forbesi, Asterias rubens",starfish
+sea star,"Asterias forbesi, Asterias rubens",sea star
+forbes starfish,Asterias forbesi,forbes starfish
+northern starfish,Asterias rubens,northern starfish
+mackerel,Scomber scombus,mackerel
+caballa,Scomber scombus,caballa
+salmon,Salmo salar,salmon
+menhaden,Brevoortia tyrannus,menhaden
+pogies,Brevoortia tyrannus,pogies
+pogey,Brevoortia tyrannus,pogey
+bunker,Brevoortia tyrannus,bunker
+massbunker,Brevoortia tyrannus,massbunker
+mossbunker,Brevoortia tyrannus,mossbunker
+alewife,Alosa pseudoharengus,alewife
+tuna,Thunnus thynnus,tuna
+bluefin,Thunnus thynnus,bluefin
+groundfish,"Gadus morhua, Melanogrammus aeglefinus, Limanda ferruginea, Pollachius virens, Hippoglossiodes platessoides, Glyptocephalus cynoglossus, Urophycis tenuis, Scophthalmus aquosus, Psuedopleronectes americanus, Sebastes fasciatus, Hippoglossus hippoglosus, Anarhichas lupus, Macrozoarces americanus. Microgadus tomcod",groundfish
+cod,Gadus morhua,\\bcod\\b
+tomcod,Microgadus tomcod,tomcod
+halibut,Hippoglossus hippoglossus,halibut
+hake,Urophycis tenuis,\\bhake\\b
+haddock,Melanogrammus aeglefinus,haddock
+flounder,"Limanda ferruginea, Pseudopleuronectes americanus, Gluptocephalus cynoglossus, Schophthalmus aquosus",flounder
+pollock,Pollachius virens,pollock
+plaice,Hippoglossoides platessoides,plaice
+winter flounder ,Pseudopleuronectes americanus,winter flounder 
+yellowtail flounder,Limanda ferruginea,yellowtail flounder
+witch flounder,Gluptocephalus cynoglossus,witch flounder
+windowpane flounder,Schophthalmus aquosus,windowpane flounder
+redfish,Sebastes fasciatus,redfish
+pout,Macrozoarces americanus,\\bpout\\b
+monkfish,Lophius americanus,monkfish
+goosefish,Lophius americanus,goosefish
+monktails,Lophius americanus,monktails
+angler,Lophius americanus,angler
+molligut,Lophius americanus,molligut
+dogfish,Squalus acanthias,dogfish
+bluefish,Pomatomus saltatrix,bluefish
+stripers,Morone saxatilis,stripers
+bass,Morone saxatilis,\\bbass\\b
+rockfish,Morone saxatilis,rockfish
+linesider,Morone saxatilis,linesider
+oyster,Crassostera virginica,oyster
+clam,"Mya arenaria, Mercienaria mercenaria, Ensis directus, Leukoma staminea",\\bclam\\b
+soft shell clam,Mya arenaria,soft shell clam
+hard shell clam,Mercenaria mercenaria,hard shell clam
+quahogs,Mercenaria mercenaria,quahogs
+razor clam,Ensis directus,razor clam
+little neck,Leukoma staminea,little neck
+cockle,Leukoma staminea,cockle
+shrimp,Pandalus borealis,shrimp
+crab,"Cancer borealis, Cancer irroratus, Carcinus maenas",crab
+jonah crab,Cancer borealis,jonah crab
+rock crab,Cancer irroratus,rock crab
+green crab,Carcinus maenas,green crab
+sea urchin,Strongylocentrotus droebachiensis,sea urchin
+urchin,Strongylocentrotus droebachiensis,urchin
+elver,Anguilla rostrata,elver
+eel,Anguilla rostrata,\\beel\\b
+sea squirts,"Molgula spp., Ciona intestinalis, Boltenia ovifera, Botryllus schlosseri, Halocynthia aurantium",sea squirts
+tunicate,"Molgula spp., Ciona intestinalis, Boltenia ovifera, Botryllus schlosseri, Halocynthia aurantium",tunicate
+sea grape,Molgula spp.,sea grape
+sea vase,Ciona intestinalis,sea vase
+sea potato,Boltenia ovifera,sea potato
+stalked tunicate,Boltenia ovifera,stalked tunicate
+golden star tunicate,Botryllus schlosseri,golden star tunicate
+sea peach,Halocynthia aurantium,sea peach
+sea cucumbers,Cucumaria frondosa,sea cucumbers
+mussel,"Mytilus edulis, Modiolus modiolus",mussel
+blue mussel,Mytilus edulis,blue mussel
+horse mussel,Modiolus modiolus,horse mussel
+kelp,"Saccarina latissima, Laminaria digitata, Alaria esculenta",kelp
+seaweed,"Saccharina latissima, Laminaria digitata, Alaria esculenta, Palmaria palmata, Chondrus crispus, Porphyra umbilicalis, Ulva lactuca, Ascophyllum nodosum, Fucus vesiculosus",seaweed
+algae,"Saccharina latissima, Laminaria digitata, Alaria esculenta, Palmaria palmata, Chondrus crispus, Porphyra umbilicalis, Ulva lactuca, Ascophyllum nodosum, Fucus vesiculosus",algae
+sea vegetable,"Saccharina latissima, Laminaria digitata, Alaria esculenta, Palmaria palmata, Chondrus crispus, Porphyra umbilicalis, Ulva lactuca, Ascophyllum nodosum, Fucus vesiculosus",sea vegetable
+rockweed,Ascophyllum nodusm,rockweed
+sugar kelp,Saccarina latissima,sugar kelp
+skinny kelp,Saccarina latissima,skinny kelp
+horsetail kelp,Laminaria digita,horsetail kelp
+winged kelp,Alaria esculenta,winged kelp
+dulse,Palmaria palmata,dulse
+irish moss,Chodrus crispus,irish moss
+laver,Porphyra umbilicalis,laver
+sea lettuce,Ulva lactuca,sea lettuce
+bladderwrack,Fucus vesiculosus,bladderwrack
+wrinkles,"Littorina saxatilis, Littorina littorea, Littorina obtusata",wrinkles
+periwinkles,"Littorina saxatilis, Littorina littorea, Littorina obtusata",periwinkles
+common periwinkle,Littorina littorea,common periwinkle
+smouth periwinkle,Littorina obtusata,smouth periwinkle
+rough periwinkle,Littorina saxatilis,rough periwinkle
+whelks,"Nucella lapillus, Buccinum undatum",whelks
+dog whelks,Nucella lapillus,dog whelks
+waved whelks,Buccinum undatum,waved whelks
+worms,"Glycera dibranchiata, Nereis virens",worms
+blood worm,GLycera dibranchiata,blood worm
+sand worm,Nereins virens,sand worm
+seal,"Phoca vitulina, Halichoerus grypus, Cystophora cristata, Pagophilus groenlandicus",seal
+harbor seal,Phoca vitulina,harbor seal
+grey seal,Halichoerus grypus,grey seal
+hooded seal,Cystophora cristata,hooded seal
+harp seal,Pagophilus groenlandicus,harp seal
+whale,"Megaptera novaeangliae, Balaenoptera acutorostrata, Phocoena phocoena, Eubalaena glacialis, Balaenoptera physalus",whale
+humpback whale,Megaptera novaeangliae,humpback whale
+minke whale,Balaenoptera acutorostrata,minke whale
+porpoise,Phocoena phocoena,porpoise
+right whale,Eubalaena glacialis,right whale
+fin whale,Balaenoptera physalus,fin whale
