@@ -55,7 +55,7 @@ interview_clean <- function(interview_pdf_name, locations, species, gear, activi
   interview <- interview %>%
     rename(text = names(interview)) %>%
     filter(text != "") %>%
-    mutate(interview_section = if_else(str_detect(text, pattern = "\\[0{1,2}:0{2}:\\d{1,2}"),
+    mutate(interview_section = if_else(str_detect(text, pattern = "\\[0{1,2}:0{2}:?\\d{0,2}"),
                                        "main", NA)) %>%
     fill(interview_section, .direction = "down") %>%
     mutate(interview_section = if_else(is.na(interview_section), "meta", interview_section))
