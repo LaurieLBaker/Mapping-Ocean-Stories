@@ -36,10 +36,17 @@ extract_time <- function(text, time) {
   return(extracted_time_unique)
 }
 
+# Extract mention id
+extract_mention <- function(text, mention) {
+  extracted_mention <- str_extract_all(text, paste(mention, collapse = "|"))
+  extracted_mention_unique <- sapply(extracted_mention, unique)
+  return(extracted_mention_unique)
+}
+
 
 ## Interview Clean Up
 
-interview_clean <- function(interview_pdf_name, locations, species, gear, activity, time){
+interview_clean <- function(interview_pdf_name, locations, species, gear, activity, time, mention){
   # Import pdf
   file_location <- str_c(interview_pdf_name)
   interview <- pdftools::pdf_text(file_location)
@@ -102,6 +109,10 @@ interview_clean <- function(interview_pdf_name, locations, species, gear, activi
   
   # extract time
   interview$extracted_time <- extract_time(str_to_lower(interview$text), str_to_lower(time))
+
+  # extract time
+  interview$extracted_mention <- extract_mention(str_to_lower(interview$text), str_to_lower(mention))
+  
   return(interview)
 }
 

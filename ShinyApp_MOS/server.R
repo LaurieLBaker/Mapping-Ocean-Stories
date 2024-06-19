@@ -27,7 +27,7 @@ location_list <- read_csv("data/location_list.csv")
 
 species_df <- read_csv("data/species_codebook.csv")
 
-species_list <- unique(species_df$`Common name`)
+species_list <- unique(species_df$`Regular expression`)
 
 server <- function(input, output, session) {
   
@@ -44,7 +44,8 @@ server <- function(input, output, session) {
                "eighty-horsepower diesel engine", "seine net"),
     "species" = c(species_list),
     "activity" = c("longlining", "dragging", "longline", "groundfishing", "\\bdrag\\b", "\\btow\\b", "pickling", "seine", "weir", "fishing", "fish\\b", "fished", "shrimping", "shrimped", "scalloped", "lobster", "lobstering", "digging", "raking", "\\brake\\b", "dig\\b", "dug\\b", "clamming", "trapping", "trap", "lobstering"),
-    "time" = c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December", "Autumn", "Fall", "Winter", "Spring", "Summer", "Solstice", "Equinox", "Halloween", "New Year", "\'?\\d{2,4}s?")
+    "time" = c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December", "Autumn", "Fall", "Winter", "Spring", "Summer", "Solstice", "Equinox", "Halloween", "New Year", "\'?\\d{2,4}s?"),
+    "mention" = c("\\b\\d{1,2}\\b", "\\bone\\b", "\\btwo\\b", "\\bthree\\b", "\\bfour\\b", "\\bfive\\b", "\\bsix\\b", "\\bseven\\b", "\\beight\\b", "\\bnine\\b", "\\bten\\b", "\\beleven\\b", "\\btwelve\\b", "\\bthirteen\\b", "\\bfourteen\\b", "\\bfifteen\\b", "\\bsixteen\\b", "\\bseventeen\\b", "\\beighteen\\b", "\\bnineteen\\b", "\\btwenty\\b")
   )
   
   # # Update checkbox options based on the selected word list
@@ -86,26 +87,31 @@ server <- function(input, output, session) {
     inLink <- input$link
     if (!is.null(inFile)) {
       # Call interview_clean with the selected word list (locations, gear, species, time)
-      interview_data <- interview_clean(inFile$datapath, locations = word_lists$locations, species = word_lists$species, gear = word_lists$gear, activity = word_lists$activity, time = word_lists$time)
+      interview_data <- interview_clean(inFile$datapath, locations = word_lists$locations, species = word_lists$species, gear = word_lists$gear, activity = word_lists$activity, time = word_lists$time, mention = word_lists$mention)
       # Convert the list of extracted locations, species, and gear to comma-separated strings
       interview_data$extracted_locations <- sapply(interview_data$extracted_locations, toString)
       interview_data$extracted_species <- sapply(interview_data$extracted_species, toString)
       interview_data$extracted_gear <- sapply(interview_data$extracted_gear, toString)
       interview_data$extracted_activity <- sapply(interview_data$extracted_activity, toString)
       interview_data$extracted_time <- sapply(interview_data$extracted_time, toString)
+      interview_data$extracted_mention <- sapply(interview_data$extracted_mention, toString)
+      
       # Add an empty "reviewer" column
       interview_data$reviewer <- ""
       return(interview_data)
     }
     if (!is.null(inLink)) {
       # Call interview_clean with the selected word list (locations, gear, species, time)
-      interview_data <- interview_clean(inLink, locations = word_lists$locations, species = word_lists$species, gear = word_lists$gear,  activity = word_lists$activity, time = word_lists$time)
+      interview_data <- interview_clean(inLink, locations = word_lists$locations, species = word_lists$species, gear = word_lists$gear,  activity = word_lists$activity, time = word_lists$time, mention = word_lists$mention)
       # Convert the list of extracted locations, species, and gear to comma-separated strings
       interview_data$extracted_locations <- sapply(interview_data$extracted_locations, toString)
       interview_data$extracted_species <- sapply(interview_data$extracted_species, toString)
       interview_data$extracted_gear <- sapply(interview_data$extracted_gear, toString)
       interview_data$extracted_activity <- sapply(interview_data$extracted_activity, toString)
       interview_data$extracted_time <- sapply(interview_data$extracted_time, toString)
+      interview_data$extracted_mention <- sapply(interview_data$extracted_mention, toString)
+      
+      
       # Add an empty "reviewer" column
       interview_data$reviewer <- ""
       return(interview_data)

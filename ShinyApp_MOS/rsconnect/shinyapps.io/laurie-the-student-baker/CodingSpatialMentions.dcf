@@ -5,7 +5,7 @@ account: laurie-the-student-baker
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 11671823
-bundleId: 8734049
+bundleId: 8764658
 url: https://laurie-the-student-baker.shinyapps.io/CodingSpatialMentions/
 asMultiple: FALSE
 asStatic: FALSE
