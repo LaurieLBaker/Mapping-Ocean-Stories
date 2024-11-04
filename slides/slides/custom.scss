@@ -1,0 +1,32 @@
+
+@import url(https://fonts.googleapis.com/css?family=IBM+Plex+Sans&display=swap);
+@import url(https://fonts.googleapis.com/css?family=Playfair+Display:700&display=swap);
+
+
+/*-- scss:defaults --*/
+$theme-darkblue: #202C61;
+$theme-lavender: #cec2dc;
+$theme-white: #F7F8F9;
+
+$body-bg: $theme-darkblue;
+$body-color: $theme-white;
+$link-color: $theme-lavender;
+
+$font-family-sans-serif: 'IBM Plex Sans', sans-serif;
+$presentation-heading-font: 'Playfair Display', sans-serif;
+
+/*-- scss:rules --*/
+
+.blue {
+  color: $theme-darkblue;
+}
+
+.lavender {
+  color: $theme-lavender;
+  font-weight: bold;
+}
+
+.codedarkbg {
+  color: darken($theme-lavender, 10%);
+  font-family: monospace;
+}
