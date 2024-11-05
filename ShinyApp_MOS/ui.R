@@ -71,7 +71,9 @@ fluidRow(column(width = 6,
     tabPanel("Term Frequency Graph 2", column(width = 12,
                                               # Numeric input to select the number of words in the word cloud
                                               downloadButton("download_tf2", "Download Term Frequency Plot")
-    ), plotOutput("term_frequency_plot2", width = 970, height = 650))
+    ), plotOutput("term_frequency_plot2", width = 970, height = 650)),
+    tabPanel("Topic Modelling", column(width = 12,
+    ), plotOutput("top_terms_plot", width = 970, height = 650))
     )
 )
 

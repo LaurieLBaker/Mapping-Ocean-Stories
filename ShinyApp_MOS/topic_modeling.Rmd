@@ -1,0 +1,114 @@
+```{r}
+# # install packages
+# install.packages("tm")
+# install.packages("topicmodels")
+# install.packages("reshape2")
+# install.packages("ggplot2")
+# install.packages("wordcloud")
+# install.packages("pals")
+# install.packages("SnowballC")
+# install.packages("lda")
+# install.packages("ldatuning")
+# install.packages("kableExtra")
+# install.packages("DT")
+# install.packages("flextable")
+# # install klippy for copy-to-clipboard button in code chunks
+# install.packages("remotes")
+# remotes::install_github("rlesur/klippy")
+install.packages("pdftools")
+
+```
+
+```{r}
+# set options
+options(stringsAsFactors = F)         # no automatic data transformation
+options("scipen" = 100, "digits" = 4) # suppress math annotation
+# load packages
+library(knitr) 
+library(kableExtra) 
+library(DT)
+library(tm)
+library(topicmodels)
+library(reshape2)
+library(ggplot2)
+library(wordcloud)
+library(pals)
+library(SnowballC)
+library(lda)
+library(ldatuning)
+#library(flextable)
+# activate klippy for copy-to-clipboard button
+# 11klippy::klippy()
+```
+
+```{r}
+#install.packages("googledrive")
+library(googledrive)
+#install.packages("readxl")
+library(readxl)
+library(dplyr)
+library(stringr)
+library(pdftools)
+
+```
+
+```{r}
+Masterson_Holly <- read_csv("data/Masterson_Holly.csv")
+
+MH_responces <- Masterson_Holly %>% 
+  filter(initials != "Q") %>% 
+  select(text)
+```
+
+```{r}
+# Combine all rows of text into one single string
+combined_text <- paste(MH_responces$text, collapse = " ")
+
+# Create a Corpus from the combined text
+corpus <- Corpus(VectorSource(combined_text))
+
+# Preprocess the text: Convert to lowercase, remove punctuation, stopwords, and numbers
+corpus <- tm_map(corpus, content_transformer(tolower))
+corpus <- tm_map(corpus, removePunctuation)
+corpus <- tm_map(corpus, removeNumbers)
+corpus <- tm_map(corpus, removeWords, stopwords("en"))
+
+# Create a Document-Term Matrix (DTM)
+dtm <- DocumentTermMatrix(corpus)
+
+# Filter out sparse terms if necessary
+dtm <- removeSparseTerms(dtm, 0.99)
+```
+
+```{r}
+
+# Set the number of topics you want
+num_topics <- 5
+
+# Apply the LDA model
+lda_model <- LDA(dtm, k = num_topics, control = list(seed = 1234))
+
+# Extract topics
+topics <- tidy(lda_model, matrix = "beta")
+```
+
+```{r}
+top_terms <- topics %>%
+  group_by(topic) %>%
+  top_n(10, beta) %>%
+  arrange(topic, -beta)
+
+# View the top terms for each topic
+print(top_terms)
+```
+
+```{r}
+top_terms %>%
+  #mutate(term = reorder_within(term, beta, topic)) %>%
+  ggplot(aes(forcats::fct_reorder(term, beta), beta, fill = as.factor(topic))) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ topic, scales = "free") +
+  coord_flip() 
+```
+
+

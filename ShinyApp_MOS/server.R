@@ -325,6 +325,62 @@ output$term_frequency_plot2 <- renderPlot({
       theme(axis.text = element_text(size = 14))
   }
 })
+
+
+output$top_terms_plot <- renderPlot({
+
+  # Topic model Document term frequency
+  
+  interview_responses <- cleaned_interview() %>% 
+    filter(initials != "Q") %>% 
+    select(text)
+  
+  # Combine all rows of text into one single string
+  combined_text <- paste(interview_responses$text, collapse = " ")
+  
+  # Create a Corpus from the combined text
+  corpus <- Corpus(VectorSource(combined_text))
+  
+  # Preprocess the text: Convert to lowercase, remove punctuation, stopwords, and numbers
+  corpus <- tm_map(corpus, content_transformer(tolower))
+  corpus <- tm_map(corpus, removePunctuation)
+  corpus <- tm_map(corpus, removeNumbers)
+  corpus <- tm_map(corpus, removeWords, stopwords("en"))
+  
+  # Create a Document-Term Matrix (DTM)
+  dtm <- DocumentTermMatrix(corpus)
+  
+  # Filter out sparse terms if necessary
+  dtm <- removeSparseTerms(dtm, 0.99)
+  
+  
+  # Set the number of topics you want
+  num_topics <- 5 # Add a slider here
+  
+  # Apply the LDA model
+  lda_model <- LDA(dtm, k = num_topics, control = list(seed = 1234))
+  
+  # Extract topics
+  topics <- tidy(lda_model, matrix = "beta")
+  
+  
+  top_terms <- topics %>%
+    group_by(topic) %>%
+    top_n(10, beta) %>%
+    arrange(topic, -beta)
+  
+  
+  top_terms %>%
+    mutate(term = reorder_within(term, beta, topic)) %>% 
+    ggplot(aes(term, beta, fill = as.factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free") +
+    coord_flip() +
+    scale_x_reordered()
+   })
+
+
+
   #Download term frequency plot
   output$download_tf <- downloadHandler(
     filename = function() {"term_frequency.png"},
