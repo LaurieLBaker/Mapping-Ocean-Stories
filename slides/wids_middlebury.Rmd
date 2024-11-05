@@ -1,0 +1,910 @@
+---
+title: "Connecting Oceans, Communities, and Data: A Journey from Marine Biology to Data Science"
+subtitle: "Women in Data Science, Middlebury College"  
+author: "Dr. Laurie Baker, College of the Atlantic"
+institute: "@llbaker1707"
+date: '19 and 20 March, 2024'
+output:
+  xaringan::moon_reader:
+    anchor_sections: false
+    fig_caption: false
+    lib_dir: libs
+    seal: false
+    css: xaringan-themer2.css
+    nature:
+      highlightStyle: github
+      countIncrementalSlides: false
+      ratio: 16:9
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r libraries, results='hide', message = FALSE, echo = FALSE,  warning = FALSE}
+
+#install.packages("tidyverse")
+#install.packages("readxl")
+#devtools::install_github("gadenbuie/xaringanExtra")
+#install.packages("fontawesome")
+#remotes::install_github("mitchelloharawild/icons")
+
+library(dplyr)
+library(leaflet)
+library(readxl)
+library(xaringanExtra)
+library(fontawesome)
+library(icons)
+library(DT)
+library(htmltools)
+library(htmlwidgets)
+library(kableExtra)
+library(readr)
+library(pdftools)
+library(tidyverse)
+library(tidytext)
+library(dplyr)
+library(textclean)
+library(stopwords)
+
+knitr::opts_chunk$set(message=FALSE, warning=FALSE, hiline=TRUE)
+
+xaringanExtra::use_xaringan_extra(include = c("panelset", "tile_view", "share_again", "use_broadcast"))
+
+xaringanExtra::style_share_again(share_buttons = c("twitter", "linkedin", "pocket"))
+
+```
+
+
+background-image: url(images/coastal_map.png)
+background-position: top right
+background-size: contain
+class: middle, left
+
+# `r rmarkdown::metadata$title`
+
+
+## `r rmarkdown::metadata$author`
+
+### `r rmarkdown::metadata$subtitle`, `r rmarkdown::metadata$date`
+
+
+.footnote[]
+
+---
+class: middle, left
+# About me
+
+.pull-left[
+
+.center[
+<img style="border-radius: 50%;" src="images/laurie_baker.jpg" width="350px"/>
+
+### Dr. Laurie Baker
+
+]]
+
+.pull-right[
+
+### `r icons::fontawesome("graduation-cap")` BSc Marine Biology, University of St. Andrews
+### `r icons::fontawesome("graduation-cap")` Msc Marine Biology, Dalhousie University
+### `r icons::fontawesome("graduation-cap")` PhD Ecology and Evolution, University of Glasgow
+]
+
+.center[
+[`r icons::fontawesome("link")` lauriebaker.rbind.io](https://lauriebaker.rbind.io)
+[`r icons::fontawesome("twitter")` @llbaker1707](https://twitter.com/llbaker1707)
+[`r icons::icon_style(icons::fontawesome("github"), scale = 1)` @laurielbaker](https://github.com/laurielbaker)
+]
+
+---
+class: middle, left
+# About me
+
+.pull-left[
+
+.center[
+<img style="border-radius: 50%;" src="images/laurie_baker.jpg" width="350px"/>
+
+### Dr. Laurie Baker
+
+]]
+
+.pull-right[
+
+#### `r icons::fontawesome("desktop")` Data Science Lecturer and Head of Faculty, Data Science Campus, Office for National Statistics
+#### `r icons::fontawesome("university")` Visiting Assistant Professor, Digital and Computational Studies, Bates College
+#### `r icons::fontawesome("university")` Assistant Professor, Computer Science and Data Science, College of the Atlantic
+#### `r icons::fontawesome("university")` Assistant Professor, Mathematics, Bates College
+]
+
+.center[
+[`r icons::fontawesome("link")` lauriebaker.rbind.io](https://lauriebaker.rbind.io)
+[`r icons::fontawesome("twitter")` @llbaker1707](https://twitter.com/llbaker1707)
+[`r icons::icon_style(icons::fontawesome("github"), scale = 1)` @laurielbaker](https://github.com/laurielbaker)
+]
+???
+
+---
+class: middle, left
+# Talk Outline
+
+## Career Path from Marine Biology to Data Science
+## Returning to Maine and Mapping Ocean Stories
+## Connecting Students with Communities in Community-Engaged Data Science
+
+
+```{r packages for fish analysis, echo=FALSE, message=FALSE, warning=FALSE}
+library(leaflet)
+library(tidyverse)
+library(lubridate)
+library(sf)
+```
+
+```{r data for fish analysis, echo=FALSE, message=FALSE, warning=FALSE}
+
+palangre87_97 <- read_csv("slides/data-chile/palangre_87_97.csv")
+
+```
+
+---
+class: middle, left
+# Research Interests
+
+.left-column[
+.center[
+<img style="border-radius: 5%;" src="images/ecology.png" width="500px"/>
+]
+]
+
+.right-column[
+
+### Spatial and temporal patterns in human and biological systems
+
+### - Disease spread
+### - Animal movement
+### - Fisheries management
+
+]
+
+---
+# Target species in the Chilean longline fishery
+
+.pull-left[
+
+.center[
+<img style="border-radius: 5%;" src="images/congrio_centolla.jpg" width="700px"/>
+]
+
+]
+
+.pull-right[
+## Topics
+### `r icons::fontawesome("fish")`  **Fisheries Management**
+### `r icons::fontawesome("globe")` **Spatial Statistics**
+
+]
+
+### `r icons::fontawesome("lightbulb")` What factors influence a fisher's target species (market value, weather, location, time of year) under different management practices?
+
+???
+I used catch composition and machine learning to infer a fisher's target species and used generalized additive models to explore the factors influencing target species.
+
+---
+class: middle, left
+# Who is fishing?
+
+```{r echo=FALSE, out.width="65%", fig.align="center", fig.alt = "Plot showing the vessel length and width as boats on a scatter plot where the size of the boat is proportional to the carrying capacity of the vessel"}
+knitr::include_graphics("slides/figs/fishing_who.png")
+```
+
+---
+class: middle, left
+# How are vessels fishing?
+
+```{r echo=FALSE, out.width="65%", fig.align="center", fig.alt = "Plot showing the distribution of trip length by vessel"}
+knitr::include_graphics("slides/figs/fishing_when.png")
+```
+
+
+
+---
+class: middle, left
+# What are vessels targeting?
+
+```{r echo=FALSE, out.width="65%", fig.align="center", fig.alt = "Plot showing the distribution of species in the catch by weight by vessel"}
+knitr::include_graphics("slides/figs/fishing_what.png")
+```
+
+---
+class: middle, left
+# Where are they fishing?
+
+
+```{r location data prep 87 to 97, echo = FALSE}
+
+palangre87_97 <- palangre87_97 %>%
+  mutate(startlatdd = -latcalini/10000,
+         startlondd = -loncalini/10000,
+         group = as.factor(paste(CBU_ORAC, crucero, lance)),
+         P_X6 = X6/Total.de.peso)
+
+```
+
+
+```{r chile-fishing-map, echo = FALSE, out.width="95%", fig.align="center", fig.alt = "Map of fishing locations in Chile"}
+pal <- colorNumeric(
+  palette = "Oranges",
+  domain = palangre87_97$P_X6)
+
+
+palangre87_97$labels <- sprintf("<strong>Vessel Code: %s</strong><br/>%g proportion of catch", 
+                  palangre87_97$CBU_ORAC, palangre87_97$P_X6) %>% lapply(htmltools::HTML)
+
+(start_position_map <- leaflet(data = palangre87_97) %>%
+   setView(lng = 1.382203, lat = -61.051992, zoom = 4) %>%
+  addProviderTiles(providers$Esri.WorldImagery) %>%
+  addCircleMarkers(data = palangre87_97[palangre87_97$CBU_ORAC == 400062,], 
+                   lng = ~startlondd, 
+                   lat = ~startlatdd, 
+                   clusterOptions = NULL, 
+                   color = ~pal(P_X6), 
+                   label = palangre87_97[palangre87_97$CBU_ORAC == 400062,]$labels,
+                   radius = 2,
+                   group = "Vessel 400062") %>%
+    addCircleMarkers(data = palangre87_97[palangre87_97$CBU_ORAC == 400065,], 
+                   lng = ~startlondd, 
+                   lat = ~startlatdd, 
+                   clusterOptions = NULL, 
+                   color = ~pal(P_X6), 
+                   label = palangre87_97[palangre87_97$CBU_ORAC == 400065,]$labels,
+                   radius = 2,
+                   group = "Vessel 400065") %>%
+    addCircleMarkers(data = palangre87_97[palangre87_97$CBU_ORAC == 400075,],
+                   lng = ~startlondd,
+                   lat = ~startlatdd,
+                   clusterOptions = NULL,
+                   color = ~pal(P_X6),
+                   label = palangre87_97[palangre87_97$CBU_ORAC == 400075,]$labels,
+                   radius = 2,
+                   group = "Vessel 400075") %>%
+    addCircleMarkers(data = palangre87_97[palangre87_97$CBU_ORAC == 400082,],
+                   lng = ~startlondd,
+                   lat = ~startlatdd,
+                   clusterOptions = NULL,
+                   color = ~pal(P_X6),
+                   label = palangre87_97[palangre87_97$CBU_ORAC == 400082,]$labels,
+                   radius = 2,
+                   group = "Vessel 400082") %>%
+    addCircleMarkers(data = palangre87_97[palangre87_97$CBU_ORAC == 400088,],
+                   lng = ~startlondd,
+                   lat = ~startlatdd,
+                   clusterOptions = NULL,
+                   color = ~pal(P_X6),
+                   label = palangre87_97[palangre87_97$CBU_ORAC == 400088,]$labels,
+                   radius = 2,
+                   group = "Vessel 400088") %>%
+    addCircleMarkers(data = palangre87_97[palangre87_97$CBU_ORAC == 400118,],
+                   lng = ~startlondd,
+                   lat = ~startlatdd,
+                   clusterOptions = NULL,
+                   color = ~pal(P_X6),
+                   label = palangre87_97[palangre87_97$CBU_ORAC == 400118,]$labels,
+                   radius = 2,
+                   group = "Vessel 400118") %>%
+    addCircleMarkers(data = palangre87_97[palangre87_97$CBU_ORAC == 400061,],
+                   lng = ~startlondd,
+                   lat = ~startlatdd,
+                   clusterOptions = NULL,
+                   color = ~pal(P_X6),
+                   label = palangre87_97[palangre87_97$CBU_ORAC == 400061,]$labels,
+                   radius = 2,
+                   group = "Vessel 400061") %>%
+    addCircleMarkers(data = palangre87_97[palangre87_97$CBU_ORAC == 400081,],
+                   lng = ~startlondd,
+                   lat = ~startlatdd,
+                   clusterOptions = NULL,
+                   color = ~pal(P_X6),
+                   label = palangre87_97[palangre87_97$CBU_ORAC == 400081,]$labels,
+                   radius = 2,
+                   group = "Vessel 400081") %>%
+    addCircleMarkers(data = palangre87_97[palangre87_97$CBU_ORAC == 400133,],
+                   lng = ~startlondd,
+                   lat = ~startlatdd,
+                   clusterOptions = NULL,
+                   color = ~pal(P_X6),
+                   label = palangre87_97[palangre87_97$CBU_ORAC == 400133,]$labels,
+                   radius = 2,
+                   group = "Vessel 400133") %>%
+    addCircleMarkers(data = palangre87_97[palangre87_97$CBU_ORAC == 400512,],
+                   lng = ~startlondd,
+                   lat = ~startlatdd,
+                   clusterOptions = NULL,
+                   color = ~pal(P_X6),
+                   label = palangre87_97[palangre87_97$CBU_ORAC == 400512,]$labels,
+                   radius = 2,
+                   group = "Vessel 400512") %>%
+    addLegend(position = "bottomright",
+              pal = pal,
+              values = ~P_X6,
+              title = "Proportion of catch that is pink cusk-eel",
+              opacity = 1)) %>%
+    addLayersControl(
+    overlayGroups = c("Vessel 400065", "Vessel 400062", "Vessel 400075",
+                      "Vessel 400082", "Vessel 400088", "Vessel 400118",
+                      "Vessel 400061", "Vessel 400081", "Vessel 400133",
+                      "Vessel 400512"),
+    options = layersControlOptions(collapsed = FALSE)
+    )
+```
+
+
+---
+# Grey seals as bioprobes
+.pull-left[
+
+.center[
+<img style="border-radius: 5%;" src="images/grey_seal.jpg" width="700px"/>
+]
+
+]
+
+.pull-right[
+## Topics
+
+### `r icons::fontawesome("fish")`  **Ecology**
+### `r icons::fontawesome("globe")` **Animal Movement**
+]
+
+### `r icons::fontawesome("lightbulb")` What is the detection efficiency of acoustic tags in the field? What potential is there to use grey seals to sample the marine environment?
+
+???
+
+---
+
+# Grey seals as bioprobes
+.pull-left[
+
+.center[
+<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d367544.6964222735!2d-60.215552395501966!3d43.97088868870316!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4b4689632ca41c27%3A0xfcd36f09136414e!2sSable%20Island!5e0!3m2!1sen!2sus!4v1630508253565!5m2!1sen!2sus" width="700" height="480" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+
+]
+
+]
+
+.pull-right[
+## Topics
+
+### `r icons::fontawesome("fish")`  **Ecology**
+### `r icons::fontawesome("globe")` **Animal Movement**
+]
+
+### `r icons::fontawesome("lightbulb")` What is the detection efficiency of acoustic tags in the field? What potential is there to use grey seals to sample the marine environment?
+
+???
+
+---
+# Spread and control of fox rabies in Europe
+
+.pull-left[
+
+.center[
+<img style="border-radius: 5%;" src="images/rabies_retreat.png" width="700px"/>
+]
+]
+
+.pull-right[
+## Topics
+
+### `r icons::fontawesome("fish")`  **Ecology**
+### `r icons::fontawesome("syringe")`  **Public Health**
+### `r icons::fontawesome("globe")` **Spatial Statistics**
+
+]
+
+### `r icons::fontawesome("lightbulb")` What can we learn about vaccination planning from the successful elimination of rabies in Western Europe?
+
+---
+# Alan Turing Institute Data Study Groups
+
+.pull-left[
+
+.center[
+<img style="border-radius: 5%;" src="images/rabies_retreat.png" width="700px"/>
+]
+]
+
+.pull-right[
+## Topics
+
+### `r icons::fontawesome("fish")`  **Ecology**
+### `r icons::fontawesome("syringe")`  **Public Health**
+### `r icons::fontawesome("globe")` **Spatial Statistics**
+
+]
+
+### `r icons::fontawesome("lightbulb")` What can we learn about vaccination planning from the successful elimination of rabies in Western Europe?
+---
+# Mapping Ocean Stories
+
+.pull-left[
+
+.center[
+<img style="border-radius: 5%;" src="images/student_class.jpeg" width="600px"/>
+]
+]
+
+.pull-right[
+
+#### `r icons::fontawesome("graduation-cap")` Collaboration between Island Institute, Maine Sea Grant, The First Coast, and College of the Atlantic.
+#### `r icons::fontawesome("headphones")` Series of oral history and audio storytelling projects, courses, and exhibits.
+
+```{r, echo=FALSE, out.width=450, fig.align='center', fig.cap="Stonington Soundwalk map by Kristina Buckley © 2023"}
+
+knitr::include_graphics("images/stonington_soundwalk.jpeg")
+
+```
+
+
+]
+
+### `r icons::fontawesome("bullhorn")` **Goal:** To Amplify the Voices of Maine's Coastal Communities
+
+???
+
+---
+class: 
+# Mapping Ocean Stories - Inspiration
+
+
+```{r, echo=FALSE, out.width=1000, fig.align='center', fig.alt="Map of Cod Spawning Grounds on the Coast of Maine"}
+
+knitr::include_graphics("images/cod-ted-ames.png")
+
+```
+
+???
+In Maine we have a rich history of collecting and sharing local ecological knowledge. Ted Ames collected and analyzed stories from 61- to 94-year-old Maine fishermen to show where cod had historically spawned and been caught along the coast of Maine and used this in addition to catch records to study movements of Atlantic cod. 
+
+---
+class: 
+# Mapping Ocean Stories
+
+### `r icons::fontawesome("headphones")` March 2023 received a grant to further develop two key outputs: Maine Sound + Story and the Maine Historic Fisheries Atlas.
+
+### - Transcribing and archiving interviews
+### - Developing a coding scheme for spatial data mentioned in interviews.
+
+### `r icons::fontawesome("lightbulb")` Aim: Use text analysis and spatial coding to understand the past and present use of Frenchman and Penobscot Bays
+
+---
+class: center
+# Oral History Archives: Maine Sound + Story
+
+.center[
+<iframe src="https://mainesoundandstory.com/" width="940" height="456" frameBorder="0"></iframe>
+]
+
+[Maine Sound and Story](https://mainesoundandstory.com)
+
+???
+Maine Sound & Story seeks to document and preserve the collective history, memory, and stories of Maine through sound, images, and oral history.
+
+
+---
+class: center
+# Maine Historic Fisheries Atlas
+
+.left-column[
+```{r, echo=FALSE, out.width=500, fig.align='center', fig.alt="Spatial Data Entry System"}
+
+knitr::include_graphics("images/mos-data-entry.png")
+
+```
+]
+.right-column[
+
+**Demo** [MOS Data Entry System](https://mos-data-coagis.hub.arcgis.com/pages/data-entry)
+
+```{r, echo=FALSE, out.width=475, fig.align='center', fig.alt="Scallop Dragging"}
+
+knitr::include_graphics("images/toby-scallops.png")
+
+```
+
+]
+
+
+---
+class: center
+
+<figure>
+    <img src="images/workflow.png"
+         alt="Diagram of the Interview to Spatial Coding Analysis Workflow" width="800" 
+     height="600">
+    <figcaption>Figure 1. Diagram of the mapping ocean stories data analysis workflow.</figcaption>
+</figure>
+
+???
+
+The database is designed to record spatial, categorical, observational, and temporal information about each activity. 
+---
+class: center
+# Database Structure
+.left-column[
+<figure>
+    <img src="images/database_structure.png"
+         alt="Diagram" width="650" 
+         height="450">
+         
+    <figcaption>Figure 2. MOS - Database Basic Structure.</figcaption>
+</figure>
+]
+
+.right-column[
+
+## - Who?
+## - What?
+## - Where?
+## - When?
+
+]
+???
+Spatial activities are categorized by coders by their domain, subdomain, and observation type to create a set of standardized observations that can be reliably compared later using queries, summaries, and other systematic methods (Figure 3). 
+
+---
+class: center
+# Project Codebook
+
+<figure>
+    <img src="images/codebook.png"
+         alt="Diagram" width="700" 
+          height="475">
+    <figcaption>Figure 3. Subset of the codebook showing the domain, subdomain, and data fields.</figcaption>
+</figure>
+
+???
+The spatial information for each activity is then classified by the geomethod and type of spatial information conveyed (Figure 4).
+
+- **Domain** Activity Classification (Fisheries,
+Aquaculture, Recreation)
+- **Subdomain** Subcategorization and specificity for
+observations (e.g. by species for fishing)
+
+---
+class: center
+# Spatial Classification Scheme
+
+<figure>
+    <img src="images/spatial_classification_scheme.png"
+         alt="Diagram" width="650" 
+          height="450">
+    <figcaption>Figure 4. Spatial classification scheme by geomethod.</figcaption>
+</figure>
+
+---
+# Gathering the Spatial Data: Illustrated
+
+```{r, echo=FALSE, out.width=500, fig.align='center', fig.cap="Spatial Interview: Frenchman Bay Coding Example 1"}
+
+knitr::include_graphics("images/fb-jp-ex.jpeg")
+
+```
+
+---
+# Gathering the Spatial Data: Map Overlay
+
+```{r, echo=FALSE, out.width=800, fig.align='center', fig.cap="Spatial Interview: Frenchman Bay Coding Example"}
+
+knitr::include_graphics("images/fb-jp-map-overlay-opaque.png")
+
+```
+
+---
+# Gathering the Spatial Data: Digitization
+
+```{r, echo=FALSE, out.width=800, fig.align='center', fig.cap="Spatial Interview: Frenchman Bay Coding Example"}
+
+knitr::include_graphics("images/fb-jp-ex-polygon-large.png")
+
+```
+
+---
+# Gathering the Spatial Data from Audio
+
+### *"But we would go up and fish the channels, which is on the other side of Long [Porcupine] and you could always fish all the way up to Bald Rock and then back to the [southern?]. You could tow up and down through there and catch a couple of hundred an hour of shrimp on a good day, a couple hundred pounds an hour. So some of the best fishing I’d ever seen was just on that side of that island, just like a whole bunch of boats going back and forth. And shrimp were–it was a lot of shrimp."*
+
+.footnote[Kane, Josh, Frenchman Bay Oral History Project, June 22nd, 2023, by Camden Hunt, 22 pages, Maine Sound and Story. Online: https://mainesoundandstory.s3.us-east-2.amazonaws.com/wp-content/uploads/2023/09/24154031/Kane_Josh_06.22.2023.pdf (Last Accessed: 03/18/2024).]
+
+---
+# Shrimp Tow: Referential
+
+```{r, echo=FALSE, out.width=600, fig.align='center', fig.cap="Shrimp Tow"}
+
+knitr::include_graphics("images/shrimp_trawl_large.png")
+
+```
+
+---
+# Expanding the Spatial Glossary
+
+```{r, echo=FALSE, out.width=800, fig.align='center', fig.cap="Spatial Glossary"}
+
+knitr::include_graphics("images/mos-spatial-glossary.png")
+
+```
+
+**Demo:** [MOS Spatial Glossary](https://mos-data-coagis.hub.arcgis.com/apps/a6c101ea5fc643bbb3c7067a0b8d86a4)
+
+
+---
+# Understanding prepositions in a marine context
+
+```{r, echo=FALSE, out.width=600, fig.align='center', fig.cap="Prepositions"}
+
+knitr::include_graphics("images/prepositions.jpeg")
+
+```
+
+
+---
+class: inverse, center, middle
+# Can we use text analysis to help us in the spatial coding process?
+ 
+
+---
+class: center
+# Oral History Interview
+
+.center[
+<iframe src="https://mainesoundandstory.com/record/josh-kane/" width="940" height="456" frameBorder="0"></iframe>
+]
+
+[Josh Kane Interview](https://mainesoundandstory.com/record/josh-kane/)
+
+---
+class: center
+# Oral History Transcript
+
+.center[
+<iframe src="https://mainesoundandstory.s3.us-east-2.amazonaws.com/wp-content/uploads/2023/09/24154031/Kane_Josh_06.22.2023.pdf" width="940" height="456" frameBorder="0"></iframe>
+]
+
+[Josh Kane Interview Transcript](https://mainesoundandstory.s3.us-east-2.amazonaws.com/wp-content/uploads/2023/09/24154031/Kane_Josh_06.22.2023.pdf)
+
+---
+# Using Text Analysis for Interview Processing
+
+### - Read in the transcript and identify speakers
+### - Identify relevant sections for spatial coding
+### - Collect information related to key questions
+
+```{r message = FALSE, warning = FALSE, echo = FALSE}
+library(pdftools) # read in pdf
+library(tidyverse) # data wrangling and visualization
+library(tidytext) # text analysis
+library(stopwords) # stop words
+```
+
+
+```{r message = FALSE, warning = FALSE, echo = FALSE}
+kane_full_text <- pdftools::pdf_text(pdf = "../data/Kane_Josh_06.22.2023.pdf")
+
+# convert text to string
+kane_full_text <- toString(kane_full_text)
+
+# convert text to character lines
+kane <- read_lines(kane_full_text)
+
+kane <- tibble(kane)
+kane <- kane %>%
+  rename(text = kane) %>%
+  filter(text != "") %>% 
+  mutate(interview_section = if_else(str_detect(text, pattern = "0:00:00"), "main", NA)) %>%
+  fill(interview_section, .direction = "down") %>%
+  filter(interview_section == "main")
+```
+
+
+```{r echo = FALSE}
+kane <- kane %>%
+  mutate(initials = str_extract(text, pattern = "[A-Z]{1,3}\\:")) %>%
+  mutate(initials = str_replace(initials, pattern = ":", replacement = "")) %>%
+  fill(initials, .direction = "down") %>%
+  filter(is.na(initials) == FALSE) %>%
+  mutate(text = str_replace_all(text, "[A-Z]{1,3}:", "")) %>%
+  mutate(group = cumsum(initials != lag(initials, default = "")))
+
+kane <- kane %>%
+  group_by(initials, group) %>%
+  summarise(text = str_c(text, collapse = " ")) %>%
+  mutate(text = str_squish(text)) %>%
+  ungroup() %>% 
+  arrange(group)
+```
+
+---
+# Transcript Text
+
+```{r echo = FALSE, out.width = "600px", out.height = "400px"}
+kane %>%
+  DT::datatable()
+```
+
+---
+# Searching for locations code
+
+```{r eval = FALSE}
+
+locations <- "bar harbor|Bar Harbor|Frenchman|frenchman|bay|Bay|porcupine|Porcupine|island|Island|Bar|bar"
+
+kane %>%
+  filter(initials == "JK") %>%
+  filter(str_detect(text, pattern = locations)) %>%
+  DT::datatable()
+```
+
+---
+# Searching for locations
+
+
+```{r echo = FALSE}
+
+locations <- "bar harbor|Bar Harbor|Frenchman|frenchman|bay|Bay|porcupine|Porcupine|island|Island|Bar|bar"
+
+kane %>%
+  filter(initials == "JK") %>%
+  filter(str_detect(text, pattern = locations)) %>%
+  DT::datatable()
+```
+
+---
+# Searching for species code
+
+```{r eval = FALSE}
+
+species <- "shrimp|Shrimp|Halibut|halibut|Lobster|lobster|Pogies|pogies|Menhayden|menhayden"
+
+kane %>%
+  filter(initials == "JK") %>%
+  filter(str_detect(text, pattern = species)) %>%
+  DT::datatable()
+```
+
+---
+# Searching for species
+
+```{r echo = FALSE}
+
+species <- "shrimp|Shrimp|Halibut|halibut|Lobster|lobster|Pogies|pogies|Menhayden|menhayden"
+
+kane %>%
+  filter(initials == "JK") %>%
+  filter(str_detect(text, pattern = species)) %>%
+  DT::datatable()
+```
+---
+class: left
+# Future Work
+
+### - Continue to develop data collection and text analysis processes
+### - Understand spatial semantics in the marine environment
+### - Complete spatial data entry system and open platform to public
+### - Further develop the uncertainty quantification and spatial classification schemes
+### - Explore the potential for Large Language Models
+
+
+---
+# Thank You!
+
+.left-column[
+
+**College of the Atlantic, Maine Sea Grant, Island Institute, Haley Ward, and Rhumbline Maps**:  
+- Natalie Springuel (Maine Sea Grant)
+- Todd Little-Siebold, Delphine DeMaisy, Will Draxler, Ilham Santoso, Linnea Goh (College of the Atlantic) 
+- Galen Koch (The First Coast/College of the Atlantic/Island Institute)
+- Ben Meader (Haley Ward); Eliza Carter, Vincent Falardeau, and Emily Meader (Rhumbline Maps)
+
+**Funding Support:**
+- The Maine Community Foundation
+]
+
+.right-column[
+**MOS Outputs**
+- Island Institute’s podcast: [https://www.islandinstitute.org/stories/podcast/](https://www.islandinstitute.org/stories/podcast/)
+
+- Coastal Conversations radio show: [https://seagrant.umaine.edu/coastal-conversations-radio-program/](https://seagrant.umaine.edu/coastal-conversations-radio-program/)
+- Maine Sound + Story Archive: [www.mainesoundandstory.com](www.mainesoundandstory.com)
+- The First Coast’s exhibits:  [www.thefirstcoast.org](www.thefirstcoast.org)
+- Historic Fisheries Atlas: [https://mos-data-coagis.hub.arcgis.com/](https://mos-data-coagis.hub.arcgis.com/).
+
+]
+
+
+---
+class: inverse, center, middle
+# Additional slides
+
+???
+
+---
+
+# Text Analysis In Practice - packages
+```{r message = FALSE, warning = FALSE}
+library(pdftools) # read in pdf
+library(tidyverse) # data wrangling and visualization
+library(tidytext) # text analysis
+library(stopwords) # stop words
+```
+
+---
+# In Practice - reading in the transcript
+
+```{r message = FALSE, warning = FALSE}
+kane_full_text <- pdftools::pdf_text(pdf = "../data/Kane_Josh_06.22.2023.pdf")
+
+# convert text to string
+kane_full_text <- toString(kane_full_text)
+
+# convert text to character lines
+kane <- read_lines(kane_full_text)
+
+kane <- tibble(kane)
+kane <- kane %>%
+  rename(text = kane) %>%
+  filter(text != "") %>% 
+  mutate(interview_section = if_else(str_detect(text, pattern = "0:00:00"), "main", NA)) %>%
+  fill(interview_section, .direction = "down") %>%
+  filter(interview_section == "main")
+```
+
+---
+# In Practice - identifying speakers
+
+```{r }
+kane <- kane %>%
+  mutate(initials = str_extract(text, pattern = "[A-Z]{1,3}\\:")) %>%
+  mutate(initials = str_replace(initials, pattern = ":", replacement = "")) %>%
+  fill(initials, .direction = "down") %>%
+  filter(is.na(initials) == FALSE) %>%
+  mutate(text = str_replace_all(text, "[A-Z]{1,3}:", "")) %>%
+  mutate(group = cumsum(initials != lag(initials, default = "")))
+
+kane <- kane %>%
+  group_by(initials, group) %>%
+  summarise(text = str_c(text, collapse = " ")) %>%
+  mutate(text = str_squish(text)) %>%
+  ungroup() %>% 
+  arrange(group)
+```
+
+---
+# Breaking down into words
+
+```{r}
+kane %>%
+  unnest_tokens(word, text, token='words') 
+```
+
+
+---
+# Parts of Speech
+
+```{r}
+kane %>%
+  unnest_tokens(word, text, token='words') %>% 
+  inner_join(parts_of_speech, relationship = "many-to-many")
+
+```
+
+---
+# Prepositions and parts of speech
+
+```{r}
+kane %>%
+  unnest_tokens(word, text, token='words') %>% 
+  inner_join(parts_of_speech, relationship = "many-to-many") %>% 
+  filter(pos == "Preposition") %>%
+  count(word) %>%
+  arrange(desc(n))
+
+```
