@@ -3,7 +3,7 @@ title: "Connecting Oceans, Communities, and Data: A Journey from Marine Biology 
 subtitle: "Women in Data Science, Middlebury College"  
 author: "Dr. Laurie Baker, College of the Atlantic"
 institute: "@llbaker1707"
-date: '19 and 20 March, 2024'
+date: '18 November, 2024'
 output:
   xaringan::moon_reader:
     anchor_sections: false
@@ -231,7 +231,7 @@ palangre87_97 <- palangre87_97 %>%
 ```
 
 
-```{r chile-fishing-map, echo = FALSE, out.width="95%", fig.align="center", fig.alt = "Map of fishing locations in Chile"}
+```{r chile-fishing-map, echo = FALSE, out.width="75%", fig.align="center", fig.alt = "Map of fishing locations in Chile"}
 pal <- colorNumeric(
   palette = "Oranges",
   domain = palangre87_97$P_X6)
@@ -365,7 +365,7 @@ palangre87_97$labels <- sprintf("<strong>Vessel Code: %s</strong><br/>%g proport
 .pull-left[
 
 .center[
-<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d367544.6964222735!2d-60.215552395501966!3d43.97088868870316!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4b4689632ca41c27%3A0xfcd36f09136414e!2sSable%20Island!5e0!3m2!1sen!2sus!4v1630508253565!5m2!1sen!2sus" width="700" height="480" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d367544.6964222735!2d-60.215552395501966!3d43.97088868870316!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4b4689632ca41c27%3A0xfcd36f09136414e!2sSable%20Island!5e0!3m2!1sen!2sus!4v1630508253565!5m2!1sen!2sus" width="560" height="420" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
 
 ]
 
@@ -409,20 +409,20 @@ palangre87_97$labels <- sprintf("<strong>Vessel Code: %s</strong><br/>%g proport
 .pull-left[
 
 .center[
-<img style="border-radius: 5%;" src="images/rabies_retreat.png" width="700px"/>
+<img style="border-radius: 5%;" src="images/turing_institute.jpg" width="700px"/>
 ]
 ]
 
 .pull-right[
 ## Topics
 
-### `r icons::fontawesome("fish")`  **Ecology**
-### `r icons::fontawesome("syringe")`  **Public Health**
-### `r icons::fontawesome("globe")` **Spatial Statistics**
+### `r icons::fontawesome("language")`  **Natural Language Processing**
+### `r icons::fontawesome("desktop")`  **Machine Learning**
+### `r icons::fontawesome("image")` **Image Processing**
 
 ]
 
-### `r icons::fontawesome("lightbulb")` What can we learn about vaccination planning from the successful elimination of rabies in Western Europe?
+### `r icons::fontawesome("lightbulb")` Alan Turing Institute
 ---
 # Mapping Ocean Stories
 
@@ -469,7 +469,7 @@ In Maine we have a rich history of collecting and sharing local ecological knowl
 class: 
 # Mapping Ocean Stories
 
-### `r icons::fontawesome("headphones")` March 2023 received a grant to further develop two key outputs: Maine Sound + Story and the Maine Historic Fisheries Atlas.
+### `r icons::fontawesome("headphones")` March 2023 received a grant to further develop two key outputs: Maine Sound + Story and the Maine Historical Fisheries Atlas.
 
 ### - Transcribing and archiving interviews
 ### - Developing a coding scheme for spatial data mentioned in interviews.
@@ -492,7 +492,7 @@ Maine Sound & Story seeks to document and preserve the collective history, memor
 
 ---
 class: center
-# Maine Historic Fisheries Atlas
+# Maine Historical Fisheries Atlas
 
 .left-column[
 ```{r, echo=FALSE, out.width=500, fig.align='center', fig.alt="Spatial Data Entry System"}
@@ -521,7 +521,7 @@ class: center
     <img src="images/workflow.png"
          alt="Diagram of the Interview to Spatial Coding Analysis Workflow" width="800" 
      height="600">
-    <figcaption>Figure 1. Diagram of the mapping ocean stories data analysis workflow.</figcaption>
+    <figcaption>Figure 1. Diagram of the Mapping Ocean Stories Data Analysis Workflow.</figcaption>
 </figure>
 
 ???

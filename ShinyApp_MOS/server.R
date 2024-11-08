@@ -20,6 +20,11 @@ library(tidyverse)
 library(htmlwidgets)
 library(readr)
 library(tm)
+library(lda)
+library(ldatuning)
+library(topicmodels)
+library(pals)
+library(SnowballC)
 
 source("Functions.R")
 
