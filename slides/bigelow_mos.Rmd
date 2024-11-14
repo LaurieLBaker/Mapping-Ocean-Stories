@@ -122,15 +122,6 @@ class: middle, left
 [`r icons::fontawesome("twitter")` @llbaker1707](https://twitter.com/llbaker1707)
 [`r icons::icon_style(icons::fontawesome("github"), scale = 1)` @laurielbaker](https://github.com/laurielbaker)
 ]
-???
-
----
-class: middle, left
-# Talk Outline
-
-## Career Path from Marine Biology to Data Science
-## Returning to Maine and Mapping Ocean Stories
-## Connecting Students with Communities in Community-Engaged Data Science
 
 
 ```{r packages for fish analysis, echo=FALSE, message=FALSE, warning=FALSE}
