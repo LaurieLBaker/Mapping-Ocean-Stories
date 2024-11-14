@@ -212,7 +212,7 @@ class: middle, left
 # What are vessels targeting?
 
 ```{r echo=FALSE, out.width="65%", fig.align="center", fig.alt = "Plot showing the distribution of species in the catch by weight by vessel"}
-knitr::include_graphics("slides/figs/fishing_what.png")
+knitr::include_graphics("images/species_prop.png")
 ```
 
 ---
@@ -241,7 +241,7 @@ palangre87_97$labels <- sprintf("<strong>Vessel Code: %s</strong><br/>%g proport
                   palangre87_97$CBU_ORAC, palangre87_97$P_X6) %>% lapply(htmltools::HTML)
 
 (start_position_map <- leaflet(data = palangre87_97) %>%
-   setView(lng = 1.382203, lat = -61.051992, zoom = 4) %>%
+   setView(lng = -68.527060, lat = -46.162921, zoom = 4) %>%
   addProviderTiles(providers$Esri.WorldImagery) %>%
   addCircleMarkers(data = palangre87_97[palangre87_97$CBU_ORAC == 400062,], 
                    lng = ~startlondd, 
@@ -435,7 +435,7 @@ palangre87_97$labels <- sprintf("<strong>Vessel Code: %s</strong><br/>%g proport
 
 .pull-right[
 
-#### `r icons::fontawesome("graduation-cap")` Collaboration between Island Institute, Maine Sea Grant, The First Coast, and College of the Atlantic.
+#### `r icons::fontawesome("graduation-cap")` Collaboration with the Island Institute, Maine Sea Grant, The First Coast, and College of the Atlantic.
 #### `r icons::fontawesome("headphones")` Series of oral history and audio storytelling projects, courses, and exhibits.
 
 ```{r, echo=FALSE, out.width=450, fig.align='center', fig.cap="Stonington Soundwalk map by Kristina Buckley © 2023"}
@@ -611,7 +611,7 @@ knitr::include_graphics("images/fb-jp-ex-polygon-large.png")
 ---
 # Gathering the Spatial Data from Audio
 
-### *"But we would go up and fish the channels, which is on the other side of Long [Porcupine] and you could always fish all the way up to Bald Rock and then back to the [southern?]. You could tow up and down through there and catch a couple of hundred an hour of shrimp on a good day, a couple hundred pounds an hour. So some of the best fishing I’d ever seen was just on that side of that island, just like a whole bunch of boats going back and forth. And shrimp were–it was a lot of shrimp."*
+ <font size="6"> "But we would go up and <strong>fish the channels, which is on the other side of Long [Porcupine] and you could always fish all the way up to Bald Rock and then back to the [southern?]</strong>. You could tow up and down through there and catch a couple of hundred an hour of shrimp on a good day, a couple hundred pounds an hour. So some of the best fishing I’d ever seen was just on that side of that island, just like a whole bunch of boats going back and forth. And shrimp were–it was a lot of shrimp."* </font> 
 
 .footnote[Kane, Josh, Frenchman Bay Oral History Project, June 22nd, 2023, by Camden Hunt, 22 pages, Maine Sound and Story. Online: https://mainesoundandstory.s3.us-east-2.amazonaws.com/wp-content/uploads/2023/09/24154031/Kane_Josh_06.22.2023.pdf (Last Accessed: 03/18/2024).]
 
@@ -800,9 +800,10 @@ class: left
 
 **College of the Atlantic, Maine Sea Grant, Island Institute, Haley Ward, and Rhumbline Maps**:  
 - Natalie Springuel (Maine Sea Grant)
-- Todd Little-Siebold, Delphine DeMaisy, Will Draxler, Ilham Santoso, Linnea Goh (College of the Atlantic) 
+- Todd Little-Siebold, Delphine DeMaisy, Will Draxler, Ilham Santoso, Linnea Goh, Asy Xaytouthor (College of the Atlantic) 
 - Galen Koch (The First Coast/College of the Atlantic/Island Institute)
-- Ben Meader (Haley Ward); Eliza Carter, Vincent Falardeau, and Emily Meader (Rhumbline Maps)
+- Ben Meader '10 (Haley Ward)
+- Nick Battista (Island Institute)
 
 **Funding Support:**
 - The Maine Community Foundation
