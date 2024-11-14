@@ -246,27 +246,6 @@ I used catch composition and machine learning to infer a fisher's target species
 ### `r icons::fontawesome("lightbulb")` What can we learn about vaccination planning from the successful elimination of rabies in Western Europe?
 
 ---
-# Alan Turing Institute Data Study Groups
-
-.pull-left[
-
-.center[
-<img style="border-radius: 5%;" src="images/turing_institute.jpg" width="700px"/>
-]
-]
-
-.pull-right[
-## Topics
-
-### `r icons::fontawesome("language")`  **Natural Language Processing**
-### `r icons::fontawesome("desktop")`  **Machine Learning**
-### `r icons::fontawesome("image")` **Image Processing**
-
-]
-
-### `r icons::fontawesome("lightbulb")` Alan Turing Institute
-
----
 # Target species in the Chilean longline fishery
 
 .pull-left[
