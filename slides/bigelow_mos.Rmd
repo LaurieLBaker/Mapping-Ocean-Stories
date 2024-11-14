@@ -680,12 +680,19 @@ class: left
 
 .right-column[
 **MOS Outputs**
-- Island Institute’s podcast: [https://www.islandinstitute.org/stories/podcast/](https://www.islandinstitute.org/stories/podcast/)
 
-- Coastal Conversations radio show: [https://seagrant.umaine.edu/coastal-conversations-radio-program/](https://seagrant.umaine.edu/coastal-conversations-radio-program/)
-- Maine Sound + Story Archive: [www.mainesoundandstory.com](www.mainesoundandstory.com)
-- The First Coast’s exhibits:  [www.thefirstcoast.org](www.thefirstcoast.org)
-- Historic Fisheries Atlas: [https://mos-data-coagis.hub.arcgis.com/](https://mos-data-coagis.hub.arcgis.com/).
+.center[
+```{r echo = FALSE, out.width = 150}
+knitr::include_graphics("images/mos-linktree.png")
+```
+]
+
+- [From the Sea Up](https://www.islandinstitute.org/stories/podcast/)
+
+- [Coastal Conversations WERU](https://seagrant.umaine.edu/coastal-conversations-radio-program/)
+- [Maine Sound + Story Archive:](www.mainesoundandstory.com)
+- [The First Coast Exhibits](www.thefirstcoast.org)
+- [Maine Historical Fisheries Atlas](https://mos-data-coagis.hub.arcgis.com/).
 
 ]
 
