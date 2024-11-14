@@ -1,9 +1,9 @@
 ---
-title: "Connecting Oceans, Communities, and Data: A Journey from Marine Biology to Data Science"
-subtitle: "Women in Data Science, Middlebury College"  
-author: "Dr. Laurie Baker, College of the Atlantic"
+title: "Mapping Ocean Stories"
+subtitle: "Bigelow Laboratory for Ocean Sciences"  
+author: "Dr. Laurie Baker, College of the Atlantic soon Bates College"
 institute: "@llbaker1707"
-date: '18 November, 2024'
+date: '14 November, 2024'
 output:
   xaringan::moon_reader:
     anchor_sections: false
@@ -506,8 +506,9 @@ knitr::include_graphics("images/mos_goals.png")
 
 ---
 class: 
-# Mapping Ocean Stories
+# Mapping Ocean Stories Timeline
 
+### Began with 2017 class *Mapping Ocean Stories* and 2020 class created the Mt. Desert Island Historical Fisheries Atlas.
 ### `r icons::fontawesome("headphones")` March 2023 received a grant to further develop two key outputs: Maine Sound + Story and the Maine Historical Fisheries Atlas (MHFA).
 
 ### 1. Develop a coding scheme for spatial data mentioned in interviews
@@ -529,27 +530,15 @@ class: center
 The database is designed to record spatial, categorical, observational, and temporal information about each activity.
 
 ---
-class: center
-# Maine Historical Fisheries Atlas
-
-.left-column[
-```{r, echo=FALSE, out.width=500, fig.align='center', fig.alt="Spatial Data Entry System"}
-
-knitr::include_graphics("images/mos-data-entry.png")
-
+# Biographical Mapping Interviews
+.pull-left[
+```{r echo = FALSE, out.width = 550}
+knitr::include_graphics("images/mos-bio-map.jpg")
 ```
 ]
-.right-column[
 
-**Demo** [MOS Data Entry System](https://mos-data-coagis.hub.arcgis.com/pages/data-entry)
-
-```{r, echo=FALSE, out.width=475, fig.align='center', fig.alt="Scallop Dragging"}
-
-knitr::include_graphics("images/toby-scallops.png")
-
-```
-
-]
+.pull-right[Natalie Springuel (Maine Sea Grant) and
+MOS Class with David Thomas in Islesford, Little Cranberry]
 
 ---
 # Digitizing the Biographical Mapping Interview
@@ -564,131 +553,57 @@ Your browser does not support the video tag.
 
 ---
 class: center
-# Database Structure
-.left-column[
-<figure>
-    <img src="images/database_structure.png"
-         alt="Diagram" width="650" 
-         height="450">
-         
-    <figcaption>Figure 2. MOS - Database Basic Structure.</figcaption>
-</figure>
+# Maine Historical Fisheries Atlas
+
+```{r, echo=FALSE, out.width=500, fig.align='center', fig.alt="Spatial Data Entry System"}
+
+knitr::include_graphics("images/mos-data-entry.png")
+```
+
+**Demo** [MOS Hub Site](https://mos-data-coagis.hub.arcgis.com)
+
+---
+class: center
+# Digitized Locations
+
+```{r, echo=FALSE, out.width=800, fig.align='center', fig.alt="Scallop Dragging"} 
+
+knitr::include_graphics("images/toby-scallops.png")
+
+```
+
+---
+class: center
+# Spatial Data from Oral History Archives
+
+.pull-left[
+
+```{r echo = FALSE}
+knitr::include_graphics("images/mos-archives.png")
+```
+
+[Maine Sound + Story](https://mainesoundandstory.com/)
+
 ]
 
-.right-column[
+.pull-right[
 
-## - Who?
-## - What?
-## - Where?
-## - When?
+```{r echo = FALSE, fig.cap = "Photo of Herbert Carter Jr."}
+knitr::include_graphics("images/mainesound_story.png")
+```
+
+#### ~500 oral histories from historical societies, The First Coast, and student-led interviews.
+
+#### 1970s to present
+
 
 ]
-???
-Spatial activities are categorized by coders by their domain, subdomain, and observation type to create a set of standardized observations that can be reliably compared later using queries, summaries, and other systematic methods (Figure 3). 
+
+
 
 ---
 class: center
-# Project Codebook
-
-<figure>
-    <img src="images/codebook.png"
-         alt="Diagram" width="700" 
-          height="475">
-    <figcaption>Figure 3. Subset of the codebook showing the domain, subdomain, and data fields.</figcaption>
-</figure>
-
-???
-The spatial information for each activity is then classified by the geomethod and type of spatial information conveyed (Figure 4).
-
-- **Domain** Activity Classification (Fisheries,
-Aquaculture, Recreation)
-- **Subdomain** Subcategorization and specificity for
-observations (e.g. by species for fishing)
-
----
-class: center
-# Spatial Classification Scheme
-
-<figure>
-    <img src="images/spatial_classification_scheme.png"
-         alt="Diagram" width="650" 
-          height="450">
-    <figcaption>Figure 4. Spatial classification scheme by geomethod.</figcaption>
-</figure>
-
----
-# Spatial Data: Biographical Mapping Interviews
-
-```{r, echo=FALSE, out.width=500, fig.align='center', fig.cap="Spatial Interview: Frenchman Bay Coding Example 1"}
-
-knitr::include_graphics("images/fb-jp-ex.jpeg")
-
-```
-
----
-# Spatial Data: Map Overlay
-
-```{r, echo=FALSE, out.width=800, fig.align='center', fig.cap="Spatial Interview: Frenchman Bay Coding Example"}
-
-knitr::include_graphics("images/fb-jp-map-overlay-opaque.png")
-
-```
-
----
-# Spatial Data: Digitization
-
-```{r, echo=FALSE, out.width=800, fig.align='center', fig.cap="Spatial Interview: Frenchman Bay Coding Example"}
-
-knitr::include_graphics("images/fb-jp-ex-polygon-large.png")
-
-```
-
----
-# Spatial Data: Audio transcripts
-
- <font size="6"> "But we would go up and <strong>fish the channels, which is on the other side of Long [Porcupine] and you could always fish all the way up to Bald Rock and then back to the [southern?]</strong>. You could tow up and down through there and catch a couple of hundred an hour of shrimp on a good day, a couple hundred pounds an hour. So some of the best fishing I’d ever seen was just on that side of that island, just like a whole bunch of boats going back and forth. And shrimp were–it was a lot of shrimp."* </font> 
-
-.footnote[Kane, Josh, Frenchman Bay Oral History Project, June 22nd, 2023, by Camden Hunt, 22 pages, Maine Sound and Story. Online: https://mainesoundandstory.s3.us-east-2.amazonaws.com/wp-content/uploads/2023/09/24154031/Kane_Josh_06.22.2023.pdf (Last Accessed: 03/18/2024).]
-
----
-# Shrimp Tow: Referential
-
-```{r, echo=FALSE, out.width=600, fig.align='center', fig.cap="Shrimp Tow"}
-
-knitr::include_graphics("images/shrimp_trawl_large.png")
-
-```
-
----
-# Expanding the Spatial Glossary
-
-```{r, echo=FALSE, out.width=800, fig.align='center', fig.cap="Spatial Glossary"}
-
-knitr::include_graphics("images/mos-spatial-glossary.png")
-
-```
-
-**Demo:** [MOS Spatial Glossary](https://mos-data-coagis.hub.arcgis.com/apps/a6c101ea5fc643bbb3c7067a0b8d86a4)
-
-
----
-# Understanding prepositions in a marine context
-
-```{r, echo=FALSE, out.width=600, fig.align='center', fig.cap="Prepositions"}
-
-knitr::include_graphics("images/prepositions.jpeg")
-
-```
-
-
----
-class: inverse, center, middle
-# Can we use text analysis to help us in the spatial coding process?
- 
-
----
-class: center
-# Oral History Interview
+# Spatial Data from Oral History Archives
 
 .center[
 <iframe src="https://mainesoundandstory.com/record/josh-kane/" width="940" height="456" frameBorder="0"></iframe>
@@ -707,6 +622,13 @@ class: center
 [Josh Kane Interview Transcript](https://mainesoundandstory.s3.us-east-2.amazonaws.com/wp-content/uploads/2023/09/24154031/Kane_Josh_06.22.2023.pdf)
 
 ---
+# Spatial Data: Audio transcripts
+
+ <font size="6"> "But we would go up and <strong>fish the channels, which is on the other side of Long [Porcupine] and you could always fish all the way up to Bald Rock and then back to the [southern?]</strong>. You could tow up and down through there and catch a couple of hundred an hour of shrimp on a good day, a couple hundred pounds an hour. So some of the best fishing I’d ever seen was just on that side of that island, just like a whole bunch of boats going back and forth. And shrimp were–it was a lot of shrimp."* </font> 
+
+.footnote[Kane, Josh, Frenchman Bay Oral History Project, June 22nd, 2023, by Camden Hunt, 22 pages, Maine Sound and Story. Online: https://mainesoundandstory.s3.us-east-2.amazonaws.com/wp-content/uploads/2023/09/24154031/Kane_Josh_06.22.2023.pdf (Last Accessed: 03/18/2024).]
+
+---
 # Using Text Analysis for Interview Processing
 
 ### - Read in the transcript and identify speakers
@@ -715,7 +637,7 @@ class: center
 
 ---
 class: center
-# Oral History Transcript
+# Spatial Coding Tool
 
 .center[
 <iframe src="https://laurie-the-student-baker.shinyapps.io/CodingSpatialMentions/" width="940" height="456" frameBorder="0"></iframe>
@@ -723,14 +645,48 @@ class: center
 
 [Josh Kane Interview Transcript](https://mainesoundandstory.s3.us-east-2.amazonaws.com/wp-content/uploads/2023/09/24154031/Kane_Josh_06.22.2023.pdf)
 
+---
+# Expanding the Spatial Glossary
 
+```{r, echo=FALSE, out.width=800, fig.align='center', fig.cap="Spatial Glossary"}
+
+knitr::include_graphics("images/mos-spatial-glossary.png")
+
+```
+
+Sources of Spatial Data: NOAA Charts, GNIS, Public
+
+
+**Demo:** [MOS Spatial Glossary](https://mos-data-coagis.hub.arcgis.com/apps/a6c101ea5fc643bbb3c7067a0b8d86a4)
+
+---
+class: left
+# Where we are now
+
+.pull-left[
+```{r, echo=FALSE, out.width=900, fig.align='center', fig.alt="Map with Polygons"}
+
+knitr::include_graphics("images/where_now_101.png")
+
+```
+]
+
+.pull-right[
+
+.center[
+# **101**
+## MS+S Coded Interviews
+# **18**
+## Biographical Mapping Interviews
+]
+]
 ---
 class: left
 # Future Work
 
 ### - Continue to develop data collection and text analysis processes
 ### - Understand spatial semantics in the marine environment
-### - Complete spatial data entry system and open platform to public
+### - Share the Spatial Glossary and Data Query with others
 ### - Further develop the uncertainty quantification and spatial classification schemes
 ### - Explore the potential for Large Language Models
 
@@ -748,6 +704,7 @@ class: left
 - Nick Battista (Island Institute)
 
 **Funding Support:**
+- The Fund for Maine Islands
 - The Maine Community Foundation
 ]
 
@@ -960,3 +917,111 @@ kane %>%
   arrange(desc(n))
 
 ```
+
+
+---
+class: center
+# Spatial Classification Scheme
+
+<figure>
+    <img src="images/spatial_classification_scheme.png"
+         alt="Diagram" width="650" 
+          height="450">
+    <figcaption>Figure 4. Spatial classification scheme by geomethod.</figcaption>
+</figure>
+
+---
+# Spatial Data: Biographical Mapping Interviews
+
+```{r, echo=FALSE, out.width=500, fig.align='center', fig.cap="Spatial Interview: Frenchman Bay Coding Example 1"}
+
+knitr::include_graphics("images/fb-jp-ex.jpeg")
+
+```
+
+---
+# Spatial Data: Map Overlay
+
+```{r, echo=FALSE, out.width=800, fig.align='center', fig.cap="Spatial Interview: Frenchman Bay Coding Example"}
+
+knitr::include_graphics("images/fb-jp-map-overlay-opaque.png")
+
+```
+
+---
+# Spatial Data: Digitization
+
+```{r, echo=FALSE, out.width=800, fig.align='center', fig.cap="Spatial Interview: Frenchman Bay Coding Example"}
+
+knitr::include_graphics("images/fb-jp-ex-polygon-large.png")
+
+```
+
+---
+# Spatial Data: Audio transcripts
+
+ <font size="6"> "But we would go up and <strong>fish the channels, which is on the other side of Long [Porcupine] and you could always fish all the way up to Bald Rock and then back to the [southern?]</strong>. You could tow up and down through there and catch a couple of hundred an hour of shrimp on a good day, a couple hundred pounds an hour. So some of the best fishing I’d ever seen was just on that side of that island, just like a whole bunch of boats going back and forth. And shrimp were–it was a lot of shrimp."* </font> 
+
+.footnote[Kane, Josh, Frenchman Bay Oral History Project, June 22nd, 2023, by Camden Hunt, 22 pages, Maine Sound and Story. Online: https://mainesoundandstory.s3.us-east-2.amazonaws.com/wp-content/uploads/2023/09/24154031/Kane_Josh_06.22.2023.pdf (Last Accessed: 03/18/2024).]
+
+---
+# Shrimp Tow: Referential
+
+```{r, echo=FALSE, out.width=600, fig.align='center', fig.cap="Shrimp Tow"}
+
+knitr::include_graphics("images/shrimp_trawl_large.png")
+
+```
+
+---
+class: center
+# Database Structure
+.left-column[
+<figure>
+    <img src="images/database_structure.png"
+         alt="Diagram" width="650" 
+         height="450">
+         
+    <figcaption>Figure 2. MOS - Database Basic Structure.</figcaption>
+</figure>
+]
+
+.right-column[
+
+## - Who?
+## - What?
+## - Where?
+## - When?
+
+]
+???
+Spatial activities are categorized by coders by their domain, subdomain, and observation type to create a set of standardized observations that can be reliably compared later using queries, summaries, and other systematic methods (Figure 3). 
+
+---
+class: center
+# Project Codebook
+
+<figure>
+    <img src="images/codebook.png"
+         alt="Diagram" width="700" 
+          height="475">
+    <figcaption>Figure 3. Subset of the codebook showing the domain, subdomain, and data fields.</figcaption>
+</figure>
+
+???
+The spatial information for each activity is then classified by the geomethod and type of spatial information conveyed (Figure 4).
+
+- **Domain** Activity Classification (Fisheries,
+Aquaculture, Recreation)
+- **Subdomain** Subcategorization and specificity for
+observations (e.g. by species for fishing)
+
+---
+# Future Work: Marine Prepositions
+
+```{r, echo=FALSE, out.width=600, fig.align='center', fig.cap="Prepositions"}
+
+knitr::include_graphics("images/prepositions.jpeg")
+```
+
+- Understanding prepositions in a marine context.
