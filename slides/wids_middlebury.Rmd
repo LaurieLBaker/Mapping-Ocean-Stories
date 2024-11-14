@@ -516,17 +516,17 @@ class:
 
 ---
 class: center
-# Oral History Archives: Maine Sound + Story
 
-.center[
-<iframe src="https://mainesoundandstory.com/" width="940" height="456" frameBorder="0"></iframe>
-]
-
-[Maine Sound and Story](https://mainesoundandstory.com)
+<figure>
+    <img src="images/workflow.png"
+         alt="Diagram of the Interview to Spatial Coding Analysis Workflow" width="800" 
+     height="600">
+    <figcaption>Figure 1. Diagram of the Mapping Ocean Stories Data Analysis Workflow.</figcaption>
+</figure>
 
 ???
-Maine Sound & Story seeks to document and preserve the collective history, memory, and stories of Maine through sound, images, and oral history.
 
+The database is designed to record spatial, categorical, observational, and temporal information about each activity.
 
 ---
 class: center
@@ -551,20 +551,17 @@ knitr::include_graphics("images/toby-scallops.png")
 
 ]
 
-
 ---
-class: center
+# Digitizing the Biographical Mapping Interview
 
-<figure>
-    <img src="images/workflow.png"
-         alt="Diagram of the Interview to Spatial Coding Analysis Workflow" width="800" 
-     height="600">
-    <figcaption>Figure 1. Diagram of the Mapping Ocean Stories Data Analysis Workflow.</figcaption>
-</figure>
+<center>
+<video width="800" height="500" controls>
+  <source src="media/Spatial_Data_Editor_Demo.mp4" type="video/mp4">
+  <source src="media/Spatial_Data_Editor_Demo.ogg" type="video/ogg">
+Your browser does not support the video tag.
+</video>
+</center>
 
-???
-
-The database is designed to record spatial, categorical, observational, and temporal information about each activity. 
 ---
 class: center
 # Database Structure
