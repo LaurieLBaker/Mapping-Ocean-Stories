@@ -3,3 +3,13 @@
 .RData
 .Ruserdata
 .DS_Store
+
+# Data set
+
+data/*.xlsx
+data/*.csv
+
+# Big images
+
+slides/images/*
+slides/slides/figs/*
