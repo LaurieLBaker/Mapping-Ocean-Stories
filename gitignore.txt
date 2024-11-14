@@ -7,11 +7,11 @@
 data/*.xlsx
 data/*.csv
 
-# Big images
+# Big images and videos
 
 slides/images/*
 Slides/slides/figs/*
-
+slides/media/*
 # Session Data files
 .RData
 
