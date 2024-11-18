@@ -190,7 +190,6 @@ I used catch composition and machine learning to infer a fisher's target species
 
 .center[
 <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d367544.6964222735!2d-60.215552395501966!3d43.97088868870316!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4b4689632ca41c27%3A0xfcd36f09136414e!2sSable%20Island!5e0!3m2!1sen!2sus!4v1630508253565!5m2!1sen!2sus" width="560" height="420" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
-
 ]
 
 ]
@@ -247,6 +246,14 @@ I used catch composition and machine learning to infer a fisher's target species
 ]
 
 ### `r icons::fontawesome("lightbulb")` Week-long Hackathon working with an industry or government partner (e.g. Cabinet Office, British Antarctic Survey, Samsung, and Cochrane Systematic Reviews). 
+
+---
+# RLadies, PyLadies, Codebar.io
+
+.center[
+<iframe src="https://rladies.org/" width="800" height="620" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+]
+
 
 ---
 # Data Science Campus, Office for National Statistics
@@ -483,7 +490,7 @@ class: left
 
 <figure>
     <img src="images/where_now_101.png"
-         alt="Map showing spatial locations" width="450" 
+         alt="Map showing spatial locations" width="500" 
      height="350">
     <figcaption></figcaption>
 </figure>
@@ -515,7 +522,7 @@ class: left
 
 .left-column[
 
-**College of the Atlantic, Maine Sea Grant, Island Institute, Haley Ward, and Rhumbline Maps**:  
+**College of the Atlantic, Maine Sea Grant, Island Institute, and Haley Ward**:  
 - Natalie Springuel (Maine Sea Grant)
 - Todd Little-Siebold, Delphine DeMaisy, Will Draxler, Ilham Santoso, Linnea Goh, Asy Xaytouthor (College of the Atlantic) 
 - Galen Koch (The First Coast/College of the Atlantic/Island Institute)
