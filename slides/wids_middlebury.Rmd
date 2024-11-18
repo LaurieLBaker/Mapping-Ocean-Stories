@@ -485,12 +485,16 @@ class: left
 
 .pull-left[
 
-<figure>
-    <img src="images/where_now_101.png"
-         alt="Map showing spatial locations" width="500" 
-     height="350">
-    <figcaption></figcaption>
-</figure>
+.center[
+<iframe src="https://mos-data-coagis.hub.arcgis.com/pages/432de46cdda0489fb73bc5cd6c0e7c92" width="400" height="600" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+]
+
+<!-- <figure> -->
+<!--     <img src="images/where_now_101.png" -->
+<!--          alt="Map showing spatial locations" width="500"  -->
+<!--      height="350"> -->
+<!--     <figcaption></figcaption> -->
+<!-- </figure> -->
 
 ]
 
