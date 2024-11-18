@@ -425,7 +425,7 @@ class: center
 ---
 # Spatial Data: Audio transcripts
 
- <font size="6"> "But we would go up and <strong>fish the channels, which is on the other side of Long [Porcupine] and you could always fish all the way up to Bald Rock and then back to the [southern?]</strong>. You could tow up and down through there and catch a couple of hundred an hour of shrimp on a good day, a couple hundred pounds an hour. So some of the best fishing I’d ever seen was just on that side of that island, just like a whole bunch of boats going back and forth. And shrimp were–it was a lot of shrimp." </font> 
+ <font size="6"> "But we would go up and <strong style="color:#FFA500;">fish the channels, which is on the other side of Long [Porcupine] and you could always fish all the way up to Bald Rock and then back to the [southern?]</strong>. You could tow up and down through there and catch a couple of hundred an hour of shrimp on a good day, a couple hundred pounds an hour. So some of the best fishing I’d ever seen was just on that side of that island, just like a whole bunch of boats going back and forth. And shrimp were–it was a lot of shrimp." </font> 
 
 .footnote[Kane, Josh, Frenchman Bay Oral History Project, June 22nd, 2023, by Camden Hunt, 22 pages, Maine Sound and Story. Online: https://mainesoundandstory.s3.us-east-2.amazonaws.com/wp-content/uploads/2023/09/24154031/Kane_Josh_06.22.2023.pdf (Last Accessed: 03/18/2024).]
 
