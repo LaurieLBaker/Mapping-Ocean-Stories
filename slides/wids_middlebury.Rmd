@@ -99,39 +99,11 @@ class: middle, left
 
 ---
 class: middle, left
-# About me
-
-.pull-left[
-
-.center[
-<img style="border-radius: 50%;" src="images/laurie_baker.jpg" width="350px"/>
-
-### Dr. Laurie Baker
-
-]]
-
-.pull-right[
-
-#### `r icons::fontawesome("desktop")` Data Science Lecturer and Head of Faculty, Data Science Campus, Office for National Statistics
-#### `r icons::fontawesome("university")` Visiting Assistant Professor, Digital and Computational Studies, Bates College
-#### `r icons::fontawesome("university")` Assistant Professor, Computer Science and Data Science, College of the Atlantic
-#### `r icons::fontawesome("university")` Assistant Professor, Mathematics, Bates College
-]
-
-.center[
-[`r icons::fontawesome("link")` lauriebaker.rbind.io](https://lauriebaker.rbind.io)
-[`r icons::fontawesome("twitter")` @llbaker1707](https://twitter.com/llbaker1707)
-[`r icons::icon_style(icons::fontawesome("github"), scale = 1)` @laurielbaker](https://github.com/laurielbaker)
-]
-???
-
----
-class: middle, left
 # Talk Outline
 
-## Career Path from Marine Biology to Data Science
-## Returning to Maine and Mapping Ocean Stories
-## Connecting Students with Communities in Community-Engaged Data Science
+### - Career Path from Marine Biology to Data Science
+### - Connecting Students with Communities in Community-Engaged Data Science
+### - Current Research Project: Mapping Ocean Stories
 
 
 ```{r packages for fish analysis, echo=FALSE, message=FALSE, warning=FALSE}
@@ -274,7 +246,284 @@ I used catch composition and machine learning to infer a fisher's target species
 
 ]
 
-### `r icons::fontawesome("lightbulb")` Alan Turing Institute
+### `r icons::fontawesome("lightbulb")` Week-long Hackathon working with an industry or government partner (e.g. Cabinet Office, British Antarctic Survey, Samsung, and Cochrane Systematic Reviews). 
+
+---
+class: middle, left
+# Data Science Campus, Office for National Statistics
+
+.left-column[
+.center[
+<img style="border-radius: 5%;" src="images/sdg.png" width="500px"/>
+]
+]
+
+.right-column[
+
+
+### - Data Science projects related to UN Sustainable Development Goals
+
+### - Teaching
+
+### - Mentoring
+
+]
+
+---
+# Mapping Ocean Stories
+
+.pull-left[
+
+.center[
+<img style="border-radius: 5%;" src="images/student_class.jpeg" width="600px"/>
+]
+]
+
+.pull-right[
+
+#### `r icons::fontawesome("graduation-cap")` Collaboration with the Island Institute, Maine Sea Grant, The First Coast, College of the Atlantic, and Bates College.
+#### `r icons::fontawesome("headphones")` Series of oral history and audio storytelling projects, courses, and exhibits.
+
+```{r, echo=FALSE, out.width=450, fig.align='center', fig.cap="Stonington Soundwalk map by Kristina Buckley © 2023"}
+
+knitr::include_graphics("images/stonington_soundwalk.jpeg")
+
+```
+
+
+]
+
+???
+
+---
+class:
+# Mapping Ocean Stories Goals
+
+```{r mos goals, out.width = 880, echo = FALSE, message = FALSE}
+knitr::include_graphics("images/mos_goals.png")
+
+```
+
+
+---
+class:
+# Mapping Ocean Stories
+
+<iframe width="960" height="505" src="https://www.youtube.com/embed/__oa_9Gugmg?si=pthIL7fCYvOLtdeW" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+---
+class: 
+# Mapping Ocean Stories Timeline
+
+### Began with 2017 class *Mapping Ocean Stories* and 2020 class created the Mt. Desert Island Historical Fisheries Atlas.
+### `r icons::fontawesome("headphones")` March 2023 received a grant to further develop two key outputs: Maine Sound + Story and the Maine Historical Fisheries Atlas (MHFA).
+
+### 1. Develop a coding scheme for spatial data mentioned in interviews
+### 2. Build a hub site to host the Maine Historical Fisheries Atlas (*Work with Ben Meader Middlebury '10)
+### 3. Use text analysis to support the spatial coding process
+
+---
+class: center
+
+<figure>
+    <img src="images/workflow.png"
+         alt="Diagram of the Interview to Spatial Coding Analysis Workflow" width="800" 
+     height="600">
+    <figcaption>Figure 1. Diagram of the Mapping Ocean Stories Data Analysis Workflow.</figcaption>
+</figure>
+
+???
+
+The database is designed to record spatial, categorical, observational, and temporal information about each activity.
+
+---
+# Biographical Mapping Interviews
+.pull-left[
+```{r echo = FALSE, out.width = 550}
+knitr::include_graphics("images/mos-bio-map.jpg")
+```
+]
+
+.pull-right[Natalie Springuel (Maine Sea Grant) and
+MOS Class with David Thomas in Islesford, Little Cranberry]
+
+---
+# Digitizing the Biographical Mapping Interview
+
+<center>
+<video width="800" height="500" controls>
+  <source src="media/Spatial_Data_Editor_Demo.mp4" type="video/mp4">
+  <source src="media/Spatial_Data_Editor_Demo.ogg" type="video/ogg">
+Your browser does not support the video tag.
+</video>
+</center>
+
+---
+class: center
+# Digitized Locations
+
+```{r, echo=FALSE, out.width=800, fig.align='center', fig.alt="Scallop Dragging"} 
+
+knitr::include_graphics("images/toby-scallops.png")
+
+```
+
+---
+class: center
+# Spatial Data from Oral History Archives
+
+.pull-left[
+
+```{r echo = FALSE}
+knitr::include_graphics("images/mos-archives.png")
+```
+
+[Maine Sound + Story](https://mainesoundandstory.com/)
+
+]
+
+.pull-right[
+
+```{r echo = FALSE, fig.cap = "Photo of Herbert Carter Jr."}
+knitr::include_graphics("images/mainesound_story.png")
+```
+
+### ~500 oral histories from historical societies, The First Coast, and student-led interviews.
+
+### 1970s to present
+
+
+]
+
+
+
+---
+class: center
+# Spatial Data from Oral History Archives
+
+.center[
+<iframe src="https://mainesoundandstory.com/record/josh-kane/" width="940" height="456" frameBorder="0"></iframe>
+]
+
+[Josh Kane Interview](https://mainesoundandstory.com/record/josh-kane/)
+
+---
+class: center
+# Oral History Transcript
+
+.center[
+<iframe src="https://mainesoundandstory.s3.us-east-2.amazonaws.com/wp-content/uploads/2023/09/24154031/Kane_Josh_06.22.2023.pdf" width="940" height="456" frameBorder="0"></iframe>
+]
+
+[Josh Kane Interview Transcript](https://mainesoundandstory.s3.us-east-2.amazonaws.com/wp-content/uploads/2023/09/24154031/Kane_Josh_06.22.2023.pdf)
+
+---
+# Spatial Data: Audio transcripts
+
+ <font size="6"> "But we would go up and <strong>fish the channels, which is on the other side of Long [Porcupine] and you could always fish all the way up to Bald Rock and then back to the [southern?]</strong>. You could tow up and down through there and catch a couple of hundred an hour of shrimp on a good day, a couple hundred pounds an hour. So some of the best fishing I’d ever seen was just on that side of that island, just like a whole bunch of boats going back and forth. And shrimp were–it was a lot of shrimp."* </font> 
+
+.footnote[Kane, Josh, Frenchman Bay Oral History Project, June 22nd, 2023, by Camden Hunt, 22 pages, Maine Sound and Story. Online: https://mainesoundandstory.s3.us-east-2.amazonaws.com/wp-content/uploads/2023/09/24154031/Kane_Josh_06.22.2023.pdf (Last Accessed: 03/18/2024).]
+
+---
+# Using Text Analysis for Interview Processing
+
+### - Read in the transcript and identify speakers
+### - Identify relevant sections for spatial coding
+### - Identify information related to key questions
+
+---
+class: center
+# Spatial Coding Tool
+
+.center[
+<iframe src="https://laurie-the-student-baker.shinyapps.io/CodingSpatialMentions/" width="940" height="456" frameBorder="0"></iframe>
+]
+
+[Josh Kane Interview Transcript](https://mainesoundandstory.s3.us-east-2.amazonaws.com/wp-content/uploads/2023/09/24154031/Kane_Josh_06.22.2023.pdf)
+
+---
+# Expanding the Spatial Glossary
+
+<center>
+<video width="800" height="500" controls>
+  <source src="media/Spatial_Glossary_Add_Alt_Names.mp4" type="video/mp4">
+  <source src="media/Spatial_Glossary_Add_Alt_Names.ogg" type="video/ogg">
+Your browser does not support the video tag.
+</video>
+</center>
+
+
+Sources of Spatial Data: NOAA Charts, GNIS, Public
+
+[MOS Spatial Glossary](https://mos-data-coagis.hub.arcgis.com/apps/a6c101ea5fc643bbb3c7067a0b8d86a4)
+
+---
+class: left
+# Where we are now
+
+.pull-left[
+```{r, echo=FALSE, out.width=900, fig.align='center', fig.alt="Map with Polygons"}
+
+knitr::include_graphics("images/where_now_101.png")
+
+```
+]
+
+.pull-right[
+
+.center[
+# **101**
+## MS+S Coded Interviews
+# **18**
+## Biographical Mapping Interviews
+]
+]
+---
+class: left
+# Future Work
+
+### - Continue to develop data collection and text analysis processes
+### - Understand spatial semantics in the marine environment
+### - Share the Spatial Glossary and Data Query with others
+### - Further develop the uncertainty quantification and spatial classification schemes
+### - Explore the potential for Large Language Models
+
+
+---
+# Thank You!
+
+.left-column[
+
+**College of the Atlantic, Maine Sea Grant, Island Institute, Haley Ward, and Rhumbline Maps**:  
+- Natalie Springuel (Maine Sea Grant)
+- Todd Little-Siebold, Delphine DeMaisy, Will Draxler, Ilham Santoso, Linnea Goh, Asy Xaytouthor (College of the Atlantic) 
+- Galen Koch (The First Coast/College of the Atlantic/Island Institute)
+- Ben Meader '10 (Haley Ward)
+- Nick Battista (Island Institute)
+
+**Funding Support:**
+- The Fund for Maine Islands
+- The Maine Community Foundation
+]
+
+.right-column[
+**MOS Outputs**
+- Island Institute’s podcast: [https://www.islandinstitute.org/stories/podcast/](https://www.islandinstitute.org/stories/podcast/)
+
+- Coastal Conversations radio show: [https://seagrant.umaine.edu/coastal-conversations-radio-program/](https://seagrant.umaine.edu/coastal-conversations-radio-program/)
+- Maine Sound + Story Archive: [www.mainesoundandstory.com](www.mainesoundandstory.com)
+- The First Coast’s exhibits:  [www.thefirstcoast.org](www.thefirstcoast.org)
+- Historic Fisheries Atlas: [https://mos-data-coagis.hub.arcgis.com/](https://mos-data-coagis.hub.arcgis.com/).
+
+]
+
+
+---
+class: inverse, center, middle
+# Additional slides
+
+???
+
 
 ---
 # Target species in the Chilean longline fishery
@@ -463,464 +712,6 @@ In Maine we have a rich history of collecting and sharing local ecological knowl
 
 
 ---
-# Mapping Ocean Stories
-
-.pull-left[
-
-.center[
-<img style="border-radius: 5%;" src="images/student_class.jpeg" width="600px"/>
-]
-]
-
-.pull-right[
-
-#### `r icons::fontawesome("graduation-cap")` Collaboration with the Island Institute, Maine Sea Grant, The First Coast, College of the Atlantic, and Bates College.
-#### `r icons::fontawesome("headphones")` Series of oral history and audio storytelling projects, courses, and exhibits.
-
-```{r, echo=FALSE, out.width=450, fig.align='center', fig.cap="Stonington Soundwalk map by Kristina Buckley © 2023"}
-
-knitr::include_graphics("images/stonington_soundwalk.jpeg")
-
-```
-
-
-]
-
-### `r icons::fontawesome("bullhorn")` **Goal:** To Amplify the Voices of Maine's Coastal Communities
-
-???
-
----
-class:
-# Mapping Ocean Stories
-
-<iframe width="960" height="505" src="https://www.youtube.com/embed/__oa_9Gugmg?si=pthIL7fCYvOLtdeW" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
----
-class:
-# Mapping Ocean Stories Goals
-
-```{r mos goals, out.width = 880, echo = FALSE, message = FALSE}
-knitr::include_graphics("images/mos_goals.png")
-
-```
-
----
-class: 
-# Mapping Ocean Stories Timeline
-
-### Began with 2017 class *Mapping Ocean Stories* and 2020 class created the Mt. Desert Island Historical Fisheries Atlas.
-### `r icons::fontawesome("headphones")` March 2023 received a grant to further develop two key outputs: Maine Sound + Story and the Maine Historical Fisheries Atlas (MHFA).
-
-### 1. Develop a coding scheme for spatial data mentioned in interviews
-### 2. Build a hub site to host the Maine Historical Fisheries Atlas
-### 3. Use text analysis to support the spatial coding process
-
----
-class: center
-
-<figure>
-    <img src="images/workflow.png"
-         alt="Diagram of the Interview to Spatial Coding Analysis Workflow" width="800" 
-     height="600">
-    <figcaption>Figure 1. Diagram of the Mapping Ocean Stories Data Analysis Workflow.</figcaption>
-</figure>
-
-???
-
-The database is designed to record spatial, categorical, observational, and temporal information about each activity.
-
----
-# Biographical Mapping Interviews
-.pull-left[
-```{r echo = FALSE, out.width = 550}
-knitr::include_graphics("images/mos-bio-map.jpg")
-```
-]
-
-.pull-right[Natalie Springuel (Maine Sea Grant) and
-MOS Class with David Thomas in Islesford, Little Cranberry]
-
----
-# Digitizing the Biographical Mapping Interview
-
-<center>
-<video width="800" height="500" controls>
-  <source src="media/Spatial_Data_Editor_Demo.mp4" type="video/mp4">
-  <source src="media/Spatial_Data_Editor_Demo.ogg" type="video/ogg">
-Your browser does not support the video tag.
-</video>
-</center>
-
----
-class: center
-# Maine Historical Fisheries Atlas
-
-```{r, echo=FALSE, out.width=500, fig.align='center', fig.alt="Spatial Data Entry System"}
-
-knitr::include_graphics("images/mos-data-entry.png")
-```
-
-**Demo** [MOS Hub Site](https://mos-data-coagis.hub.arcgis.com)
-
----
-class: center
-# Digitized Locations
-
-```{r, echo=FALSE, out.width=800, fig.align='center', fig.alt="Scallop Dragging"} 
-
-knitr::include_graphics("images/toby-scallops.png")
-
-```
-
----
-class: center
-# Spatial Data from Oral History Archives
-
-.pull-left[
-
-```{r echo = FALSE}
-knitr::include_graphics("images/mos-archives.png")
-```
-
-[Maine Sound + Story](https://mainesoundandstory.com/)
-
-]
-
-.pull-right[
-
-```{r echo = FALSE, fig.cap = "Photo of Herbert Carter Jr."}
-knitr::include_graphics("images/mainesound_story.png")
-```
-
-#### ~500 oral histories from historical societies, The First Coast, and student-led interviews.
-
-#### 1970s to present
-
-
-]
-
-
-
----
-class: center
-# Spatial Data from Oral History Archives
-
-.center[
-<iframe src="https://mainesoundandstory.com/record/josh-kane/" width="940" height="456" frameBorder="0"></iframe>
-]
-
-[Josh Kane Interview](https://mainesoundandstory.com/record/josh-kane/)
-
----
-class: center
-# Oral History Transcript
-
-.center[
-<iframe src="https://mainesoundandstory.s3.us-east-2.amazonaws.com/wp-content/uploads/2023/09/24154031/Kane_Josh_06.22.2023.pdf" width="940" height="456" frameBorder="0"></iframe>
-]
-
-[Josh Kane Interview Transcript](https://mainesoundandstory.s3.us-east-2.amazonaws.com/wp-content/uploads/2023/09/24154031/Kane_Josh_06.22.2023.pdf)
-
----
-# Spatial Data: Audio transcripts
-
- <font size="6"> "But we would go up and <strong>fish the channels, which is on the other side of Long [Porcupine] and you could always fish all the way up to Bald Rock and then back to the [southern?]</strong>. You could tow up and down through there and catch a couple of hundred an hour of shrimp on a good day, a couple hundred pounds an hour. So some of the best fishing I’d ever seen was just on that side of that island, just like a whole bunch of boats going back and forth. And shrimp were–it was a lot of shrimp."* </font> 
-
-.footnote[Kane, Josh, Frenchman Bay Oral History Project, June 22nd, 2023, by Camden Hunt, 22 pages, Maine Sound and Story. Online: https://mainesoundandstory.s3.us-east-2.amazonaws.com/wp-content/uploads/2023/09/24154031/Kane_Josh_06.22.2023.pdf (Last Accessed: 03/18/2024).]
-
----
-# Using Text Analysis for Interview Processing
-
-### - Read in the transcript and identify speakers
-### - Identify relevant sections for spatial coding
-### - Identify information related to key questions
-
----
-class: center
-# Spatial Coding Tool
-
-.center[
-<iframe src="https://laurie-the-student-baker.shinyapps.io/CodingSpatialMentions/" width="940" height="456" frameBorder="0"></iframe>
-]
-
-[Josh Kane Interview Transcript](https://mainesoundandstory.s3.us-east-2.amazonaws.com/wp-content/uploads/2023/09/24154031/Kane_Josh_06.22.2023.pdf)
-
----
-# Expanding the Spatial Glossary
-
-```{r, echo=FALSE, out.width=800, fig.align='center', fig.cap="Spatial Glossary"}
-
-knitr::include_graphics("images/mos-spatial-glossary.png")
-
-```
-
-Sources of Spatial Data: NOAA Charts, GNIS, Public
-
-
-**Demo:** [MOS Spatial Glossary](https://mos-data-coagis.hub.arcgis.com/apps/a6c101ea5fc643bbb3c7067a0b8d86a4)
-
----
-class: left
-# Where we are now
-
-.pull-left[
-```{r, echo=FALSE, out.width=900, fig.align='center', fig.alt="Map with Polygons"}
-
-knitr::include_graphics("images/where_now_101.png")
-
-```
-]
-
-.pull-right[
-
-.center[
-# **101**
-## MS+S Coded Interviews
-# **18**
-## Biographical Mapping Interviews
-]
-]
----
-class: left
-# Future Work
-
-### - Continue to develop data collection and text analysis processes
-### - Understand spatial semantics in the marine environment
-### - Share the Spatial Glossary and Data Query with others
-### - Further develop the uncertainty quantification and spatial classification schemes
-### - Explore the potential for Large Language Models
-
-
----
-# Thank You!
-
-.left-column[
-
-**College of the Atlantic, Maine Sea Grant, Island Institute, Haley Ward, and Rhumbline Maps**:  
-- Natalie Springuel (Maine Sea Grant)
-- Todd Little-Siebold, Delphine DeMaisy, Will Draxler, Ilham Santoso, Linnea Goh, Asy Xaytouthor (College of the Atlantic) 
-- Galen Koch (The First Coast/College of the Atlantic/Island Institute)
-- Ben Meader '10 (Haley Ward)
-- Nick Battista (Island Institute)
-
-**Funding Support:**
-- The Fund for Maine Islands
-- The Maine Community Foundation
-]
-
-.right-column[
-**MOS Outputs**
-- Island Institute’s podcast: [https://www.islandinstitute.org/stories/podcast/](https://www.islandinstitute.org/stories/podcast/)
-
-- Coastal Conversations radio show: [https://seagrant.umaine.edu/coastal-conversations-radio-program/](https://seagrant.umaine.edu/coastal-conversations-radio-program/)
-- Maine Sound + Story Archive: [www.mainesoundandstory.com](www.mainesoundandstory.com)
-- The First Coast’s exhibits:  [www.thefirstcoast.org](www.thefirstcoast.org)
-- Historic Fisheries Atlas: [https://mos-data-coagis.hub.arcgis.com/](https://mos-data-coagis.hub.arcgis.com/).
-
-]
-
-
----
-class: inverse, center, middle
-# Additional slides
-
-???
-
----
-
-# Text Analysis In Practice - packages
-```{r message = FALSE, warning = FALSE}
-library(pdftools) # read in pdf
-library(tidyverse) # data wrangling and visualization
-library(tidytext) # text analysis
-library(stopwords) # stop words
-```
-
----
-# In Practice - reading in the transcript
-
-```{r message = FALSE, warning = FALSE}
-kane_full_text <- pdftools::pdf_text(pdf = "../data/Kane_Josh_06.22.2023.pdf")
-
-# convert text to string
-kane_full_text <- toString(kane_full_text)
-
-# convert text to character lines
-kane <- read_lines(kane_full_text)
-
-kane <- tibble(kane)
-kane <- kane %>%
-  rename(text = kane) %>%
-  filter(text != "") %>% 
-  mutate(interview_section = if_else(str_detect(text, pattern = "0:00:00"), "main", NA)) %>%
-  fill(interview_section, .direction = "down") %>%
-  filter(interview_section == "main")
-```
-
----
-# In Practice - identifying speakers
-
-```{r }
-kane <- kane %>%
-  mutate(initials = str_extract(text, pattern = "[A-Z]{1,3}\\:")) %>%
-  mutate(initials = str_replace(initials, pattern = ":", replacement = "")) %>%
-  fill(initials, .direction = "down") %>%
-  filter(is.na(initials) == FALSE) %>%
-  mutate(text = str_replace_all(text, "[A-Z]{1,3}:", "")) %>%
-  mutate(group = cumsum(initials != lag(initials, default = "")))
-
-kane <- kane %>%
-  group_by(initials, group) %>%
-  summarise(text = str_c(text, collapse = " ")) %>%
-  mutate(text = str_squish(text)) %>%
-  ungroup() %>% 
-  arrange(group)
-```
-
-
----
-# Text Analysis Steps
-
-```{r message = FALSE, warning = FALSE, echo = FALSE}
-library(pdftools) # read in pdf
-library(tidyverse) # data wrangling and visualization
-library(tidytext) # text analysis
-library(stopwords) # stop words
-```
-
-
-```{r message = FALSE, warning = FALSE, echo = FALSE}
-kane_full_text <- pdftools::pdf_text(pdf = "../data/Kane_Josh_06.22.2023.pdf")
-
-# convert text to string
-kane_full_text <- toString(kane_full_text)
-
-# convert text to character lines
-kane <- read_lines(kane_full_text)
-
-kane <- tibble(kane)
-kane <- kane %>%
-  rename(text = kane) %>%
-  filter(text != "") %>% 
-  mutate(interview_section = if_else(str_detect(text, pattern = "0:00:00"), "main", NA)) %>%
-  fill(interview_section, .direction = "down") %>%
-  filter(interview_section == "main")
-```
-
-
-```{r echo = FALSE}
-kane <- kane %>%
-  mutate(initials = str_extract(text, pattern = "[A-Z]{1,3}\\:")) %>%
-  mutate(initials = str_replace(initials, pattern = ":", replacement = "")) %>%
-  fill(initials, .direction = "down") %>%
-  filter(is.na(initials) == FALSE) %>%
-  mutate(text = str_replace_all(text, "[A-Z]{1,3}:", "")) %>%
-  mutate(group = cumsum(initials != lag(initials, default = "")))
-
-kane <- kane %>%
-  group_by(initials, group) %>%
-  summarise(text = str_c(text, collapse = " ")) %>%
-  mutate(text = str_squish(text)) %>%
-  ungroup() %>% 
-  arrange(group)
-```
-
----
-# Transcript Text
-
-```{r echo = FALSE, out.width = "600px", out.height = "400px"}
-kane %>%
-  DT::datatable()
-```
-
----
-# Searching for locations code
-
-```{r eval = FALSE}
-
-locations <- "bar harbor|Bar Harbor|Frenchman|frenchman|bay|Bay|porcupine|Porcupine|island|Island|Bar|bar"
-
-kane %>%
-  filter(initials == "JK") %>%
-  filter(str_detect(text, pattern = locations)) %>%
-  DT::datatable()
-```
-
----
-# Searching for locations
-
-
-```{r echo = FALSE}
-
-locations <- "bar harbor|Bar Harbor|Frenchman|frenchman|bay|Bay|porcupine|Porcupine|island|Island|Bar|bar"
-
-kane %>%
-  filter(initials == "JK") %>%
-  filter(str_detect(text, pattern = locations)) %>%
-  DT::datatable()
-```
-
----
-# Searching for species code
-
-```{r eval = FALSE}
-
-species <- "shrimp|Shrimp|Halibut|halibut|Lobster|lobster|Pogies|pogies|Menhayden|menhayden"
-
-kane %>%
-  filter(initials == "JK") %>%
-  filter(str_detect(text, pattern = species)) %>%
-  DT::datatable()
-```
-
----
-# Searching for species
-
-```{r echo = FALSE}
-
-species <- "shrimp|Shrimp|Halibut|halibut|Lobster|lobster|Pogies|pogies|Menhayden|menhayden"
-
-kane %>%
-  filter(initials == "JK") %>%
-  filter(str_detect(text, pattern = species)) %>%
-  DT::datatable()
-```
-
----
-# Breaking down into words
-
-```{r}
-kane %>%
-  unnest_tokens(word, text, token='words') 
-```
-
-
----
-# Parts of Speech
-
-```{r}
-kane %>%
-  unnest_tokens(word, text, token='words') %>% 
-  inner_join(parts_of_speech, relationship = "many-to-many")
-
-```
-
----
-# Prepositions and parts of speech
-
-```{r}
-kane %>%
-  unnest_tokens(word, text, token='words') %>% 
-  inner_join(parts_of_speech, relationship = "many-to-many") %>% 
-  filter(pos == "Preposition") %>%
-  count(word) %>%
-  arrange(desc(n))
-
-```
-
-
----
 class: center
 # Spatial Classification Scheme
 
@@ -957,14 +748,6 @@ knitr::include_graphics("images/fb-jp-map-overlay-opaque.png")
 knitr::include_graphics("images/fb-jp-ex-polygon-large.png")
 
 ```
-
----
-# Spatial Data: Audio transcripts
-
- <font size="6"> "But we would go up and <strong>fish the channels, which is on the other side of Long [Porcupine] and you could always fish all the way up to Bald Rock and then back to the [southern?]</strong>. You could tow up and down through there and catch a couple of hundred an hour of shrimp on a good day, a couple hundred pounds an hour. So some of the best fishing I’d ever seen was just on that side of that island, just like a whole bunch of boats going back and forth. And shrimp were–it was a lot of shrimp."* </font> 
-
-.footnote[Kane, Josh, Frenchman Bay Oral History Project, June 22nd, 2023, by Camden Hunt, 22 pages, Maine Sound and Story. Online: https://mainesoundandstory.s3.us-east-2.amazonaws.com/wp-content/uploads/2023/09/24154031/Kane_Josh_06.22.2023.pdf (Last Accessed: 03/18/2024).]
-
 ---
 # Shrimp Tow: Referential
 
