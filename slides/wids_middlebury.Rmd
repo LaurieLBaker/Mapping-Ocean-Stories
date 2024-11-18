@@ -248,7 +248,7 @@ I used catch composition and machine learning to infer a fisher's target species
 ### `r icons::fontawesome("lightbulb")` Week-long Hackathon working with an industry or government partner (e.g. Cabinet Office, British Antarctic Survey, Samsung, and Cochrane Systematic Reviews). 
 
 ---
-# RLadies, PyLadies, Codebar.io
+# RLadies, PyLadies, Codebar.io, MiR
 
 .center[
 <iframe src="https://rladies.org/" width="800" height="600" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
@@ -366,19 +366,6 @@ class: center
 The database is designed to record spatial, categorical, observational, and temporal information about each activity.
 
 ---
-# Biographical Mapping Interviews
-
-<figure>
-    <img src="images/mos-bio-map.jpg"
-         alt="Biographical Mapping Process" width="800" 
-     height="500">
-    <figcaption>Natalie Springuel Maine Sea Grant and
-MOS Class with David Thomas in Islesford, Little Cranberry.</figcaption>
-</figure>
-]
-
-
----
 # Digitizing the Biographical Mapping Interview
 
 <center>
@@ -406,7 +393,7 @@ class: center
 .pull-left[
 
 <figure>
-    <img src="images/mos-archives.png"
+    <img src="images/mos-archives.jpg"
          alt="Maine Sound and Story Archive Origins" width="600" 
      height="500">
     <figcaption>Maine Sound and Story Archive.</figcaption>
@@ -420,7 +407,7 @@ class: center
 .pull-right[
 
 ```{r echo = FALSE, fig.cap = "Photo of Herbert Carter Jr."}
-knitr::include_graphics("images/mainesound_story.PNG")
+knitr::include_graphics("images/mainesound_story.png")
 ```
 
 ### 500+ oral histories
