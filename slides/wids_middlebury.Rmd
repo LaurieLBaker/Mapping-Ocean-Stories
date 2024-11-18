@@ -249,7 +249,6 @@ I used catch composition and machine learning to infer a fisher's target species
 ### `r icons::fontawesome("lightbulb")` Week-long Hackathon working with an industry or government partner (e.g. Cabinet Office, British Antarctic Survey, Samsung, and Cochrane Systematic Reviews). 
 
 ---
-class: middle, left
 # Data Science Campus, Office for National Statistics
 
 .left-column[
@@ -385,10 +384,10 @@ knitr::include_graphics("images/mos-archives.png")
 .pull-right[
 
 ```{r echo = FALSE, fig.cap = "Photo of Herbert Carter Jr."}
-knitr::include_graphics("images/mainesound_story.png")
+knitr::include_graphics("images/mainesound_story.PNG")
 ```
 
-### ~500 oral histories from historical societies, The First Coast, and student-led interviews.
+### 500+ oral histories
 
 ### 1970s to present
 
