@@ -269,6 +269,19 @@ I used catch composition and machine learning to infer a fisher's target species
 ]
 
 ---
+# Community-Engaged Data Science
+
+.center[
+<iframe src="https://community-engaged-data-science.netlify.app/#projects" width="940" height="456" frameBorder="0"></iframe>
+]
+
+---
+# Community-Engaged Data Science
+
+.center[
+<iframe src="https://coa-community-data-science.netlify.app/#projects" width="940" height="456" frameBorder="0"></iframe>
+]
+---
 # Mapping Ocean Stories
 
 .pull-left[
