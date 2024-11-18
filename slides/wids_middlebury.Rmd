@@ -337,14 +337,16 @@ The database is designed to record spatial, categorical, observational, and temp
 
 ---
 # Biographical Mapping Interviews
-.pull-left[
-```{r echo = FALSE, out.width = 550}
-knitr::include_graphics("images/mos-bio-map.jpg")
-```
+
+<figure>
+    <img src="images/mos-bio-map.jpg"
+         alt="Biographical Mapping Process" width="800" 
+     height="500">
+    <figcaption>Natalie Springuel Maine Sea Grant and
+MOS Class with David Thomas in Islesford, Little Cranberry.</figcaption>
+</figure>
 ]
 
-.pull-right[Natalie Springuel (Maine Sea Grant) and
-MOS Class with David Thomas in Islesford, Little Cranberry]
 
 ---
 # Digitizing the Biographical Mapping Interview
@@ -373,9 +375,13 @@ class: center
 
 .pull-left[
 
-```{r echo = FALSE}
-knitr::include_graphics("images/mos-archives.png")
-```
+<figure>
+    <img src="images/mos-archives.png"
+         alt="Maine Sound and Story Archive Origins" width="600" 
+     height="600">
+    <figcaption>Maine Sound and Story Archive.</figcaption>
+</figure>
+
 
 [Maine Sound + Story](https://mainesoundandstory.com/)
 
