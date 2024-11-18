@@ -269,8 +269,9 @@ I used catch composition and machine learning to infer a fisher's target species
 # Data Science Campus, Office for National Statistics
 
 .left-column[
+
 .center[
-<img style="border-radius: 5%;" src="images/sdg.png" width="500px"/>
+<iframe src="https://datasciencecampus.ons.gov.uk/" width="500" height="400" frameBorder="0"></iframe>
 ]
 ]
 
@@ -289,7 +290,7 @@ I used catch composition and machine learning to infer a fisher's target species
 # Community-Engaged Data Science
 
 .center[
-<iframe src="https://community-engaged-data-science.netlify.app/#projects" width="940" height="456" frameBorder="0"></iframe>
+<iframe src="https://community-engaged-data-science.netlify.app/" width="940" height="456" frameBorder="0"></iframe>
 ]
 
 ---
@@ -392,12 +393,11 @@ class: center
 
 .pull-left[
 
-<figure>
-    <img src="images/mos-archives.jpg"
-         alt="Maine Sound and Story Archive Origins" width="600" 
-     height="500">
-    <figcaption>Maine Sound and Story Archive.</figcaption>
-</figure>
+.center[
+<iframe src="https://mainesoundandstory.com/" width="400" height="500" frameBorder="0"></iframe>
+]
+
+
 
 
 [Maine Sound + Story](https://mainesoundandstory.com/)
@@ -486,9 +486,10 @@ class: left
 .pull-left[
 
 .center[
-<iframe src="https://mos-data-coagis.hub.arcgis.com/pages/432de46cdda0489fb73bc5cd6c0e7c92" width="400" height="600" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+<iframe src="https://mos-data-coagis.hub.arcgis.com/pages/432de46cdda0489fb73bc5cd6c0e7c92" width="400" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
 ]
 
+[Data Query](https://mos-data-coagis.hub.arcgis.com/pages/432de46cdda0489fb73bc5cd6c0e7c92)
 <!-- <figure> -->
 <!--     <img src="images/where_now_101.png" -->
 <!--          alt="Map showing spatial locations" width="500"  -->
