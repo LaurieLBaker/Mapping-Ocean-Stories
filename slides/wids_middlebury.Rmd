@@ -251,9 +251,19 @@ I used catch composition and machine learning to infer a fisher's target species
 # RLadies, PyLadies, Codebar.io
 
 .center[
-<iframe src="https://rladies.org/" width="800" height="620" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+<iframe src="https://rladies.org/" width="800" height="600" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
 ]
 
+---
+# RLadies, PyLadies, Codebar.io, MiR
+
+### - Workshops
+### - Job advice and negotiation
+### - Study and Book Groups
+### - Resources and troubleshooting
+### - Teaching materials
+
+- https://codebar.io/; https://rladies.org/; https://pyladies.com/; https://mircommunity.com/
 
 ---
 # Data Science Campus, Office for National Statistics
