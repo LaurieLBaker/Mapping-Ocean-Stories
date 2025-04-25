@@ -8,7 +8,7 @@
 
 data/*.xlsx
 data/*.csv
-Interviews/*
+interviews/*.csv
 
 # Big images
 
