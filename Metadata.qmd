@@ -1,0 +1,545 @@
+```{r}
+library(tidyverse)
+library(readr)
+library(visdat)
+library(naniar)
+library(UpSetR)
+library(tidyverse)
+library(tidytext)
+library(topicmodels)
+library(tm)
+library(igraph)
+library(ggraph)
+library(scales) 
+```
+
+
+```{r}
+Metadata <- read_csv("/Users/shea/Downloads/Gendered_Dimentions_of_Climate_Change/Mapping-Ocean-Stories/Metadata_analysis/Narrator Metadata_NOAA CAFA - Meta-data copy2.csv")
+```
+
+```{r}
+colnames(Metadata) <- Metadata[1, ]
+Metadata <- Metadata[-1, ]
+
+Metadata <- data.frame(Metadata, stringsAsFactors = FALSE)
+
+head(Metadata)
+```
+
+```{r}
+Metadata2 <- Metadata %>%
+  mutate(across(everything(), ~ suppressWarnings(as.numeric(.))))
+```
+
+```{r convert to numerical variables}
+Metadata$Year.born..number.only. <- as.numeric(Metadata$Year.born..number.only.)
+Metadata$Number.of.siblings..enter.number.only..enter.0.for.none. <- as.numeric(Metadata$Number.of.siblings..enter.number.only..enter.0.for.none.)
+Metadata$Multi.generational.fishing.family..number.of.generations..enter.number.only..enter.0.if.none. <- as.numeric(Metadata$Multi.generational.fishing.family..number.of.generations..enter.number.only..enter.0.if.none.)
+Metadata$Number.of.own.children..Enter.number..0.if.NA. <- as.numeric(Metadata$Number.of.own.children..Enter.number..0.if.NA.)
+Metadata$Age.of.youngest.child..or.enter.NA. <- as.numeric(Metadata$Age.of.youngest.child..or.enter.NA.)
+Metadata$Age.started.in.the.sector <- as.numeric(Metadata$Age.started.in.the.sector)
+Metadata$Aproximate.years.in.sector <- as.numeric(Metadata$Aproximate.years.in.sector)
+```
+
+```{r}
+vis_dat(Metadata)
+vis_dat(Metadata2)
+```
+
+```{r Maine not maine}
+Metadata %>%
+  ggplot(aes(x = From.Maine, fill = From.Maine)) +
+  geom_bar() +
+  geom_text(stat = "count", 
+            aes(label = scales::percent(..count.. / sum(..count..), accuracy = 0.1)), 
+            vjust = -0.5) +  
+  labs(x = "Are you from maine?", y = "Count") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+```{r Multi-Generational? (comertial fishing)}
+Metadata %>% 
+  ggplot(aes(x = Multi.generational.commercial.fishing.family..Yes.No, fill = Multi.generational.commercial.fishing.family..Yes.No)) +
+  geom_bar() +
+    geom_text(stat = "count", 
+            aes(label = scales::percent(..count.. / sum(..count..), accuracy = 0.1)), 
+            vjust = -0.5) +  
+  labs(x = "Multigenerational?", y = "Count") +
+  theme(legend.position = "none")
+```
+
+```{r Lobster?}
+Metadata %>%
+  ggplot(aes(x = Lobster, fill = Lobster)) +
+  geom_bar() +
+  geom_text(stat = "count", 
+            aes(label = scales::percent(..count.. / sum(..count..), accuracy = 0.1)), 
+            vjust = -0.5) +  
+  labs(x = "Lobster?", y = "Count") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+
+```{r year_born}
+Metadata %>% 
+  ggplot(aes(x = 2025 - Year.born..number.only., fill = Year.born..number.only.)) +
+  geom_histogram(bins = 15) +
+  labs(x = "age", y = "Count") +
+  theme(legend.position = "none")
+```
+
+```{r plotly age}
+# library(plotly)
+# 
+# plot_ly(
+#   data = Metadata,
+#   x = ~ (2024 - Year.born..number.only.),
+#   type = 'histogram',
+#   nbinsx = 100,
+#   marker = list(color = ~ Year.born..number.only.)
+#   #color = ~ (2025 - Year.born..number.only.)
+# ) %>%
+#   layout(
+#     xaxis = list(title = "year born"),
+#     yaxis = list(title = "Count"),
+#     showlegend = FALSE
+#   )
+```
+
+```{r}
+Metadata %>% 
+  group_by(From.Maine, Multi.generational.commercial.fishing.family..Yes.No) %>%
+  ggplot(aes(x = From.Maine, fill = Multi.generational.commercial.fishing.family..Yes.No)) +
+  geom_bar() +
+  labs(fill = "Multigenerational",
+       title = "Fishing Communities in Maine by Birthplace and Multigenerational Fishing Status")
+```
+
+```{r}
+Metadata %>% 
+  ggplot(aes(x = History.of.female.relatives.in.fishing.sector..Yes.No, fill = History.of.female.relatives.in.fishing.sector..Yes.No)) +
+  geom_bar() +
+  geom_text(stat = "count", 
+            aes(label = scales::percent(..count.. / sum(..count..), accuracy = 0.1)), 
+            vjust = -0.5) +  
+  labs(x = "history of female relatives in fishing", y = "Count") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+
+```{r}
+tokenized_intervies <- tokens2 %>% 
+  mutate(ID.number = interview) %>% 
+  select(!interview)
+
+Metadata <- Metadata %>% 
+  mutate(ID.number = ID.number)
+
+#all_data <- full_join(tokenized_intervies, Metadata, by = "ID.number")
+
+all_data_answers <- all_data %>%
+  group_by(Harvester..Aquaculture..Yes.No, word) %>%
+  filter(Speaker == "A") %>% 
+  anti_join(stop_words) %>% 
+  filter(!word %in% custom_stopwords)
+```
+
+
+```{r}
+tm_df <- tokenized_intervies %>%
+  filter(Speaker == "A") %>% 
+  unnest_tokens(word, word) %>%
+  anti_join(stop_words)
+
+custom_stopwords <- c("lot", "yeah", "it’s", "i’m", "i’ll", "you’re", "you’ve", "you’d", "you’ll", "who’ve", "who’s", "laughter")
+tm_df <- tm_df %>%
+  filter(!word %in% custom_stopwords)
+```
+
+```{r}
+# tm_df %>% 
+#   group_by(ID.number) %>% 
+#   count(word) %>% 
+#   ggplot(aes(x = word, y = n)) +
+#   geom_col()+
+#   facet_grid(~ID.number)
+
+tm_df %>%
+  group_by(ID.number, word) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  group_by(ID.number) %>%
+  slice_max(n, n = 3, with_ties = FALSE) %>%  # Select top r values
+  ggplot(aes(x = reorder_within(word, n, ID.number), y = n)) + 
+  geom_col() + 
+  coord_flip() +  # Flips the x-axis for better readability
+  facet_wrap(~ID.number, scales = "free_y") + 
+  scale_x_reordered() +# Free scales to adjust per facet
+  labs(x = "Word", y = "Count", title = "Top Words by Interview") +
+  theme_minimal()
+
+```
+```{r}
+all_data %>%
+  group_by(Harvester..Aquaculture..Yes.No, word) %>%
+  filter(Speaker == "A") %>% 
+  anti_join(stop_words) %>% 
+  filter(!word %in% custom_stopwords) %>% 
+  summarise(n = n()) %>%
+  slice_max(n, n = 5, with_ties = FALSE) %>% 
+  ggplot(aes(x = reorder(word, n), y = n)) + 
+  geom_col() + 
+  coord_flip() +
+  facet_wrap(~Harvester..Aquaculture..Yes.No, scales = "free_y") +  
+  labs(x = "Word", y = "Count", title = "Word frequencies in aquaculture vs no aquaculture") +
+  theme_minimal()
+```
+
+```{r topic modelling}
+dtm <- all_data %>%
+  count(ID.number, word) %>%
+  cast_dtm(document = ID.number, term = word, value = n)
+
+
+num_topics <- 6
+lda_model <- LDA(dtm, k = num_topics, control = list(seed = 1234))
+
+
+topics <- tidy(lda_model, matrix = "beta")  
+
+top_terms <- topics %>%
+  group_by(topic) %>%
+  filter(term != "laughter") %>% 
+  slice_max(beta, n = 5) %>%
+  ungroup()
+
+ggplot(top_terms, aes(x = reorder_within(term, beta, topic), y = beta, fill = factor(topic))) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ topic, scales = "free_y") +
+  coord_flip() +
+  scale_x_reordered() +
+  labs(title = "Top Words in Each Topic", x = "Words", y = "Beta Score")
+
+```
+
+```{r sentiment proportions}
+sentiment_data <- all_data %>%
+  inner_join(get_sentiments("bing"), by = "word") %>%
+  count(ID.number, sentiment) %>%
+  group_by(ID.number) %>%
+  mutate(proportion = n / sum(n)) %>%
+  ungroup() 
+  
+
+ggplot(sentiment_data, aes(x = factor(ID.number), y = proportion, fill = sentiment, colour = sentiment)) +
+  geom_bar(stat = "identity", position = "fill") +
+  labs(title = "Proportion of Positive and Negative Words",
+       x = "ID.number", y = "Proportion") +
+  scale_fill_manual(values = c("positive" = "steelblue", "negative" = "red")) +
+  scale_colour_manual(values = c("positive" = "steelblue", "negative" = "red")) +
+  theme_minimal()
+```
+
+```{r}
+# Define the additional stopwords list
+additional_stopwords <- c(
+  "eureka", "around", "tenth", "into", "ultimately", "unless", "these", "r", "fifty", "above", 
+  "except", "drat", "also", "being", "nineteen", "those", "were", "onto", "–", "Deer", "fewest", 
+  "whoops", "themselves", "though", "moreover", "s", "had", "54", "whereas", "excluding", "shoo", 
+  "may", "pow", "similarly", "all", "fifth", "most", "phooey", "he", "having", "humph", "gradually", 
+  "wherever", "v", "another", "considering", "fourteen", "Really", "ow", "yippee", "arg", "such", 
+  "either", "its", "no", "amid", "could", "still", "whichever", "against", "across", "as", "away", 
+  "consequently", "fewer", "seventh", "darn", "twenty", "her", "brrr", "How", "twentieth", "eighth", 
+  "thousand", "isle", "sixtieth", "thousandth", "first", "aside", "Isle", "third", "yes", "within", 
+  "hers", "it", "an", "down", "nonetheless", "dared", "cheers", "has", "56", "pooh", "eighty", "off", 
+  "any", "actually", "2", "enough", "regarding", "his", "k", "inside", "thereafter", "yourself", 
+  "eight", "06", "along", "conversely", "round", "therefore", "whoever", "none", "have", "up", 
+  "ninetieth", "ourselves", "encore", "yuck", "whom", "beside", "million", "five", "fifteenth", 
+  "yo", "meanwhile", "versus", "whose", "really", "16", "50", "am", "eh", "eightieth", "three", 
+  "few", "apart", "less", "theirs", "under", "him", "amongst", "gosh", "whatever", "oops", "y", 
+  "48", "when", "Not", "beyond", "concerning", "however", "tut-tut", "near", "04", "six", "e", 
+  "bingo", "sort", "seventeenth", "uh-oh", "other", "subsequently", "hence", "because", "without", 
+  "wahoo", "various", "then", "ought", "dares", "in", "millionth", "anybody", "uh-huh", "ugh", 
+  "seven", "aboard", "ouch", "eighteen", "52", "over", "somebody", "they", "to", "ve", "bam", "what", 
+  "prior", "aw", "look", "m", "ours", "gee", "about", "anything", "wow", "z", "according", "due", 
+  "between", "eek", "ten", "p", "don", "laughter", "be", "h", "me", "thus", "furthermore", "toward", 
+  "their", "44", "fortieth", "shh", "ninth", "now", "everyone", "them", "ahem", "through", "u", 
+  "accordingly", "37", "further", "so", "unlike", "33", "us", "which", "since", "t", "nineteenth", 
+  "towards", "needing", "or", "itself", "worth", "I", "eleven", "presently", "51", "is", "f", 
+  "opposite", "while", "two", "ok", "anywhere", "oh", "underneath", "sixteenth", "sixth", "by", 
+  "instead", "after", "seventeen", "can", "on", "past", "should", "shall", "yourselves", "both", 
+  "who", "0", "1", "but", "haha", "Just", "thirtieth", "lastly", "despite", "at", "throughout", 
+  "d", "blah", "four", "until", "yikes", "how", "everywhere", "afterward", "alas", "sixteen", "save", 
+  "ahead", "least", "some", "will", "b", "amidst", "upon", "39", "himself", "fourth", "if", "via", 
+  "before", "dare", "doing", "bravo", "others", "second", "once", "myself", "nevertheless", 
+  "outside", "finally", "little", "somewhere", "than", "whilst", "would", "re", "going", "plus", 
+  "soon", "q", "There", "ahh", "later", "she", "thirty", "c", "last", "twelve", "47", "fiddlesticks", 
+  "abroad", "done", "hmm", "minus", "eighteenth", "more", "phew", "seventy", "several", 
+  "thirteenth", "till", "whenever", "certain", "sixty", "fiftieth", "hey", "our", "l", "nobody", 
+  "yours", "hallelujah", "not", "whomever", "yet", "twelfth", "x", "below", "i", "your", "we", 
+  "circa", "must", "there", "and", "fourty", "lest", "huh", "everybody", "with", "eleventh", "do", 
+  "thirteen", "did", "ahoy", "might", "briefly", "fifteen", "boo", "dang", "next", "you", "need", 
+  "ago", "o", "hurray", "was", "ll", "following", "j", "many", "where", "gadzooks", "unto", "3", 
+  "out", "something", "mine", "42", "are", "barring", "behind", "golly", "nor", "needed", "times", 
+  "whiz", "everything", "during", "my", "yeah", "hundred", "nothing", "much", "this", "well", 
+  "from", "n", "per", "hundredth", "each", "of", "deer", "even", "been", "a", "needs", "nine", 
+  "the", "beneath", "daring", "too", "whoa", "herself", "every", "for", "one", "among", "that", 
+  "aha", "although", "anyone", "ninety", "just", "duh", "nowhere", "okay", "w", "neither", 
+  "besides", "g", "like", "fourteenth", "seventieth", "does", "by", "to", "a", "is", "yeah", "and", "my", "it", "so", "get", "ok", "use", "00", "05", "a", "q", "and", "a lot", "q"
+)
+
+```
+
+```{r}
+  stop_words_list <- stop_words$word
+  stop_words_pattern <- paste0("\\b(", paste(stop_words_list, collapse = "|"), ")\\b")
+
+all_interviews_df %>%
+  mutate(Content = str_remove_all(Content, paste0("\\b(", paste(additional_stopwords, collapse = "|"), ")\\b"))) %>%
+  mutate(clean_text = str_remove_all(Content, stop_words_pattern)) %>%
+  mutate(clean_text = str_squish(clean_text)) %>%
+  unnest_tokens(bigram, clean_text, token = "ngrams", n = 3) %>%
+  drop_na(bigram) %>%
+  separate(bigram, into = c("word1", "word2"), sep = " ") %>%
+  filter(!word1 %in% additional_stopwords, !word2 %in% additional_stopwords) %>%
+  unite(bigram, word1, word2, sep = " ") %>%
+  count(bigram, sort = TRUE)
+
+trigram_counts <- all_interviews_df %>%
+  mutate(Content = str_remove_all(Content, paste0("\\b(", paste(additional_stopwords, collapse = "|"), ")\\b"))) %>%
+  mutate(clean_text = str_remove_all(Content, stop_words_pattern)) %>%
+  mutate(clean_text = str_squish(clean_text)) %>%
+  unnest_tokens(trigram, clean_text, token = "ngrams", n = 3) %>%
+  drop_na(trigram) %>%
+  separate(trigram, into = c("word1", "word2", "word3"), sep = " ") %>%
+  filter(!word1 %in% additional_stopwords, 
+         !word2 %in% additional_stopwords, 
+         !word3 %in% additional_stopwords) %>%
+  unite(trigram, word1, word2, word3, sep = " ") %>%
+  count(trigram, sort = TRUE)
+
+bigram_counts <- all_interviews_df %>%
+  mutate(Content = str_remove_all(Content, paste0("\\b(", paste(additional_stopwords, collapse = "|"), ")\\b"))) %>%
+  mutate(clean_text = str_remove_all(Content, stop_words_pattern)) %>%
+  mutate(clean_text = str_squish(clean_text)) %>%
+  unnest_tokens(bigram, clean_text, token = "ngrams", n = 2) %>%
+  drop_na(bigram) %>%
+  separate(bigram, into = c("word1", "word2"), sep = " ") %>%
+  filter(!word1 %in% additional_stopwords, !word2 %in% additional_stopwords) %>%
+  unite(bigram, word1, word2, sep = " ") %>%
+  count(bigram, sort = TRUE)
+
+```
+```{r}
+bigram_counts %>%
+  top_n(15, n) %>%
+  ggplot(aes(x = reorder(bigram, n), y = n)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(title = "Top 15 Bigrams", x = "Bigram", y = "Count") +
+  theme_minimal()
+
+
+trigram_counts %>%
+  top_n(15, n) %>%
+  ggplot(aes(x = reorder(trigram, n), y = n)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(title = "Top 15 Trigrams", x = "Trigram", y = "Count") +
+  theme_minimal()
+```
+
+```{r}
+library(ggraph)
+library(igraph)
+
+bigram_graph <- bigram_counts %>%
+  filter(n > 25) %>%  # Adjust threshold as needed
+  separate(bigram, into = c("word1", "word2"), sep = " ") %>%
+  graph_from_data_frame()
+
+set.seed(1)
+ggraph(bigram_graph, layout = "fr") +
+  geom_edge_link(aes(edge_alpha = n), show.legend = FALSE) +
+  geom_node_point(color = "steelblue", size = 5) +
+  geom_node_text(aes(label = name), vjust = 1, hjust = 1) +
+  theme_void() +
+  labs(title = "Bigram Network Graph")
+
+```
+
+```{r}
+bigram_counts <- all_interviews_df %>%
+  unnest_tokens(bigram, Content, token = "ngrams", n = 2) %>%
+  drop_na(bigram) %>%
+    separate(bigram, c("word1", "word2"), sep = " ") %>%
+    filter(!word1 %in% stop_words$word,
+           !word2 %in% stop_words$word) %>%
+    count(word1, word2, sort = TRUE)
+```
+
+```{r}
+write_csv(all_data,"../all_data.csv")
+#/Users/shea/Downloads/Gendered_Dimensions_of_Climate_Change
+```
+
+```{r}
+all_interviews_df %>%
+  mutate(Content = str_remove_all(Content, paste0("\\b(", paste(additional_stopwords, collapse = "|"), ")\\b"))) %>%
+  mutate(clean_text = str_remove_all(Content, stop_words_pattern)) %>%
+  mutate(clean_text = str_squish(clean_text)) %>%
+  unnest_tokens(fourgram, clean_text, token = "ngrams", n = 4) %>%
+  drop_na(fourgram) %>%
+  separate(fourgram, into = c("word1", "word2", "word3", "word4"), sep = " ") %>%
+  filter(!word1 %in% additional_stopwords, 
+         !word2 %in% additional_stopwords, 
+         !word3 %in% additional_stopwords, 
+         !word4 %in% additional_stopwords) %>%
+  unite(fourgram, word1, word2, word3, word4, sep = " ") %>%
+  count(fourgram, sort = TRUE)
+
+all_interviews_df %>%
+  mutate(Content = str_remove_all(Content, paste0("\\b(", paste(additional_stopwords, collapse = "|"), ")\\b"))) %>%
+  mutate(clean_text = str_remove_all(Content, stop_words_pattern)) %>%
+  mutate(clean_text = str_squish(clean_text)) %>%
+  unnest_tokens(fivegram, clean_text, token = "ngrams", n = 5) %>%
+  drop_na(fivegram) %>%
+  separate(fivegram, into = c("word1", "word2", "word3", "word4", "word5"), sep = " ") %>%
+  filter(!word1 %in% additional_stopwords, 
+         !word2 %in% additional_stopwords, 
+         !word3 %in% additional_stopwords, 
+         !word4 %in% additional_stopwords, 
+         !word5 %in% additional_stopwords) %>%
+  unite(fivegram, word1, word2, word3, word4, word5, sep = " ") %>%
+  count(fivegram, sort = TRUE)
+
+
+```
+```{r arc diagram practice}
+# install.packages("tidygraph")
+# install.packages("ggraph")
+# install.packages("igraph") # for sample graph building
+```
+
+```{r}
+library(tidygraph)
+library(ggraph)
+library(igraph)
+
+
+edges <- data.frame(
+  from = c("A", "A", "A", "B", "B", "B", "C", "D", "E", "F"),
+  to   = c("B", "C", "G", "C", "D", "G", "F", "E", "G", "G")
+)
+
+graph <- tbl_graph(edges = edges, directed = FALSE)
+
+
+node_sizes <- c(1, 1, 1, 1, 1, 1, 1)
+
+graph <- graph %>%
+  activate(nodes) %>%
+  mutate(size = node_sizes,
+         color = node_colors)
+
+ggraph(graph, layout = 'linear') +
+  geom_edge_arc() +
+  geom_node_point() +
+  geom_node_text(aes(label = name), vjust = 2, size = 4) +
+  scale_color_identity() +
+  theme_void()
+```
+
+```{r}
+library(ggplot2)
+library(dplyr)
+
+nodes <- data.frame(
+  name = LETTERS[1:7],
+  x = 1:7,
+  size = c(5, 10, 2, 4, 1, 2, 5),
+  color = c("navy", "red", "navy", "red", "navy", "red", "navy")
+)
+
+
+edges <- data.frame(
+  from = c("A", "A", "A", "B", "B", "B", "C", "D", "E", "F"),
+  to   = c("B", "C", "G", "C", "D", "G", "F", "E", "G", "G")
+) %>%
+  left_join(nodes, by = c("from" = "name")) %>%
+  rename(x_start = x) %>%
+  left_join(nodes, by = c("to" = "name")) %>%
+  rename(x_end = x)
+
+# Plot
+ggplot() +
+  geom_curve(data = edges, aes(x = x_start, xend = x_end, y = 0, yend = 0),
+             curvature = -1 , color = "lightgray", linewidth = 0.3) +
+  geom_point(data = nodes, aes(x = x, y = 0, size = size, color = color)) +
+  geom_text(data = nodes, aes(x = x, y = 1, label = name), color = "black") +
+  scale_color_identity() +
+  scale_size_continuous(range = c(2, 10)) +
+  theme_void() +
+  theme(legend.position = "none")
+
+```
+
+```{r}
+# Sample data: rows = people, columns = Yes/No answers to questions
+data <- tibble::tibble(
+  person = c("A", "B", "C", "D"),
+  Q1 = c("Yes", "No",  "Yes", "Yes"),
+  Q2 = c("Yes", "Yes", "No",  "No"),
+  Q3 = c("No",  "Yes", "Yes", "Yes"),
+  Q4 = c("No",  "No",  "Yes", "No")
+)
+```
+
+```{r}
+edges <- list()
+
+# Loop over each row (person)
+for (i in 1:nrow(GDOCC_permit_data)) {
+  person_row <- GDOCC_permit_data[i, -1]  # exclude the "person" column
+  yes_questions <- names(person_row)[person_row == "Yes"]
+  
+  if (length(yes_questions) >= 2) {
+    # Get all combinations of yes responses
+    combos <- combn(yes_questions, 2, simplify = FALSE)
+    
+    # Add to edges list
+    edges <- c(edges, combos)
+  }
+}
+
+# Convert to a tibble
+edge_df <- tibble::tibble(
+  from = map_chr(edges, 1),
+  to   = map_chr(edges, 2)
+) %>%
+  filter(!is.na(from),
+         !is.na(to)) %>% 
+  count(from, to)
+```
+
+```{r}
+# Bin edge counts into 5 categories
+edge_df <- edge_df %>%
+  mutate(n_cat = cut(n, breaks = 5, labels = FALSE))
+
+my_colors <- c("darkgrey", "black", "blue")
+
+ggraph(g, layout = 'linear') +
+  geom_edge_arc(aes(colour = as.factor(n_cat), width = n), strength = 0.5) +
+  geom_node_point(size = 5, color = "steelblue") +
+  geom_node_text(aes(label = name), vjust = 3, size = 2.4, angle = 45) +
+  scale_edge_width(range = c(0.5, 3)) +
+  scale_edge_colour_manual(values = my_colors, name = "Connection Strength") +
+  theme_void() +
+  labs(title = "Arc Diagram of Permit Relationship")
+```
+
+
