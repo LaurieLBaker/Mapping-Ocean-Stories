@@ -13,3 +13,4 @@ data/*.csv
 
 slides/images/*
 slides/slides/figs/*
+.DS_Store
